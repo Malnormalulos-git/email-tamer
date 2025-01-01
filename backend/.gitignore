@@ -1,0 +1,51 @@
+# Dont store hidden files and directories by default
+.*
+
+# Exceptions
+!.config
+!.babelrc*
+!.browserslistrc
+!.lintstagedrc.cjs
+!.env.example
+!.eslintrc.cjs
+!.eslintignore
+!.editorconfig
+!.gitattributes
+!.gitignore
+!.gitkeep
+!.npmignore
+!.npmrc
+!.prettierignore
+!.prettierrc.cjs
+!.travis.yml
+!.circleci
+!.gitlab-ci.yml
+!.dependabot
+!.github
+!.gitlab
+!.dockerignore
+!.husky
+
+# Generated directories
+build
+coverage
+dist
+node_modules
+cdk.out
+cdk.context.json
+
+# Other potentionally conflicting files
+*.db
+*.env
+~*
+*.tmp
+*.log
+npm-debug.log*
+*.tsbuildinfo
+**/obj
+**/bin
+**/*.DotSettings.user
+TaxReturn/TaxReturn.sln.DotSettings.user
+TaxReturn/global.json
+TaxReturn/TaxReturn.Application/ngrok.exe
+TaxReturn/TaxReturn.Application/ngrok-v3-stable-windows-amd64.zip
