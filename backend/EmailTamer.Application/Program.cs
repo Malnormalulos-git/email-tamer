@@ -1,12 +1,40 @@
+using EmailTamer.Auth;
+using EmailTamer.Config;
+using EmailTamer.Database;
+using EmailTamer.DependencyInjection;
+using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Serialization;
 using Serilog;
 using Serilog.Events;
 using Serilog.Sinks.SystemConsole.Themes;
 
 var builder = WebApplication.CreateBuilder(args);
 
+var configuration = builder.Configuration
+    .AddUserSecrets<Program>(true, true)
+    .AddEnvironmentVariables()
+    .Build();
+var appConfig = configuration.Get<ApplicationConfig>();
+
+var host = builder.Host;
+var services = builder.Services;
 
 
-builder.Host.UseSerilog((context, loggerConfiguration) =>
+services.AddSingleton(appConfig!);
+services.AddSingleton(TimeProvider.System);
+
+services.AddDbContext<EmailTamerDbContext>(dbContextOptionsBuilder =>
+    {
+        dbContextOptionsBuilder
+            .UseMySQL(appConfig!.Database.ConnectionString, optionsBuilder => optionsBuilder
+                .EnableRetryOnFailure(appConfig.Database.Retries)
+                .CommandTimeout(appConfig.Database.Timeout));
+    }, ServiceLifetime.Transient
+);
+
+host.UseSerilog((context, loggerConfiguration) =>
 {
     const string logOutputTemplate = "[{Timestamp:HH:mm:ss.fff}] "
                                      + "[{RequestId}] "
@@ -30,6 +58,10 @@ var app = builder.Build();
 
 app.UseSerilogRequestLogging();
 
-
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<EmailTamerDbContext>();
+    dbContext.Database.Migrate();
+}
 
 app.Run();
