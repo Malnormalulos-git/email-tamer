@@ -20,10 +20,15 @@ var appConfig = configuration.Get<ApplicationConfig>();
 
 var host = builder.Host;
 var services = builder.Services;
+var isDevelopment = builder.Environment.IsDevelopment();
 
 
 services.AddSingleton(appConfig!);
 services.AddSingleton(TimeProvider.System);
+
+
+services.AddCoreServicesFromAssemblyContaining<IUserContextAccessor>();
+services.AddCoreServicesFromAssembly(typeof(Program).Assembly);
 
 services.AddDbContext<EmailTamerDbContext>(dbContextOptionsBuilder =>
     {
@@ -33,6 +38,35 @@ services.AddDbContext<EmailTamerDbContext>(dbContextOptionsBuilder =>
                 .CommandTimeout(appConfig.Database.Timeout));
     }, ServiceLifetime.Transient
 );
+
+services.ConfigureIdentity();
+
+services.ConfigureAuth(appConfig!.Jwt);
+
+services.AddScoped<IConfigurableUserContextAccessor, UserContextAccessor>();
+services.AddScoped<IUserContextAccessor>(sp => sp.GetRequiredService<IConfigurableUserContextAccessor>());
+
+if (isDevelopment) {
+    services.AddSwaggerGen(o =>
+        {
+            o.SwaggerDoc("v1", new ()
+            {
+                Title = "EmailTamer",
+                Version = "v1"
+            });
+            o.UseAllOfForInheritance();
+        }
+    ).AddSwaggerGenNewtonsoftSupport();
+}
+
+services.AddControllers()
+    .AddNewtonsoftJson(x =>
+    {
+        var settings = x.SerializerSettings;
+        settings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+        settings.Converters.Add(new StringEnumConverter{NamingStrategy = new CamelCaseNamingStrategy()});
+        settings.NullValueHandling = NullValueHandling.Include;
+    });
 
 host.UseSerilog((context, loggerConfiguration) =>
 {
@@ -55,6 +89,18 @@ host.UseSerilog((context, loggerConfiguration) =>
 });
 
 var app = builder.Build();
+
+app.UseAuthentication();
+app.UseAuthorization();
+
+if (isDevelopment)
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+    app.UseDeveloperExceptionPage();
+}
+
+app.MapControllers();
 
 app.UseSerilogRequestLogging();
 
