@@ -9,14 +9,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="AutoMapper" Version="13.0.1" />
-      <PackageReference Include="AutoMapper.Collection" Version="10.0.0" />
-      <PackageReference Include="FluentValidation" Version="12.0.0-preview1" />
-      <PackageReference Include="FluentValidation.AspNetCore" Version="11.3.0" />
-      <PackageReference Include="JetBrains.Annotations" Version="2024.3.0" />
-      <PackageReference Include="MediatR" Version="12.4.1" />
-      <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.11" />
-      <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.11" />
       <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="8.0.11" />
       <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.11" />
       <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.11">
@@ -27,13 +19,22 @@
         <PrivateAssets>all</PrivateAssets>
         <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       </PackageReference>
-      <PackageReference Include="MySql.EntityFrameworkCore" Version="8.0.8" />
       <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
       <PackageReference Include="Serilog" Version="4.2.1-dev-02337" />
       <PackageReference Include="Serilog.AspNetCore" Version="9.0.0" />
       <PackageReference Include="Serilog.Enrichers.Thread" Version="4.0.0" />
       <PackageReference Include="Swashbuckle.AspNetCore" Version="7.2.0" />
       <PackageReference Include="Swashbuckle.AspNetCore.Newtonsoft" Version="7.2.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\EmailTamer.Parts.Auth\EmailTamer.Parts.Auth.csproj" />
+      <ProjectReference Include="..\EmailTamer.Database\EmailTamer.Database.csproj" />
+      <ProjectReference Include="..\EmailTamer.Infrastructure\EmailTamer.Infrastructure.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\EmailTamer.Core\EmailTamer.Core.csproj" />
     </ItemGroup>
 
 </Project>

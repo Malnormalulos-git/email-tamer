@@ -2,6 +2,16 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmailTamer.Application", "EmailTamer.Application\EmailTamer.Application.csproj", "{09CECDD5-B359-4095-99BA-ED27C2D20DFD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmailTamer.Database", "EmailTamer.Database\EmailTamer.Database.csproj", "{127F875D-9ABB-4099-B038-82A49FA88A9C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmailTamer.Core", "EmailTamer.Core\EmailTamer.Core.csproj", "{D6391962-F108-4438-B12C-58DC6BBDB7C6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmailTamer.Parts.Auth", "EmailTamer.Parts.Auth\EmailTamer.Parts.Auth.csproj", "{49AF4D8A-E16D-43DC-BB0A-1B7C64D22AF8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmailTamer.Infrastructure", "EmailTamer.Infrastructure\EmailTamer.Infrastructure.csproj", "{D371D39C-A10F-4DDC-ADB9-268564EFCB5B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmaiTamer.Parts", "EmaiTamer.Parts\EmaiTamer.Parts.csproj", "{80EFEB1D-0138-4A88-AE46-C195A1B20C05}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +22,25 @@ Global
 		{09CECDD5-B359-4095-99BA-ED27C2D20DFD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{09CECDD5-B359-4095-99BA-ED27C2D20DFD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{09CECDD5-B359-4095-99BA-ED27C2D20DFD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{127F875D-9ABB-4099-B038-82A49FA88A9C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{127F875D-9ABB-4099-B038-82A49FA88A9C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{127F875D-9ABB-4099-B038-82A49FA88A9C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{127F875D-9ABB-4099-B038-82A49FA88A9C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D6391962-F108-4438-B12C-58DC6BBDB7C6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D6391962-F108-4438-B12C-58DC6BBDB7C6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D6391962-F108-4438-B12C-58DC6BBDB7C6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D6391962-F108-4438-B12C-58DC6BBDB7C6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{49AF4D8A-E16D-43DC-BB0A-1B7C64D22AF8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{49AF4D8A-E16D-43DC-BB0A-1B7C64D22AF8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{49AF4D8A-E16D-43DC-BB0A-1B7C64D22AF8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{49AF4D8A-E16D-43DC-BB0A-1B7C64D22AF8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D371D39C-A10F-4DDC-ADB9-268564EFCB5B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D371D39C-A10F-4DDC-ADB9-268564EFCB5B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D371D39C-A10F-4DDC-ADB9-268564EFCB5B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D371D39C-A10F-4DDC-ADB9-268564EFCB5B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{80EFEB1D-0138-4A88-AE46-C195A1B20C05}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{80EFEB1D-0138-4A88-AE46-C195A1B20C05}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{80EFEB1D-0138-4A88-AE46-C195A1B20C05}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{80EFEB1D-0138-4A88-AE46-C195A1B20C05}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

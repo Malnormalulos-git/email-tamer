@@ -1,7 +1,9 @@
 using EmailTamer.Auth;
-using EmailTamer.Config;
+using EmailTamer.Core.DependencyInjection;
+using EmailTamer.Core.Extensions;
 using EmailTamer.Database;
-using EmailTamer.DependencyInjection;
+using EmailTamer.Database.Config;
+using EmailTamer.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
@@ -16,35 +18,26 @@ var configuration = builder.Configuration
     .AddUserSecrets<Program>(true, true)
     .AddEnvironmentVariables()
     .Build();
-var appConfig = configuration.Get<ApplicationConfig>();
+
+var dbConfig = configuration.GetSection("Database").Get<DatabaseConfig>();
 
 var host = builder.Host;
 var services = builder.Services;
 var isDevelopment = builder.Environment.IsDevelopment();
 
 
-services.AddSingleton(appConfig!);
 services.AddSingleton(TimeProvider.System);
 
 
-services.AddCoreServicesFromAssemblyContaining<IUserContextAccessor>();
+services.AddInfrastructure();
 services.AddCoreServicesFromAssembly(typeof(Program).Assembly);
 
-services.AddDbContext<EmailTamerDbContext>(dbContextOptionsBuilder =>
-    {
-        dbContextOptionsBuilder
-            .UseMySQL(appConfig!.Database.ConnectionString, optionsBuilder => optionsBuilder
-                .EnableRetryOnFailure(appConfig.Database.Retries)
-                .CommandTimeout(appConfig.Database.Timeout));
-    }, ServiceLifetime.Transient
-);
+services.AddDatabase(dbConfig!);
 
-services.ConfigureIdentity();
+services.AddMvcCore()
+    .AddAuthPart(configuration);
 
-services.ConfigureAuth(appConfig!.Jwt);
-
-services.AddScoped<IConfigurableUserContextAccessor, UserContextAccessor>();
-services.AddScoped<IUserContextAccessor>(sp => sp.GetRequiredService<IConfigurableUserContextAccessor>());
+services.AddEndpointsApiExplorer();
 
 if (isDevelopment) {
     services.AddSwaggerGen(o =>
@@ -58,6 +51,19 @@ if (isDevelopment) {
         }
     ).AddSwaggerGenNewtonsoftSupport();
 }
+
+services.AddCors(options =>
+{
+    options.AddDefaultPolicy(corsPolicyBuilder =>
+        corsPolicyBuilder
+            .Map(x => isDevelopment
+                ? x.WithOrigins("http://localhost:5173")
+                : x)
+            .AllowAnyMethod()
+            .AllowCredentials()
+            .AllowAnyHeader()
+            .Build());
+});
 
 services.AddControllers()
     .AddNewtonsoftJson(x =>
@@ -90,8 +96,10 @@ host.UseSerilog((context, loggerConfiguration) =>
 
 var app = builder.Build();
 
+app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseCors();
 
 if (isDevelopment)
 {
