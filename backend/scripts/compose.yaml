@@ -1,0 +1,9 @@
+name: emailtamer
+services:
+  db:
+    container_name: app-local-db
+    build:
+      context: .
+      dockerfile: ./db.dockerfile
+    ports:
+      - 3306:3306
