@@ -1,5 +1,6 @@
 using EmailTamer.Database.Entities;
 using EmailTamer.Database.Entities.Base;
+using EmailTamer.Database.Extensions;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -17,6 +18,8 @@ public class EmailTamerDbContext(
         modelBuilder.Entity<EmailTamerUser>()
             .HasIndex(b => b.Email)
             .IsUnique();
+        
+        modelBuilder.SeedRoles();
     }
 
     public override Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess,

@@ -3,16 +3,19 @@ using System;
 using EmailTamer.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace EmailTamer.Migrations
+namespace EmailTamer.Database.Migrations
 {
     [DbContext(typeof(EmailTamerDbContext))]
-    partial class EmailTamerDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250110145931_AddRoles")]
+    partial class AddRoles
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
