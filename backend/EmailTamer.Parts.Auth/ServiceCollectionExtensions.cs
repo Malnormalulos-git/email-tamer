@@ -4,7 +4,7 @@ using EmailTamer.Core.FluentValidation;
 using EmailTamer.Database;
 using EmailTamer.Database.Entities;
 using EmailTamer.Infrastructure.Auth;
-using EmaiTamer.Parts;
+using EmailTamer.Parts;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
@@ -82,12 +82,12 @@ public static class ServiceCollectionExtensions
             var adminRole = UserRole.Admin.ToString("G");
             var userRole = UserRole.User.ToString("G");
             
-            options.AddPolicy(Policies.Admin, policy =>
+            options.AddPolicy(AuthPolicy.Admin, policy =>
             {
                 policy.RequireAuthenticatedUser();
                 policy.RequireRole(adminRole);
             });
-            options.AddPolicy(Policies.User, policy =>
+            options.AddPolicy(AuthPolicy.User, policy =>
             {
                 policy.RequireAuthenticatedUser();
                 policy.RequireRole(adminRole, userRole);

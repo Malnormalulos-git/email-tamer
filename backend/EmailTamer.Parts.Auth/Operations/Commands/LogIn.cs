@@ -9,6 +9,7 @@ using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Internal;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
@@ -27,7 +28,7 @@ public sealed record LogInCommand(LogInDto Credentials) : IRequest<IActionResult
 
 public class LogInCommandHandler(UserManager<EmailTamerUser> userManager,
                                  IOptionsMonitor<JwtConfig> jwtConfig,
-                                 TimeProvider timeProvider)
+                                 ISystemClock systemClock)
 	: IRequestHandler<LogInCommand, IActionResult>
 {
     public async Task<IActionResult> Handle(LogInCommand request, CancellationToken cancellationToken)
@@ -65,7 +66,7 @@ public class LogInCommandHandler(UserManager<EmailTamerUser> userManager,
             Subject = new(claims),
             Issuer = config.Issuer,
             Audience = config.Audience,
-            Expires = timeProvider.GetUtcNow().AddHours(24).DateTime,
+            Expires = systemClock.UtcNow.AddHours(24).DateTime,
             SigningCredentials = new(secretKey, SecurityAlgorithms.HmacSha256)
         };
 

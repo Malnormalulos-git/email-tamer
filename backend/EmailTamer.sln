@@ -10,7 +10,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmailTamer.Parts.Auth", "Em
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmailTamer.Infrastructure", "EmailTamer.Infrastructure\EmailTamer.Infrastructure.csproj", "{D371D39C-A10F-4DDC-ADB9-268564EFCB5B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmaiTamer.Parts", "EmaiTamer.Parts\EmaiTamer.Parts.csproj", "{80EFEB1D-0138-4A88-AE46-C195A1B20C05}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmailTamer.Parts", "EmailTamer.Parts\EmailTamer.Parts.csproj", "{80EFEB1D-0138-4A88-AE46-C195A1B20C05}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

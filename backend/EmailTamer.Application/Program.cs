@@ -1,10 +1,12 @@
+using AutoMapper.EquivalencyExpression;
 using EmailTamer.Auth;
-using EmailTamer.Core.DependencyInjection;
+using EmailTamer.Core;
 using EmailTamer.Core.Extensions;
+using EmailTamer.Core.Startup;
 using EmailTamer.Database;
-using EmailTamer.Database.Config;
 using EmailTamer.Infrastructure;
-using Microsoft.EntityFrameworkCore;
+using EmailTamer.Startup;
+using HealthChecks.UI.Client;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
@@ -19,20 +21,20 @@ var configuration = builder.Configuration
     .AddEnvironmentVariables()
     .Build();
 
-var dbConfig = configuration.GetSection("Database").Get<DatabaseConfig>();
-
 var host = builder.Host;
 var services = builder.Services;
 var isDevelopment = builder.Environment.IsDevelopment();
 
 
-services.AddSingleton(TimeProvider.System);
+services.AddAutoMapper(x => x.AddCollectionMappers(), typeof(Program));
+services.AddStartupAction<AutoMapperValidationAction>();
 
+services.AddHealthChecks();
 
-services.AddInfrastructure();
-services.AddCoreServicesFromAssembly(typeof(Program).Assembly);
+services.AddCore();
 
-services.AddDatabase(dbConfig!);
+services.AddInfrastructure()
+    .AddDatabase();
 
 services.AddMvcCore()
     .AddAuthPart(configuration);
@@ -100,6 +102,7 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseCors();
+app.UseEmailTamerAuth();
 
 if (isDevelopment)
 {
@@ -108,14 +111,35 @@ if (isDevelopment)
     app.UseDeveloperExceptionPage();
 }
 
+app.MapHealthChecks("/api/health",
+    new()
+    {
+        AllowCachingResponses = false,
+        ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+    });
+
 app.MapControllers();
 
 app.UseSerilogRequestLogging();
 
-using (var scope = app.Services.CreateScope())
-{
-    var dbContext = scope.ServiceProvider.GetRequiredService<EmailTamerDbContext>();
-    dbContext.Database.Migrate();
-}
+await RunAsync(app);
 
-app.Run();
+return;
+
+async Task RunAsync(WebApplication application)
+{
+    var lifetime = application.Lifetime;
+
+    var appRunner = application.RunAsync();
+    lifetime.ApplicationStarted.WaitHandle.WaitOne();
+
+    await using (var scope = application.Services.CreateAsyncScope())
+    {
+        var sp = scope.ServiceProvider;
+        await sp
+            .GetRequiredService<IStartupActionCoordinator>()
+            .PerformStartupActionsAsync(lifetime.ApplicationStopping);
+    }
+
+    await appRunner;
+}

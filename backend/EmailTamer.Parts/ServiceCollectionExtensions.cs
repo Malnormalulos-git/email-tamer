@@ -1,7 +1,7 @@
 using EmailTamer.Core.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace EmaiTamer.Parts;
+namespace EmailTamer.Parts;
 
 public static class ServiceCollectionExtensions
 {

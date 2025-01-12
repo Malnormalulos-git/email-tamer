@@ -1,5 +1,5 @@
 using EmailTamer.Database.Entities;
-using EmailTamer.Database.Entities.Base;
+using EmailTamer.Database.Entities.Configuration;
 using EmailTamer.Database.Extensions;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -8,44 +8,20 @@ namespace EmailTamer.Database;
 
 public class EmailTamerDbContext(
     DbContextOptions<EmailTamerDbContext> options,
-    TimeProvider timeProvider)
+    IDatabaseConfigurator configurator)
     : IdentityDbContext<EmailTamerUser>(options)
 {
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+        configurator.OnModelCreating(modelBuilder);
 
-        modelBuilder.Entity<EmailTamerUser>()
-            .HasIndex(b => b.Email)
-            .IsUnique();
-        
         modelBuilder.SeedRoles();
     }
 
-    public override Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess,
-        CancellationToken cancellationToken = default)
+    protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
     {
-        OnBeforeSaving();
-        return base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
-    }
-    private void OnBeforeSaving()
-    {
-        var entries = ChangeTracker.Entries();
-        
-        foreach (var entry in entries)
-            if (entry.Entity is IDateAuditableEntity entity)
-            {
-                var now = timeProvider.GetUtcNow().UtcDateTime;
-                switch (entry.State)
-                {
-                    case EntityState.Modified:
-                        entity.ModifiedAt = now;
-                        break;
-                    case EntityState.Added:
-                        entity.CreatedAt = now;
-                        entity.ModifiedAt = now;
-                        break;
-                }
-            }
+        base.ConfigureConventions(configurationBuilder);
+        configurator.ConfigureConventions(configurationBuilder, Database);
     }
 }

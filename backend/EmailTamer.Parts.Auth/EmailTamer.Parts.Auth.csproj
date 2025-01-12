@@ -14,7 +14,7 @@
     <ItemGroup>
       <ProjectReference Include="..\EmailTamer.Database\EmailTamer.Database.csproj" />
       <ProjectReference Include="..\EmailTamer.Infrastructure\EmailTamer.Infrastructure.csproj" />
-      <ProjectReference Include="..\EmaiTamer.Parts\EmaiTamer.Parts.csproj" />
+      <ProjectReference Include="..\EmailTamer.Parts\EmailTamer.Parts.csproj" />
     </ItemGroup>
 
     <ItemGroup>
