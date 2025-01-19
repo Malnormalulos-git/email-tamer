@@ -62,60 +62,60 @@ internal sealed class AuditSaveChangesInterceptor(
 				}
 			}
 
-			// if (entry.Entity is IEmailTamerUserAuditableEntity userAudit)
-			// {
-			// 	switch (entry.State)
-			// 	{
-			// 		case EntityState.Modified:
-			// 			userAudit.ModifiedByUserId = userId;
-			// 			break;
-			// 		case EntityState.Added:
-			// 			userAudit.CreatedByUserId = userId;
-			// 			userAudit.ModifiedByUserId = userId;
-			// 			break;
-			// 		case EntityState.Detached:
-			// 		case EntityState.Unchanged:
-			// 		case EntityState.Deleted:
-			// 		default:
-			// 			break;
-			// 	}
-			// }
+			if (entry.Entity is IEmailTamerUserAuditableEntity userAudit)
+			{
+				switch (entry.State)
+				{
+					case EntityState.Modified:
+						userAudit.ModifiedByUserId = userId;
+						break;
+					case EntityState.Added:
+						userAudit.CreatedByUserId = userId;
+						userAudit.ModifiedByUserId = userId;
+						break;
+					case EntityState.Detached:
+					case EntityState.Unchanged:
+					case EntityState.Deleted:
+					default:
+						break;
+				}
+			}
 
 			var isSoftDeleted = false;
 
-			// if (entry.Entity is IDateSoftDeletableEntity dateSoftDeletable)
-			// {
-			// 	switch (entry.State)
-			// 	{
-			// 		case EntityState.Deleted:
-			// 			isSoftDeleted = true;
-			// 			dateSoftDeletable.DeletedAt = now;
-			// 			break;
-			// 		case EntityState.Modified:
-			// 		case EntityState.Added:
-			// 		case EntityState.Detached:
-			// 		case EntityState.Unchanged:
-			// 		default:
-			// 			break;
-			// 	}
-			// }
-			//
-			// if (entry.Entity is IEmailTamerUserSoftDeletableEntity userSoftDeletable)
-			// {
-			// 	switch (entry.State)
-			// 	{
-			// 		case EntityState.Deleted:
-			// 			isSoftDeleted = true;
-			// 			userSoftDeletable.DeletedByUserId = userId;
-			// 			break;
-			// 		case EntityState.Modified:
-			// 		case EntityState.Added:
-			// 		case EntityState.Detached:
-			// 		case EntityState.Unchanged:
-			// 		default:
-			// 			break;
-			// 	}
-			// }
+			if (entry.Entity is IDateSoftDeletableEntity dateSoftDeletable)
+			{
+				switch (entry.State)
+				{
+					case EntityState.Deleted:
+						isSoftDeleted = true;
+						dateSoftDeletable.DeletedAt = now;
+						break;
+					case EntityState.Modified:
+					case EntityState.Added:
+					case EntityState.Detached:
+					case EntityState.Unchanged:
+					default:
+						break;
+				}
+			}
+			
+			if (entry.Entity is IEmailTamerUserSoftDeletableEntity userSoftDeletable)
+			{
+				switch (entry.State)
+				{
+					case EntityState.Deleted:
+						isSoftDeleted = true;
+						userSoftDeletable.DeletedByUserId = userId;
+						break;
+					case EntityState.Modified:
+					case EntityState.Added:
+					case EntityState.Detached:
+					case EntityState.Unchanged:
+					default:
+						break;
+				}
+			}
 
 			if (isSoftDeleted)
 			{
