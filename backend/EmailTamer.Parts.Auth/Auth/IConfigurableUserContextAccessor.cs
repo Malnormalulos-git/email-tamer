@@ -1,6 +1,6 @@
 using EmailTamer.Infrastructure.Auth;
 
-namespace EmailTamer.Auth;
+namespace EmailTamer.Auth.Auth;
 
 public interface IConfigurableUserContextAccessor : IUserContextAccessor
 {

@@ -1,6 +1,6 @@
 using EmailTamer.Auth.Exceptions;
 
-namespace EmailTamer.Auth;
+namespace EmailTamer.Auth.Auth;
 
 public sealed class UserContextAccessor : IConfigurableUserContextAccessor
 {

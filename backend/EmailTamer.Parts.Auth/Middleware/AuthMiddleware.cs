@@ -1,3 +1,4 @@
+using EmailTamer.Auth.Auth;
 using EmailTamer.Auth.Config;
 using JetBrains.Annotations;
 using Microsoft.AspNetCore.Http;

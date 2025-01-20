@@ -1,3 +1,4 @@
+using EmailTamer.Auth.Auth;
 using EmailTamer.Auth.Config;
 using EmailTamer.Auth.Controllers;
 using EmailTamer.Core.FluentValidation;
