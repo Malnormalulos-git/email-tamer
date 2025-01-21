@@ -14,6 +14,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmailTamer.Parts", "EmailTa
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Parts", "Parts", "{085EECCF-BBE3-4C6F-8633-D5A401C41627}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmailTamer.Database.Tenant", "EmailTamer.Database.Tenant\EmailTamer.Database.Tenant.csproj", "{D7A907FC-C0EF-4E99-9F8C-9D7F68B8C4D4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmailTamer.Parts.EmailBox", "EmailTamer.Parts.EmailBox\EmailTamer.Parts.EmailBox.csproj", "{C9FAB059-5388-45D9-9EB3-8FFAAA053B71}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -44,9 +48,18 @@ Global
 		{80EFEB1D-0138-4A88-AE46-C195A1B20C05}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{80EFEB1D-0138-4A88-AE46-C195A1B20C05}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{80EFEB1D-0138-4A88-AE46-C195A1B20C05}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D7A907FC-C0EF-4E99-9F8C-9D7F68B8C4D4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D7A907FC-C0EF-4E99-9F8C-9D7F68B8C4D4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D7A907FC-C0EF-4E99-9F8C-9D7F68B8C4D4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D7A907FC-C0EF-4E99-9F8C-9D7F68B8C4D4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C9FAB059-5388-45D9-9EB3-8FFAAA053B71}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C9FAB059-5388-45D9-9EB3-8FFAAA053B71}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C9FAB059-5388-45D9-9EB3-8FFAAA053B71}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C9FAB059-5388-45D9-9EB3-8FFAAA053B71}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{80EFEB1D-0138-4A88-AE46-C195A1B20C05} = {085EECCF-BBE3-4C6F-8633-D5A401C41627}
 		{49AF4D8A-E16D-43DC-BB0A-1B7C64D22AF8} = {085EECCF-BBE3-4C6F-8633-D5A401C41627}
+		{C9FAB059-5388-45D9-9EB3-8FFAAA053B71} = {085EECCF-BBE3-4C6F-8633-D5A401C41627}
 	EndGlobalSection
 EndGlobal

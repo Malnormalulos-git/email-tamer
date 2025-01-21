@@ -29,9 +29,11 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\EmailTamer.Database.Tenant\EmailTamer.Database.Tenant.csproj" />
       <ProjectReference Include="..\EmailTamer.Parts.Auth\EmailTamer.Parts.Auth.csproj" />
       <ProjectReference Include="..\EmailTamer.Database\EmailTamer.Database.csproj" />
       <ProjectReference Include="..\EmailTamer.Infrastructure\EmailTamer.Infrastructure.csproj" />
+      <ProjectReference Include="..\EmailTamer.Parts.EmailBox\EmailTamer.Parts.EmailBox.csproj" />
     </ItemGroup>
 
     <ItemGroup>

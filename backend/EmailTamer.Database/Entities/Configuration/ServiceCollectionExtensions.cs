@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace EmailTamer.Database.Entities.Configuration;
 
-internal static class ServiceCollectionExtensions
+public static class ServiceCollectionExtensions
 {
 	public static IServiceCollection AddDatabaseConfiguration<T>(this IServiceCollection services)
 	{

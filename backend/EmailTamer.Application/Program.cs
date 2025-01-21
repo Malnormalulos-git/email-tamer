@@ -4,7 +4,9 @@ using EmailTamer.Core;
 using EmailTamer.Core.Extensions;
 using EmailTamer.Core.Startup;
 using EmailTamer.Database;
+using EmailTamer.Database.Tenant;
 using EmailTamer.Infrastructure;
+using EmailTamer.Parts.EmailBox;
 using EmailTamer.Startup;
 using HealthChecks.UI.Client;
 using Newtonsoft.Json;
@@ -34,10 +36,12 @@ services.AddHealthChecks();
 services.AddCore();
 
 services.AddInfrastructure()
-    .AddDatabase();
+    .AddDatabase()
+    .AddTenantDatabases();
 
 services.AddMvcCore()
-    .AddAuthPart(configuration);
+    .AddAuthPart(configuration)
+    .AddEmailBoxesPart();
 
 services.AddEndpointsApiExplorer();
 

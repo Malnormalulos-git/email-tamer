@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging;
 
 namespace EmailTamer.Database.Persistence.Interceptors;
 
-internal sealed class AuditSaveChangesInterceptor(
+public sealed class AuditSaveChangesInterceptor(
 	ILogger<AuditSaveChangesInterceptor> logger,
 	ISystemClock clock,
 	IUserContextAccessor accessor)

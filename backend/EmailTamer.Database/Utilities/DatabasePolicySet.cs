@@ -5,7 +5,7 @@ using Polly.Timeout;
 
 namespace EmailTamer.Database.Utilities;
 
-internal sealed class DatabasePolicySet(ILogger<DatabasePolicySet> logger) : IDatabasePolicySet
+public sealed class DatabasePolicySet(ILogger<DatabasePolicySet> logger) : IDatabasePolicySet
 {
 	public IAsyncPolicy DatabaseReadPolicy => Policy.WrapAsync(
 			CommonWaitAndRetryOn<MySqlException, InvalidOperationException, TimeoutRejectedException>(3)

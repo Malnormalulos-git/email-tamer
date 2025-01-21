@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging;
 
 namespace EmailTamer.Database.Entities.Configuration;
 
-internal sealed class DatabaseConfigurator(
+public sealed class DatabaseConfigurator(
 	IEnumerable<INonGenericEntityConfiguration> configurations,
 	ILogger<DatabaseConfigurator> logger)
 	: IDatabaseConfigurator
