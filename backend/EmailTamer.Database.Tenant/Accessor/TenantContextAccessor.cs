@@ -2,13 +2,14 @@ using EmailTamer.Database.Entities;
 using EmailTamer.Database.Persistence;
 using EmailTamer.Infrastructure.Auth;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace EmailTamer.Database.Tenant.Accessor;
 
 public sealed class TenantContextAccessor(
 	IUserContextAccessor userContextAccessor,
 	UserManager<EmailTamerUser> userManager,
-	IEmailTamerRepository emailTamerRepository
+	[FromKeyedServices(nameof(EmailTamerDbContext))] IEmailTamerRepository emailTamerRepository
 	) : ITenantContextAccessor
 {
 	private string? Id;

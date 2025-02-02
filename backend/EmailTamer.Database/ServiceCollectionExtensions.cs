@@ -96,7 +96,7 @@ public static class ServiceCollectionExtensions
 
 	private static IServiceCollection AddDatabasePersistence(this IServiceCollection services)
 	{
-		services.TryAddScoped<IEmailTamerRepository, EmailTamerRepository>();
+		services.TryAddKeyedScoped<IEmailTamerRepository, EmailTamerRepository<EmailTamerDbContext>>(nameof(EmailTamerDbContext));
 		return services;
 	}
 }

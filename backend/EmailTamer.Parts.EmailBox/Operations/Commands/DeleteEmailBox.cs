@@ -1,11 +1,13 @@
 using AutoMapper;
 using EmailTamer.Database.Persistence;
+using EmailTamer.Database.Tenant;
 using EmailTamer.Parts.EmailBox.Models;
 using FluentValidation;
 using JetBrains.Annotations;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace EmailTamer.Parts.EmailBox.Operations.Commands;
 
@@ -21,8 +23,7 @@ public sealed record DeleteEmailBox(Guid Id) : IRequest<IActionResult>
 }
 
 [UsedImplicitly]
-public class DeleteEmailBoxCommandHandler(
-    ITenantRepository repository)
+public class DeleteEmailBoxCommandHandler([FromKeyedServices(nameof(TenantDbContext))] IEmailTamerRepository repository)
     : IRequestHandler<DeleteEmailBox, IActionResult>
 {
     public async Task<IActionResult> Handle(DeleteEmailBox command, CancellationToken cancellationToken)

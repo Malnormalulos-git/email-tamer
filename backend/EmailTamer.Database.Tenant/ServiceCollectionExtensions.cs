@@ -5,7 +5,6 @@ using EmailTamer.Database.Persistence;
 using EmailTamer.Database.Persistence.Interceptors;
 using EmailTamer.Database.Tenant.Accessor;
 using EmailTamer.Database.Tenant.Config;
-using EmailTamer.Database.Tenant.Persistence;
 using EmailTamer.Database.Utilities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -64,14 +63,14 @@ public static class ServiceCollectionExtensions
 
 	private static IServiceCollection AddDatabasePersistence(this IServiceCollection services)
 	{
-		services.TryAddScoped<ITenantRepository>(sp =>
+		services.TryAddKeyedScoped<IEmailTamerRepository>(nameof(TenantDbContext), (sp, _) =>
 		{
 			var dbContextFactory = sp.GetRequiredService<IDbContextFactory<TenantDbContext>>();
 			var dbContext = dbContextFactory.CreateDbContext();
 		
 			var databasePolicySet = sp.GetRequiredService<IDatabasePolicySet>();
 			
-			var repository = new TenantRepository(dbContext, databasePolicySet);
+			var repository = new EmailTamerRepository<TenantDbContext>(dbContext, databasePolicySet);
 			return repository;
 		});
 		

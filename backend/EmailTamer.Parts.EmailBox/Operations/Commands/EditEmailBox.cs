@@ -1,10 +1,12 @@
 using EmailTamer.Database.Persistence;
+using EmailTamer.Database.Tenant;
 using EmailTamer.Parts.EmailBox.Models;
 using FluentValidation;
 using JetBrains.Annotations;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace EmailTamer.Parts.EmailBox.Operations.Commands;
 
@@ -20,8 +22,7 @@ public sealed record EditEmailBox(EditEmailBoxDto EditEmailBoxDto) : IRequest<IA
 }
 
 [UsedImplicitly]
-public class EditEmailBoxCommandHandler(
-    ITenantRepository repository)
+public class EditEmailBoxCommandHandler([FromKeyedServices(nameof(TenantDbContext))] IEmailTamerRepository repository)
     : IRequestHandler<EditEmailBox, IActionResult>
 {
     public async Task<IActionResult> Handle(EditEmailBox command, CancellationToken cancellationToken)

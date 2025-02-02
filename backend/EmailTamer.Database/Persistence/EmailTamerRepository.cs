@@ -5,12 +5,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace EmailTamer.Database.Persistence;
 
-internal sealed class EmailTamerRepository(
-	EmailTamerDbContext dbContext,
-	IDatabasePolicySet databasePolicySet)
-	: IEmailTamerRepository
+public class EmailTamerRepository<TContext>(
+    TContext dbContext,
+    IDatabasePolicySet databasePolicySet)
+    : IEmailTamerRepository
+    where TContext : DbContext
 {
-	public Task<T> ReadAsync<T>(Func<IEmailTamerRepository, CancellationToken, Task<T>> func,
+    public Task<T> ReadAsync<T>(Func<IEmailTamerRepository, CancellationToken, Task<T>> func,
 								CancellationToken cancellationToken = default)
 	{
 		return databasePolicySet.DatabaseReadPolicy.ExecuteAsync(ct => func(this, ct), cancellationToken);

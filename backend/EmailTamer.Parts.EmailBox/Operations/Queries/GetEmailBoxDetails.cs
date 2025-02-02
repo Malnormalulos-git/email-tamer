@@ -1,11 +1,13 @@
 using AutoMapper;
 using EmailTamer.Database.Persistence;
+using EmailTamer.Database.Tenant;
 using EmailTamer.Parts.EmailBox.Models;
 using FluentValidation;
 using JetBrains.Annotations;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace EmailTamer.Parts.EmailBox.Operations.Queries;
 
@@ -22,7 +24,7 @@ public sealed record GetEmailBoxDetails(Guid Id) : IRequest<IActionResult>
 
 [UsedImplicitly]
 public class GetEmailBoxDetailsQueryHandler(
-	ITenantRepository repository,
+	[FromKeyedServices(nameof(TenantDbContext))] IEmailTamerRepository repository,
 	IMapper mapper)
 	: IRequestHandler<GetEmailBoxDetails, IActionResult>
 {
