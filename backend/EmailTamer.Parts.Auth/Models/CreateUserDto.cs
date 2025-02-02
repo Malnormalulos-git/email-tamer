@@ -1,12 +1,13 @@
 using AutoMapper;
 using EmailTamer.Core.Mappers;
+using EmailTamer.Core.Models;
 using EmailTamer.Database.Entities;
 using EmailTamer.Infrastructure.Auth;
 using FluentValidation;
 
 namespace EmailTamer.Auth.Models;
 
-public class CreateUserDto: IMappable
+public class CreateUserDto: IMappable, IInbound
 {
     public string Email { get; set; } = null!;
 

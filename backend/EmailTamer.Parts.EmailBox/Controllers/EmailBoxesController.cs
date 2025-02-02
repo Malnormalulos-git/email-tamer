@@ -1,0 +1,51 @@
+using EmailTamer.Database.Utilities.Paging;
+using EmailTamer.Infrastructure.Auth;
+using EmailTamer.Parts.EmailBox.Models;
+using EmailTamer.Parts.EmailBox.Operations.Commands;
+using EmailTamer.Parts.EmailBox.Operations.Queries;
+using MediatR;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+
+namespace EmailTamer.Parts.EmailBox.Controllers;
+
+[Route("api/emailBoxes")]
+public class EmailBoxesController(IMediator mediator) : Controller
+{
+    [HttpPost(Name = nameof(CreateEmailBox))]
+    [Authorize(Policy = AuthPolicy.User)]
+    [ProducesResponseType(200)]
+    public Task<IActionResult> CreateEmailBox([FromBody] CreateEmailBoxDto createEmailBoxDto, CancellationToken ct = default) =>
+        mediator.Send(new CreateEmailBox(createEmailBoxDto), ct);
+    
+    [HttpGet(Name = nameof(GetEmailBoxes))]
+    [Authorize(Policy = AuthPolicy.User)]
+    [ProducesResponseType(typeof(PagedResult<EmailBoxDto>), 200)]
+    [ProducesResponseType(404)]
+    public Task<IActionResult> GetEmailBoxes(
+        [FromQuery(Name = "page")] int page,
+        [FromQuery(Name = "size")] int size,
+        CancellationToken ct = default)
+        => mediator.Send(new GetEmailBoxes(page, size), ct);
+    
+    [HttpGet("{id:guid}", Name = nameof(GetEmailBoxDetails))]
+    [Authorize(Policy = AuthPolicy.User)]
+    [ProducesResponseType(typeof(EmailBoxDetailsDto), 200)]
+    [ProducesResponseType(404)]
+    public Task<IActionResult> GetEmailBoxDetails(Guid id, CancellationToken ct = default)
+        => mediator.Send(new GetEmailBoxDetails(id), ct);
+    
+    [HttpPatch(Name = nameof(EditEmailBox))]
+    [Authorize(Policy = AuthPolicy.User)]
+    [ProducesResponseType(200)]
+    [ProducesResponseType(304)]
+    public Task<IActionResult> EditEmailBox([FromBody] EditEmailBoxDto editEmailBoxDto, CancellationToken ct = default) =>
+        mediator.Send(new EditEmailBox(editEmailBoxDto), ct);
+    
+    [HttpDelete("{id:guid}", Name = nameof(DeleteEmailBox))]
+    [Authorize(Policy = AuthPolicy.User)]
+    [ProducesResponseType(200)]
+    [ProducesResponseType(404)]
+    public Task<IActionResult> DeleteEmailBox([FromRoute(Name = "id")] Guid id, CancellationToken ct = default) =>
+        mediator.Send(new DeleteEmailBox(id), ct);
+}

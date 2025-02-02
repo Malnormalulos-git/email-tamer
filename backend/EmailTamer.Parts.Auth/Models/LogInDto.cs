@@ -1,8 +1,9 @@
+using EmailTamer.Core.Models;
 using FluentValidation;
 
 namespace EmailTamer.Auth.Models;
 
-public sealed class LogInDto
+public sealed class LogInDto: IInbound
 {
     public string Email { get; set; } = null!;
 

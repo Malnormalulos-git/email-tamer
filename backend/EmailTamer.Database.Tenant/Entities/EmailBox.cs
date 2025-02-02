@@ -1,5 +1,4 @@
 using System.ComponentModel.DataAnnotations.Schema;
-using EmailTamer.Database.Entities;
 using EmailTamer.Database.Entities.Base;
 using EmailTamer.Database.Entities.Configuration;
 using EmailTamer.Database.Extensions;
@@ -17,8 +16,8 @@ public class EmailBox : UniqueIdEntity, IDateAuditableEntity
     public string Password { get; set; } = null!;
     
     public string EmailDomainConnectionHost { get; set; } = null!;
-    
-    public int EmailDomainConnectionPort { get; set; }
+
+    public int EmailDomainConnectionPort { get; set; } = 993;
 
     public bool UseSSl { get; set; } = true;
     

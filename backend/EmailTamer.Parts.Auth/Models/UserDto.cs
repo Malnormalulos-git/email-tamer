@@ -1,10 +1,11 @@
 using AutoMapper;
 using EmailTamer.Core.Mappers;
+using EmailTamer.Core.Models;
 using EmailTamer.Infrastructure.Auth;
 
 namespace EmailTamer.Auth.Models;
 
-public sealed class UserDto : IMappable
+public sealed class UserDto : IMappable, IOutbound
 {
     public string Id { get; set; } = null!;
 
