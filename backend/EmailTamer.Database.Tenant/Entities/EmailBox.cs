@@ -9,9 +9,13 @@ namespace EmailTamer.Database.Tenant.Entities;
 [Table("EmailBoxes")]
 public class EmailBox : UniqueIdEntity, IDateAuditableEntity
 {
-    public string? Name { get; set; }
+    public string? BoxName { get; set; }
 
+    public string? UserName { get; set; }
+    
     public string Email { get; set; } = null!;
+
+    public bool AuthenticateByEmail { get; set; } = true;
     
     public string Password { get; set; } = null!;
     

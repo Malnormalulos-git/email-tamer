@@ -39,9 +39,15 @@ public class EditEmailBoxCommandHandler([FromKeyedServices(nameof(TenantDbContex
 
         bool areChangesMade = false;
 
-        if (!string.Equals(emailBox.Name, command.EditEmailBoxDto.Name))
+        if (!string.Equals(emailBox.BoxName, command.EditEmailBoxDto.BoxName))
         {
-            emailBox.Name = command.EditEmailBoxDto.Name;
+            emailBox.BoxName = command.EditEmailBoxDto.BoxName;
+            areChangesMade = true;
+        }
+
+        if (!string.Equals(emailBox.UserName, command.EditEmailBoxDto.UserName))
+        {
+            emailBox.UserName = command.EditEmailBoxDto.UserName;
             areChangesMade = true;
         }
         
@@ -58,6 +64,12 @@ public class EditEmailBoxCommandHandler([FromKeyedServices(nameof(TenantDbContex
             }
             
             emailBox.Email = command.EditEmailBoxDto.Email;
+            areChangesMade = true;
+        }
+
+        if (emailBox.AuthenticateByEmail != command.EditEmailBoxDto.AuthenticateByEmail)
+        {
+            emailBox.AuthenticateByEmail = command.EditEmailBoxDto.AuthenticateByEmail;
             areChangesMade = true;
         }
         

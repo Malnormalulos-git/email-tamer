@@ -8,9 +8,13 @@ namespace EmailTamer.Parts.EmailBox.Models;
 
 public sealed class CreateEmailBoxDto : IMappable, IInbound
 {
-    public string? Name { get; set; }
+    public string? BoxName { get; set; }
 
+    public string? UserName { get; set; }
+    
     public string Email { get; set; } = null!;
+
+    public bool AuthenticateByEmail { get; set; } = true;
     
     public string Password { get; set; } = null!;
     
@@ -24,7 +28,7 @@ public sealed class CreateEmailBoxDto : IMappable, IInbound
     {
         public EmailBoxDtoValidator()
         {
-            RuleFor(x => x.Name)
+            RuleFor(x => x.BoxName)
                 .MaximumLength(30);
             RuleFor(x => x.Email)
                 .NotEmpty()
