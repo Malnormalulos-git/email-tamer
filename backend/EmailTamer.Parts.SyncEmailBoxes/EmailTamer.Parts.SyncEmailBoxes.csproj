@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <RootNamespace>EmailTamer.Parts.Sync</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\EmailTamer.Database.Tenant\EmailTamer.Database.Tenant.csproj" />
+      <ProjectReference Include="..\EmailTamer.Parts\EmailTamer.Parts.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="HtmlAgilityPack" Version="1.11.72" />
+    </ItemGroup>
+
+</Project>

@@ -18,4 +18,8 @@
       <Folder Include="Migrations\" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="MailKit" Version="4.10.0" />
+    </ItemGroup>
+
 </Project>

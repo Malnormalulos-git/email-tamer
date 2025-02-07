@@ -7,6 +7,7 @@ using EmailTamer.Database;
 using EmailTamer.Database.Tenant;
 using EmailTamer.Infrastructure;
 using EmailTamer.Parts.EmailBox;
+using EmailTamer.Parts.Sync;
 using EmailTamer.Startup;
 using HealthChecks.UI.Client;
 using Newtonsoft.Json;
@@ -41,7 +42,8 @@ services.AddInfrastructure()
 
 services.AddMvcCore()
     .AddAuthPart(configuration)
-    .AddEmailBoxesPart();
+    .AddEmailBoxesPart()
+    .AddSyncPart();
 
 services.AddEndpointsApiExplorer();
 

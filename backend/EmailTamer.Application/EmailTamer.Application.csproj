@@ -34,6 +34,7 @@
       <ProjectReference Include="..\EmailTamer.Database\EmailTamer.Database.csproj" />
       <ProjectReference Include="..\EmailTamer.Infrastructure\EmailTamer.Infrastructure.csproj" />
       <ProjectReference Include="..\EmailTamer.Parts.EmailBox\EmailTamer.Parts.EmailBox.csproj" />
+      <ProjectReference Include="..\EmailTamer.Parts.SyncEmailBoxes\EmailTamer.Parts.SyncEmailBoxes.csproj" />
     </ItemGroup>
 
     <ItemGroup>

@@ -27,6 +27,8 @@ public class EmailBox : UniqueIdEntity, IDateAuditableEntity
     
     public DateTime LastSyncAt { get; set; }
     
+    public List<Message> Messages { get; set; } = [];
+    
     
     public DateTime CreatedAt { get; set; }
     public DateTime ModifiedAt { get; set; }
@@ -38,6 +40,10 @@ public class EmailBox : UniqueIdEntity, IDateAuditableEntity
             base.Configure(builder);
 
             builder.HasKey(x => x.Id);
+
+            builder.HasMany(x => x.Messages)
+                .WithOne(x => x.EmailBox)
+                .HasForeignKey(x => x.EmailBoxId);
 
             builder.Property(x => x.LastSyncAt).DateTime();
         }
