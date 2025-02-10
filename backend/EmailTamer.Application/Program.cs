@@ -5,6 +5,7 @@ using EmailTamer.Core.Extensions;
 using EmailTamer.Core.Startup;
 using EmailTamer.Database;
 using EmailTamer.Database.Tenant;
+using EmailTamer.Dependencies.Amazon;
 using EmailTamer.Infrastructure;
 using EmailTamer.Parts.EmailBox;
 using EmailTamer.Parts.Sync;
@@ -38,7 +39,8 @@ services.AddCore();
 
 services.AddInfrastructure()
     .AddDatabase()
-    .AddTenantDatabases();
+    .AddTenantDatabases()
+    .AddAmazonServices(isDevelopment);
 
 services.AddMvcCore()
     .AddAuthPart(configuration)
