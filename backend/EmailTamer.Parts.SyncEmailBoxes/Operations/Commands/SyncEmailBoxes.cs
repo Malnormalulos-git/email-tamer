@@ -24,17 +24,33 @@ public class SyncEmailBoxesCommandHandler(
 {
     public async Task<IActionResult> Handle(SyncEmailBoxes request, CancellationToken cancellationToken)
     {
-        var emailBoxes = await repository.ReadAsync((r, ct) =>
+        throw new NotImplementedException();
+        
+        /*
+         * Problem "System.InvalidOperationException: The instance of entity type 'Message' cannot be tracked
+         * because another instance with the key value '{Id: messageId}' is already being tracked.
+         * When attaching existing entities, ensure that only one entity instance with a given key value is attached."
+         *
+         * where emailBoxes with shared messages are backed up 
+        */
+        
+        var emailBoxesIds = await repository.ReadAsync((r, ct) =>
                 r.Set<EmailBox>()
                     .AsNoTracking()
+                    .Select(x => x.Id)
                     .ToListAsync(ct),
             cancellationToken);
 
-        var syncTasks = emailBoxes.Select(emailBox =>
-            mediator.Send(new SyncEmailBox(emailBox.Id), cancellationToken)
+        var syncTasks = emailBoxesIds.Select(emailBoxId =>
+            mediator.Send(new SyncEmailBox(emailBoxId), cancellationToken)
         );
-
+        
         await Task.WhenAll(syncTasks);
+        
+        // foreach (var emailBoxId in emailBoxesIds)
+        // {
+        //     await mediator.Send(new SyncEmailBox(emailBoxId), cancellationToken);
+        // }
 
         
         return new OkResult();

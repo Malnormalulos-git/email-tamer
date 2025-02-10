@@ -60,4 +60,7 @@ public class EmailTamerRepository<TContext>(
 	public void Update<T>(T item) where T : class, IEntity => dbContext.Update(item);
 
 	public void Remove<T>(T item) where T : class, IEntity => dbContext.Remove(item);
+
+	public IEnumerable<Microsoft.EntityFrameworkCore.ChangeTracking.EntityEntry<T>> ChangeTrackerEntries<T>()
+		where T : class, IEntity => dbContext.ChangeTracker.Entries<T>();
 }

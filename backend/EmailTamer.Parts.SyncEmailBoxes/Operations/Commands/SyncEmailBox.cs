@@ -48,9 +48,9 @@ public class SyncEmailBoxCommandHandler(
             return new NotFoundResult();
         }
         
-        var backupedMessages = await repository.ReadAsync((r, ct) =>
+        var backedUpMessages = await repository.ReadAsync((r, ct) =>
                 r.Set<Message>()
-                    .Where(x => x.EmailBoxId == emailBox.Id)
+                    // not .Where(x => x.EmailBoxId == emailBox.Id) for cases when emailBoxes with shared messages are backed up 
                     .ToListAsync(ct),
             cancellationToken);
         
@@ -96,7 +96,7 @@ public class SyncEmailBoxCommandHandler(
             {
                 var mimeMessage = await folder.GetMessageAsync(message, cancellationToken);
 
-                var backupedMessage = backupedMessages
+                var backupedMessage = backedUpMessages
                     .FirstOrDefault(x => x.Id == mimeMessage.MessageId);
                 
                 if (backupedMessage is not null)
@@ -135,7 +135,28 @@ public class SyncEmailBoxCommandHandler(
 
         if (newMessagesDictionary.Count > 0)
         {
-            repository.AddRange(newMessagesDictionary.Values.ToList());
+            var messagesToAdd = newMessagesDictionary.Values.ToList();
+
+            // Look at SyncEmailBoxes command
+            // var alreadyTrackedMessages = repository.ChangeTrackerEntries<Message>()
+            //     .Where(e => messagesToAdd.Contains(e.Entity))
+            //     .Select(x => x.Entity)
+            //     .ToList();
+            //
+            // if (alreadyTrackedMessages.Count > 0)
+            // {
+            //     messagesToAdd.RemoveAll(x => alreadyTrackedMessages.Contains(x));
+            //     foreach (var alreadyTrackedMessage in alreadyTrackedMessages)
+            //     {
+            //         alreadyTrackedMessage.Folders.AddRange(
+            //             newMessagesDictionary[alreadyTrackedMessage.Id].Folders
+            //                 .Where(folder => !alreadyTrackedMessage.Folders.Contains(folder))
+            //         );
+            //         repository.Update(alreadyTrackedMessage);
+            //     }
+            // }
+            
+            repository.AddRange(messagesToAdd);
         }
         
         repository.Update(emailBox);

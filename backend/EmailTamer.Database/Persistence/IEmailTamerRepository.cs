@@ -29,4 +29,7 @@ public interface IEmailTamerRepository
 	public void AddRange<T>(IEnumerable<T> items) where T : class, IEntity;
 
 	public void RemoveRange<T>(IEnumerable<T> items) where T : class, IEntity;
+	
+	public IEnumerable<Microsoft.EntityFrameworkCore.ChangeTracking.EntityEntry<T>> ChangeTrackerEntries<T>() 
+		where T : class, IEntity;
 }
