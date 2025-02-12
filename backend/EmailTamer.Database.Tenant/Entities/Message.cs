@@ -10,9 +10,7 @@ namespace EmailTamer.Database.Tenant.Entities;
 [Table("Messages")]
 public class Message : IEntity
 {
-    public EmailBox EmailBox { get; set; } = null!;
-    
-    public Guid EmailBoxId { get; set; }
+    public List<EmailBox> EmailBoxes { get; set; } = [];
     
     [Key]
     public string Id { get; set; } = null!;
@@ -34,7 +32,7 @@ public class Message : IEntity
     public DateTime? ResentDate { get; set; }
     
     
-    public string S3FolderName { get; set; } // TODO: for attachments and body
+    // public string S3FolderName { get; set; } // TODO: for attachments and body
     
     public List<string> Folders { get; set; } = []; // TODO: To separate table? 
     
@@ -46,9 +44,8 @@ public class Message : IEntity
 
             builder.HasKey(x => x.Id);
             
-            builder.HasOne(x => x.EmailBox)
-                .WithMany(x => x.Messages)
-                .HasForeignKey(x => x.EmailBoxId);
+            builder.HasMany(x => x.EmailBoxes)
+                .WithMany(x => x.Messages);
             
             builder.Property(x => x.Date).DateTime();
             

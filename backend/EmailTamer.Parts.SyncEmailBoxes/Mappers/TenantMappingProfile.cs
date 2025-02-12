@@ -25,10 +25,10 @@ public class MessageMappingProfile : MappableProfile, IMappable
                 opt => opt.MapFrom(src =>
                     src.From.OfType<MailboxAddress>()
                         .Select(m => new EmailAddress { Name = m.Name, Address = m.Address, Domain = m.Domain })))
-            .IgnoreMember(x => x.EmailBox)
-            .IgnoreMember(x => x.EmailBoxId)
+            .IgnoreMember(x => x.EmailBoxes)
             .IgnoreMember(x => x.Folders)
-            .IgnoreMember(x => x.S3FolderName);
+            // .IgnoreMember(x => x.S3FolderName)
+            ;
     }
     
     private static string GetTextBody(MimeMessage y)

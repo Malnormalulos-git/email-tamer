@@ -3,7 +3,6 @@ using EmailTamer.Database.Persistence;
 using EmailTamer.Database.Tenant;
 using EmailTamer.Database.Tenant.Entities;
 using FluentValidation;
-using HtmlAgilityPack;
 using JetBrains.Annotations;
 using MailKit;
 using MailKit.Net.Imap;
@@ -14,7 +13,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
 using Microsoft.Extensions.Internal;
-using MimeKit;
 
 namespace EmailTamer.Parts.Sync.Operations.Commands;
 
@@ -50,6 +48,7 @@ public class SyncEmailBoxCommandHandler(
         
         var backedUpMessages = await repository.ReadAsync((r, ct) =>
                 r.Set<Message>()
+                    .Include(x => x.EmailBoxes)
                     // not .Where(x => x.EmailBoxId == emailBox.Id) for cases when emailBoxes with shared messages are backed up 
                     .ToListAsync(ct),
             cancellationToken);
@@ -96,16 +95,21 @@ public class SyncEmailBoxCommandHandler(
             {
                 var mimeMessage = await folder.GetMessageAsync(message, cancellationToken);
 
-                var backupedMessage = backedUpMessages
+                var backedUpMessage = backedUpMessages
                     .FirstOrDefault(x => x.Id == mimeMessage.MessageId);
                 
-                if (backupedMessage is not null)
+                if (backedUpMessage is not null)
                 {
-                    if (!backupedMessage.Folders.Contains(folder.Name))
+                    if (!backedUpMessage.Folders.Contains(folder.Name))
                     {
-                        backupedMessage.Folders.Add(folder.Name);
-                        repository.Update(backupedMessage);
-                        await repository.PersistAsync(cancellationToken);
+                        backedUpMessage.Folders.Add(folder.Name);
+                        repository.Update(backedUpMessage);
+                    }
+
+                    if (!backedUpMessage.EmailBoxes.Contains(emailBox))
+                    {
+                        backedUpMessage.EmailBoxes.Add(emailBox);
+                        repository.Update(backedUpMessage);
                     }
                     continue;
                 }
@@ -114,10 +118,9 @@ public class SyncEmailBoxCommandHandler(
                 {
                     newMessage = mapper.Map<Message>(mimeMessage);
 
-                    newMessage.S3FolderName = "Test"; //TODO
+                    //TODO: attachments and html body to 
 
-                    newMessage.EmailBox = emailBox;
-                    newMessage.EmailBoxId = emailBox.Id;
+                    newMessage.EmailBoxes.Add(emailBox);
                     
                     newMessagesDictionary[mimeMessage.MessageId] = newMessage;
                 }

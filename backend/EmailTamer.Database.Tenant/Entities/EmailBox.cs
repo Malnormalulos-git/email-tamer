@@ -42,8 +42,7 @@ public class EmailBox : UniqueIdEntity, IDateAuditableEntity
             builder.HasKey(x => x.Id);
 
             builder.HasMany(x => x.Messages)
-                .WithOne(x => x.EmailBox)
-                .HasForeignKey(x => x.EmailBoxId);
+                .WithMany(x => x.EmailBoxes);
 
             builder.Property(x => x.LastSyncAt).DateTime();
         }
