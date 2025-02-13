@@ -2,6 +2,7 @@ using AutoMapper;
 using EmailTamer.Database.Persistence;
 using EmailTamer.Database.Tenant;
 using EmailTamer.Database.Tenant.Entities;
+using EmailTamer.Parts.Sync.Persistence;
 using FluentValidation;
 using JetBrains.Annotations;
 using MailKit;
@@ -13,6 +14,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
 using Microsoft.Extensions.Internal;
+using MimeKit;
+using System.IO;
 
 namespace EmailTamer.Parts.Sync.Operations.Commands;
 
@@ -28,10 +31,11 @@ public sealed record SyncEmailBox(Guid EmailBoxId) : IRequest<IActionResult>
 }
 
 [UsedImplicitly]
-public class SyncEmailBoxCommandHandler(
+internal class SyncEmailBoxCommandHandler(
     [FromKeyedServices(nameof(TenantDbContext))] IEmailTamerRepository repository,
     IMapper mapper,
-    ISystemClock clock)
+    ISystemClock clock,
+    ITenantRepository filesRepository)
     : IRequestHandler<SyncEmailBox, IActionResult>
 {
     public async Task<IActionResult> Handle(SyncEmailBox command, CancellationToken cancellationToken)
@@ -85,6 +89,8 @@ public class SyncEmailBoxCommandHandler(
         
         emailBox.LastSyncAt = clock.UtcNow.DateTime;
         
+        // var saveToRepoTasks = new List<Task>();
+        
         foreach (var folder in folders)
         {
             await folder.OpenAsync(FolderAccess.ReadOnly, cancellationToken);
@@ -117,12 +123,57 @@ public class SyncEmailBoxCommandHandler(
                 if (!newMessagesDictionary.TryGetValue(mimeMessage.MessageId, out var newMessage))
                 {
                     newMessage = mapper.Map<Message>(mimeMessage);
-
-                    //TODO: attachments and html body to 
-
+                    
                     newMessage.EmailBoxes.Add(emailBox);
+
+                    var saveToRepoTasks = new List<Task>();
+                    
+                    if (mimeMessage.HtmlBody is not null)
+                    {
+                        saveToRepoTasks.Add(
+                             filesRepository.SaveBodyAsync(
+                                new MessageBodyKey
+                                {
+                                    MessageId = mimeMessage.MessageId
+                                },
+                                new MessageBody(
+                                    new MemoryStream(System.Text.Encoding.UTF8.GetBytes(mimeMessage.HtmlBody))
+                                ),
+                                cancellationToken
+                            ));
+                    }
+                    
+                    foreach (var attachment in mimeMessage.Attachments)
+                    {
+                        if (attachment.IsAttachment)
+                        {
+                            var fileName = attachment.ContentDisposition?.FileName ?? attachment.ContentType.Name;
+                            var contentType = attachment.ContentType.MimeType;
+                            var content = ((MimePart)attachment).Content.Open();
+                            var contentStream = new MemoryStream();
+                            await content.CopyToAsync(contentStream, cancellationToken);
+                                
+                            saveToRepoTasks.Add(
+                                filesRepository.SaveAttachmentAsync(
+                                    new MessageAttachmentKey
+                                    {
+                                        MessageId = mimeMessage.MessageId,
+                                        FileName = fileName
+                                    },
+                                    new MessageAttachment(
+                                        contentStream,
+                                        fileName,
+                                        contentType),
+                                    cancellationToken
+                                ));
+                            
+                            newMessage.AttachmentFilesNames.Add(fileName);
+                        }
+                    }
                     
                     newMessagesDictionary[mimeMessage.MessageId] = newMessage;
+                    
+                    await Task.WhenAll(saveToRepoTasks);
                 }
         
                 if(!folder.Attributes.HasFlag(FolderAttributes.All))
@@ -165,6 +216,8 @@ public class SyncEmailBoxCommandHandler(
         repository.Update(emailBox);
         
         await repository.PersistAsync(cancellationToken);
+        
+        // await Task.WhenAll(saveToRepoTasks);
 
         return new OkResult();
     }

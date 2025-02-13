@@ -9,6 +9,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\EmailTamer.Database.Tenant\EmailTamer.Database.Tenant.csproj" />
+      <ProjectReference Include="..\EmailTamer.Dependencies.Amazon\EmailTamer.Dependencies.Amazon.csproj" />
       <ProjectReference Include="..\EmailTamer.Parts\EmailTamer.Parts.csproj" />
     </ItemGroup>
 

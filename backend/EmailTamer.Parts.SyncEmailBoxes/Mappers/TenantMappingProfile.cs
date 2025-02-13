@@ -27,8 +27,7 @@ public class MessageMappingProfile : MappableProfile, IMappable
                         .Select(m => new EmailAddress { Name = m.Name, Address = m.Address, Domain = m.Domain })))
             .IgnoreMember(x => x.EmailBoxes)
             .IgnoreMember(x => x.Folders)
-            // .IgnoreMember(x => x.S3FolderName)
-            ;
+            .IgnoreMember(x => x.AttachmentFilesNames);
     }
     
     private static string GetTextBody(MimeMessage y)
@@ -53,5 +52,4 @@ public class MessageMappingProfile : MappableProfile, IMappable
         }
         return textBody?.Trim() ?? string.Empty;
     }
-
 }

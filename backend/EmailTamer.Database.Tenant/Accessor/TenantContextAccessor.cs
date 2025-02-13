@@ -12,18 +12,18 @@ public sealed class TenantContextAccessor(
 	[FromKeyedServices(nameof(EmailTamerDbContext))] IEmailTamerRepository emailTamerRepository
 	) : ITenantContextAccessor
 {
-	private string? Id;
+	private string? _id;
 
 	public async Task<string> GetTenantId()
 	{
-		if (string.IsNullOrEmpty(Id))
+		if (string.IsNullOrEmpty(_id))
 		{
 			var userId = userContextAccessor.Id;
 			var user = await userManager.FindByIdAsync(userId);
 			
-			Id = user!.TenantId.ToString();
+			_id = user!.TenantId.ToString();
 
-			if (string.IsNullOrEmpty(Id))
+			if (string.IsNullOrEmpty(_id))
 			{
 				var newTenant = new Database.Entities.Tenant
 				{
@@ -37,10 +37,28 @@ public sealed class TenantContextAccessor(
 				user.TenantId = newTenant.Id;
 				await userManager.UpdateAsync(user);
 
-				Id = newTenant.Id.ToString();
+				_id = newTenant.Id.ToString();
 			}
 		}
 
-		return Id;
+		return _id;
+	}
+
+	public string GetDatabaseName()
+	{
+		var tenantId = GetTenantId().GetAwaiter().GetResult();
+    
+		var dbName = $"tenant_{tenantId.Replace("-", "_")}";
+		
+		return dbName;
+	}
+
+	public string GetS3BucketName()
+	{
+		var tenantId = GetTenantId().GetAwaiter().GetResult();
+    
+		var bucketName = $"tenant-{tenantId}";
+		
+		return bucketName;
 	}
 }

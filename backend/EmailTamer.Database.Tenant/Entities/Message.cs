@@ -21,6 +21,8 @@ public class Message : IEntity
     
     public string? TextBody { get; set; } 
     
+    public List<string> AttachmentFilesNames { get; set; } = [];
+    
     public List<string> References { get; set; } = []; // TODO: To separate table?
     
     public List<EmailAddress> From { get; set; } = []; // TODO: To separate table?
@@ -30,9 +32,6 @@ public class Message : IEntity
     public DateTime Date { get; set; }
     
     public DateTime? ResentDate { get; set; }
-    
-    
-    // public string S3FolderName { get; set; } // TODO: for attachments and body
     
     public List<string> Folders { get; set; } = []; // TODO: To separate table? 
     
@@ -50,6 +49,8 @@ public class Message : IEntity
             builder.Property(x => x.Date).DateTime();
             
             builder.Property(x => x.ResentDate).DateTime();
+            
+            builder.Property(p => p.AttachmentFilesNames).Json();
             
             builder.Property(p => p.References).Json();
             

@@ -38,11 +38,8 @@ public class TenantDbContextFactory(
     private string GetConnectionStringForTenant()
     {
         var accessor = serviceProvider.GetRequiredService<ITenantContextAccessor>();
-        
-        var tenantId = accessor.GetTenantId();
-        tenantId.Wait();
     
-        var dbName = "tenant_" + tenantId.Result.Replace("-", "_");
+        var dbName = accessor.GetDatabaseName();
 
         var dbConfig = serviceProvider.GetRequiredService<IOptionsMonitor<TenantsDatabaseConfig>>().CurrentValue;
 
