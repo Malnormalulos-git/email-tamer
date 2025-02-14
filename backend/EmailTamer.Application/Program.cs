@@ -45,7 +45,7 @@ services.AddInfrastructure()
 services.AddMvcCore()
     .AddAuthPart(configuration)
     .AddEmailBoxesPart()
-    .AddSyncPart();
+    .AddBackupPart();
 
 services.AddEndpointsApiExplorer();
 

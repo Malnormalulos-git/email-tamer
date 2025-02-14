@@ -1,4 +1,3 @@
-using EmailTamer.Database;
 using EmailTamer.Database.Persistence;
 using EmailTamer.Database.Tenant;
 using EmailTamer.Database.Tenant.Entities;
@@ -11,18 +10,18 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace EmailTamer.Parts.Sync.Operations.Commands;
 
-public sealed record SyncEmailBoxes: IRequest<IActionResult>
+public sealed record BackUpEmailBoxesMessages: IRequest<IActionResult>
 {
-    public class Validator : AbstractValidator<SyncEmailBoxes>;
+    public class Validator : AbstractValidator<BackUpEmailBoxesMessages>;
 }
 
 [UsedImplicitly]
-public class SyncEmailBoxesCommandHandler(
+public class BackUpEmailBoxesMessagesCommandHandler(
     [FromKeyedServices(nameof(TenantDbContext))] IEmailTamerRepository repository,
     IMediator mediator)
-    : IRequestHandler<SyncEmailBoxes, IActionResult>
+    : IRequestHandler<BackUpEmailBoxesMessages, IActionResult>
 {
-    public async Task<IActionResult> Handle(SyncEmailBoxes request, CancellationToken cancellationToken)
+    public async Task<IActionResult> Handle(BackUpEmailBoxesMessages request, CancellationToken cancellationToken)
     {
         throw new NotImplementedException();
         
@@ -42,14 +41,14 @@ public class SyncEmailBoxesCommandHandler(
             cancellationToken);
 
         var syncTasks = emailBoxesIds.Select(emailBoxId =>
-            mediator.Send(new SyncEmailBox(emailBoxId), cancellationToken)
+            mediator.Send(new BackUpEmailBoxMessages(emailBoxId), cancellationToken)
         );
         
         await Task.WhenAll(syncTasks);
         
         // foreach (var emailBoxId in emailBoxesIds)
         // {
-        //     await mediator.Send(new SyncEmailBox(emailBoxId), cancellationToken);
+        //     await mediator.Send(new BackUpEmailBoxMessages(emailBoxId), cancellationToken);
         // }
 
         

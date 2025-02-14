@@ -15,13 +15,12 @@ using Microsoft.Extensions.DependencyInjection;
 
 using Microsoft.Extensions.Internal;
 using MimeKit;
-using System.IO;
 
 namespace EmailTamer.Parts.Sync.Operations.Commands;
 
-public sealed record SyncEmailBox(Guid EmailBoxId) : IRequest<IActionResult>
+public sealed record BackUpEmailBoxMessages(Guid EmailBoxId) : IRequest<IActionResult>
 {
-    public class Validator : AbstractValidator<SyncEmailBox>
+    public class Validator : AbstractValidator<BackUpEmailBoxMessages>
     {
         public Validator()
         {
@@ -31,14 +30,14 @@ public sealed record SyncEmailBox(Guid EmailBoxId) : IRequest<IActionResult>
 }
 
 [UsedImplicitly]
-internal class SyncEmailBoxCommandHandler(
+internal class BackUpEmailBoxMessagesCommandHandler(
     [FromKeyedServices(nameof(TenantDbContext))] IEmailTamerRepository repository,
     IMapper mapper,
     ISystemClock clock,
     ITenantRepository filesRepository)
-    : IRequestHandler<SyncEmailBox, IActionResult>
+    : IRequestHandler<BackUpEmailBoxMessages, IActionResult>
 {
-    public async Task<IActionResult> Handle(SyncEmailBox command, CancellationToken cancellationToken)
+    public async Task<IActionResult> Handle(BackUpEmailBoxMessages command, CancellationToken cancellationToken)
     {
         var emailBox = await repository.ReadAsync((r, ct) =>
                 r.Set<EmailBox>()
@@ -191,7 +190,7 @@ internal class SyncEmailBoxCommandHandler(
         {
             var messagesToAdd = newMessagesDictionary.Values.ToList();
 
-            // Look at SyncEmailBoxes command
+            // Look at BackUpEmailBoxMessages command
             // var alreadyTrackedMessages = repository.ChangeTrackerEntries<Message>()
             //     .Where(e => messagesToAdd.Contains(e.Entity))
             //     .Select(x => x.Entity)

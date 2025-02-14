@@ -18,7 +18,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmailTamer.Database.Tenant"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmailTamer.Parts.EmailBox", "EmailTamer.Parts.EmailBox\EmailTamer.Parts.EmailBox.csproj", "{C9FAB059-5388-45D9-9EB3-8FFAAA053B71}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmailTamer.Parts.SyncEmailBoxes", "EmailTamer.Parts.SyncEmailBoxes\EmailTamer.Parts.SyncEmailBoxes.csproj", "{B0A3DCDA-1C84-45AD-B076-73A7EA3F167B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmailTamer.Parts.Backup", "EmailTamer.Parts.Backup\EmailTamer.Parts.Backup.csproj", "{B0A3DCDA-1C84-45AD-B076-73A7EA3F167B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmailTamer.Dependencies.Amazon", "EmailTamer.Dependencies.Amazon\EmailTamer.Dependencies.Amazon.csproj", "{4DE495FD-C299-4A5C-9DD7-8D94EA2CB887}"
 EndProject
