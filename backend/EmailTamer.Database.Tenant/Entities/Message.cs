@@ -33,7 +33,7 @@ public class Message : IEntity
     
     public DateTime? ResentDate { get; set; }
     
-    public List<string> Folders { get; set; } = []; // TODO: To separate table? 
+    public List<Folder> Folders { get; set; } = [];  
     
     public class Configurator : EntityConfiguration<Message>
     {
@@ -54,7 +54,8 @@ public class Message : IEntity
             
             builder.Property(p => p.References).Json();
             
-            builder.Property(p => p.Folders).Json();
+            builder.HasMany(x => x.Folders)
+                .WithMany(x => x.Messages);
             
             builder.Property(p => p.To).Json();
             

@@ -52,7 +52,13 @@ internal class BackUpEmailBoxMessagesCommandHandler(
         var backedUpMessages = await repository.ReadAsync((r, ct) =>
                 r.Set<Message>()
                     .Include(x => x.EmailBoxes)
+                    .Include(x => x.Folders)
                     // not .Where(x => x.EmailBoxId == emailBox.Id) for cases when emailBoxes with shared messages are backed up 
+                    .ToListAsync(ct),
+            cancellationToken);
+        
+        var existingFolders = await repository.ReadAsync((r, ct) =>
+                r.Set<Folder>()
                     .ToListAsync(ct),
             cancellationToken);
         
@@ -105,9 +111,30 @@ internal class BackUpEmailBoxMessagesCommandHandler(
                 
                 if (backedUpMessage is not null)
                 {
-                    if (!backedUpMessage.Folders.Contains(folder.Name))
+                    if (!string.IsNullOrEmpty(folder.Name) && 
+                        backedUpMessage.Folders.Any(x => x.Name != folder.Name))
                     {
-                        backedUpMessage.Folders.Add(folder.Name);
+                        var existingFolder = existingFolders.FirstOrDefault(x => x.Name == folder.Name);
+                        if (existingFolder is not null)
+                        {
+                            backedUpMessage.Folders.Add(existingFolder);
+                        }
+                        else
+                        {
+                            var newFolder = new Folder()
+                            {
+                                Id = Guid.NewGuid(),
+                                Name = folder.Name!,
+                            };
+                        
+                            backedUpMessage.Folders.Add(
+                                newFolder
+                            );
+                        
+                            existingFolders.Add(newFolder);
+                            repository.Add(newFolder);
+                        }
+                        
                         repository.Update(backedUpMessage);
                     }
 
@@ -175,9 +202,28 @@ internal class BackUpEmailBoxMessagesCommandHandler(
                     await Task.WhenAll(saveToRepoTasks);
                 }
         
-                if(!folder.Attributes.HasFlag(FolderAttributes.All))
+                if(!string.IsNullOrEmpty(folder.Name))
                 {
-                    newMessage.Folders.Add(folder.Name);
+                    var existingFolder = existingFolders.FirstOrDefault(x => x.Name == folder.Name);
+                    if (existingFolder is not null)
+                    {
+                        newMessage.Folders.Add(existingFolder);
+                    }
+                    else
+                    {
+                        var newFolder = new Folder()
+                        {
+                            Id = Guid.NewGuid(),
+                            Name = folder.Name!,
+                        };
+                        
+                        newMessage.Folders.Add(
+                            newFolder
+                        );
+                        
+                        existingFolders.Add(newFolder);
+                        repository.Add(newFolder);
+                    }
                 }
             }
             
