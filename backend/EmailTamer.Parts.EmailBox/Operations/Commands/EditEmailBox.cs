@@ -25,6 +25,11 @@ public sealed record EditEmailBox(EditEmailBoxDto EditEmailBoxDto) : IRequest<IA
 public class EditEmailBoxCommandHandler([FromKeyedServices(nameof(TenantDbContext))] IEmailTamerRepository repository)
     : IRequestHandler<EditEmailBox, IActionResult>
 {
+    private record struct PropertyUpdate<T>(T CurrentValue, T NewValue)
+    {
+        public bool HasChanged => !Equals(CurrentValue, NewValue);
+    }
+    
     public async Task<IActionResult> Handle(EditEmailBox command, CancellationToken cancellationToken)
     {
         var emailBox = await repository.ReadAsync((r, ct) =>
@@ -37,74 +42,47 @@ public class EditEmailBoxCommandHandler([FromKeyedServices(nameof(TenantDbContex
             return new NotFoundResult();
         }
 
-        bool areChangesMade = false;
-
-        if (!string.Equals(emailBox.BoxName, command.EditEmailBoxDto.BoxName))
+        var updates = new Dictionary<string, PropertyUpdate<object>>
         {
-            emailBox.BoxName = command.EditEmailBoxDto.BoxName;
-            areChangesMade = true;
-        }
+            { nameof(emailBox.BoxName), new(emailBox.BoxName, command.EditEmailBoxDto.BoxName) },
+            { nameof(emailBox.UserName), new(emailBox.UserName, command.EditEmailBoxDto.UserName) },
+            { nameof(emailBox.Email), new(emailBox.Email, command.EditEmailBoxDto.Email) },
+            { nameof(emailBox.AuthenticateByEmail), new(emailBox.AuthenticateByEmail, command.EditEmailBoxDto.AuthenticateByEmail) },
+            { nameof(emailBox.Password), new(emailBox.Password, command.EditEmailBoxDto.Password) },
+            { nameof(emailBox.EmailDomainConnectionHost), new(emailBox.EmailDomainConnectionHost, command.EditEmailBoxDto.EmailDomainConnectionHost) },
+            { nameof(emailBox.EmailDomainConnectionPort), new(emailBox.EmailDomainConnectionPort, command.EditEmailBoxDto.EmailDomainConnectionPort) },
+            { nameof(emailBox.UseSSl), new(emailBox.UseSSl, command.EditEmailBoxDto.UseSSl) }
+        };
 
-        if (!string.Equals(emailBox.UserName, command.EditEmailBoxDto.UserName))
-        {
-            emailBox.UserName = command.EditEmailBoxDto.UserName;
-            areChangesMade = true;
-        }
+        var changedProperties = updates.Where(u => u.Value.HasChanged).ToList();
         
-        if (!string.Equals(emailBox.Email, command.EditEmailBoxDto.Email))
+        if (changedProperties.Count == 0)
         {
-            var duplicatedEmailBox = await repository.ReadAsync((r, ct) =>
-                    r.Set<Database.Tenant.Entities.EmailBox>()
-                        .FirstOrDefaultAsync(x => x.Email == command.EditEmailBoxDto.Email, ct),
+            return new StatusCodeResult(304);
+        }
+
+        if (changedProperties.Any(p => p.Key == nameof(emailBox.Email)))
+        {
+            var duplicateExists = await repository.ReadAsync((r, ct) =>
+                r.Set<Database.Tenant.Entities.EmailBox>()
+                    .AnyAsync(x => x.Email == command.EditEmailBoxDto.Email, ct),
                 cancellationToken);
 
-            if (duplicatedEmailBox is not null)
+            if (duplicateExists)
             {
                 return new ConflictResult();
             }
-            
-            emailBox.Email = command.EditEmailBoxDto.Email;
-            areChangesMade = true;
         }
 
-        if (emailBox.AuthenticateByEmail != command.EditEmailBoxDto.AuthenticateByEmail)
+        foreach (var change in changedProperties)
         {
-            emailBox.AuthenticateByEmail = command.EditEmailBoxDto.AuthenticateByEmail;
-            areChangesMade = true;
-        }
-        
-        if (!string.Equals(emailBox.Password, command.EditEmailBoxDto.Password))
-        {
-            emailBox.Password = command.EditEmailBoxDto.Password;
-            areChangesMade = true;
+            var property = typeof(Database.Tenant.Entities.EmailBox).GetProperty(change.Key);
+            property?.SetValue(emailBox, change.Value.NewValue);
         }
 
-        if (!string.Equals(emailBox.EmailDomainConnectionHost, command.EditEmailBoxDto.EmailDomainConnectionHost))
-        {
-            emailBox.EmailDomainConnectionHost = command.EditEmailBoxDto.EmailDomainConnectionHost;
-            areChangesMade = true;
-        }
+        repository.Update(emailBox);
+        await repository.PersistAsync(cancellationToken);
         
-        if (emailBox.EmailDomainConnectionPort != command.EditEmailBoxDto.EmailDomainConnectionPort)
-        {
-            emailBox.EmailDomainConnectionPort = command.EditEmailBoxDto.EmailDomainConnectionPort;
-            areChangesMade = true;
-        }
-        
-        if (emailBox.UseSSl != command.EditEmailBoxDto.UseSSl)
-        {
-            emailBox.UseSSl = command.EditEmailBoxDto.UseSSl;
-            areChangesMade = true;
-        }
-        
-        if (areChangesMade)
-        {
-            repository.Update(emailBox);
-            await repository.PersistAsync(cancellationToken);
-            
-            return new OkResult();
-        }
-
-        return new StatusCodeResult(304);
+        return new OkResult();
     }
 }

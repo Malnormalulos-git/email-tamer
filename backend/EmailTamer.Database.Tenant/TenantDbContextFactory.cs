@@ -6,33 +6,47 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
 namespace EmailTamer.Database.Tenant;
+
 public class TenantDbContextFactory(
     DbContextOptionsBuilder<TenantDbContext> options, 
     IServiceProvider serviceProvider)
     : IDbContextFactory<TenantDbContext>
 {
-
     public TenantDbContext CreateDbContext()
     {
         var connectionString = GetConnectionStringForTenant();
+        return CreateDbContextInternal(connectionString);
+    }
+    
+    public TenantDbContext CreateDbContext(Guid tenantId)
+    {
+        var connectionString = GetConnectionString(tenantId.ToString());
+        return CreateDbContextInternal(connectionString);
+    }
 
+    private TenantDbContext CreateDbContextInternal(string connectionString)
+    {
+        var dbConfig = serviceProvider.GetRequiredService<IOptionsMonitor<TenantsDatabaseConfig>>().CurrentValue;
+        
         options.UseMySQL(connectionString,
             builder =>
             {
-                var databaseConfig = serviceProvider.GetRequiredService<IOptionsMonitor<TenantsDatabaseConfig>>()
-                    .CurrentValue;
                 builder
-                    .EnableRetryOnFailure(databaseConfig.Retries)
-                    .CommandTimeout(databaseConfig.Timeout);
+                    .EnableRetryOnFailure(dbConfig.Retries)
+                    .CommandTimeout(dbConfig.Timeout);
             });
 
         var configurator = serviceProvider.GetRequiredService<IDatabaseConfigurator>();
-        
         var dbContext = new TenantDbContext(options.Options, configurator);
-
         dbContext.Database.Migrate();
         
         return dbContext;
+    }
+
+    private string GetConnectionString(string dbName)
+    {
+        var dbConfig = serviceProvider.GetRequiredService<IOptionsMonitor<TenantsDatabaseConfig>>().CurrentValue;
+        return string.Format(dbConfig.DefaultConnectionString, dbName);
     }
 
     private string GetConnectionStringForTenant()
@@ -40,11 +54,7 @@ public class TenantDbContextFactory(
         var accessor = serviceProvider.GetRequiredService<ITenantContextAccessor>();
     
         var dbName = accessor.GetDatabaseName();
-
-        var dbConfig = serviceProvider.GetRequiredService<IOptionsMonitor<TenantsDatabaseConfig>>().CurrentValue;
-
-        var connectionString = string.Format(dbConfig.DefaultConnectionString, dbName);
         
-        return connectionString;
+        return GetConnectionString(dbName);
     }
 }

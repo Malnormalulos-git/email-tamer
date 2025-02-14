@@ -1,7 +1,5 @@
-using AutoMapper;
 using EmailTamer.Database.Persistence;
 using EmailTamer.Database.Tenant;
-using EmailTamer.Parts.EmailBox.Models;
 using FluentValidation;
 using JetBrains.Annotations;
 using MediatR;
@@ -38,7 +36,7 @@ public class DeleteEmailBoxCommandHandler([FromKeyedServices(nameof(TenantDbCont
             return new NotFoundResult();
         }
 
-        // TODO: remove all backups
+        // TODO: delete all backups
         repository.Remove(emailBox);
         await repository.PersistAsync(cancellationToken);
 
