@@ -12,7 +12,6 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-
 using Microsoft.Extensions.Internal;
 using MimeKit;
 
@@ -37,233 +36,289 @@ internal class BackUpEmailBoxMessagesCommandHandler(
     ITenantRepository filesRepository)
     : IRequestHandler<BackUpEmailBoxMessages, IActionResult>
 {
+    private const int BatchSize = 100;
+
     public async Task<IActionResult> Handle(BackUpEmailBoxMessages command, CancellationToken cancellationToken)
     {
-        var emailBox = await repository.ReadAsync((r, ct) =>
-                r.Set<EmailBox>()
-                    .FirstOrDefaultAsync(x => x.Id == command.EmailBoxId, ct),
-            cancellationToken);
+        var (emailBox, backedUpMessages, existingFolders) = 
+            await LoadInitialData(command.EmailBoxId, cancellationToken);
         
         if (emailBox is null)
-        {
             return new NotFoundResult();
-        }
+
+        using var client = await ConnectToImapClient(emailBox, cancellationToken);
         
-        var backedUpMessages = await repository.ReadAsync((r, ct) =>
-                r.Set<Message>()
-                    .Include(x => x.EmailBoxes)
-                    .Include(x => x.Folders)
-                    // not .Where(x => x.EmailBoxId == emailBox.Id) for cases when emailBoxes with shared messages are backed up 
-                    .ToListAsync(ct),
-            cancellationToken);
-        
-        var existingFolders = await repository.ReadAsync((r, ct) =>
-                r.Set<Folder>()
-                    .ToListAsync(ct),
-            cancellationToken);
-        
-        using var client = new ImapClient();
-        await client.ConnectAsync(
-            emailBox.EmailDomainConnectionHost, 
-            emailBox.EmailDomainConnectionPort, 
-            emailBox.UseSSl, cancellationToken);  
-        await client.AuthenticateAsync(
-            emailBox.AuthenticateByEmail ? emailBox.Email : emailBox.UserName, 
-            emailBox.Password, cancellationToken);
-        
-        var newMessagesDictionary = new Dictionary<string, Message>();
-        
-        var namespaces = client.PersonalNamespaces;
-        
-        var rootNamespace = namespaces.Count > 0 ? namespaces[0] : new FolderNamespace('.', "");
-        
-        // we need all folders to figure out what folders each message is in
-        var folders = (await client.GetFoldersAsync(rootNamespace, cancellationToken: cancellationToken))
-            .Where(f => !f.Attributes.HasFlag(FolderAttributes.NonExistent))
-            .Where(f => !f.Attributes.HasFlag(FolderAttributes.Drafts))
-            .Where(f => !f.Attributes.HasFlag(FolderAttributes.Trash))
-            .Where(f => !f.Attributes.HasFlag(FolderAttributes.Junk))
-            .Where(f => !f.Attributes.HasFlag(FolderAttributes.All))
-            .ToList();
-        
-        // for cases when inbox is not in root namespace, or it filtered out
-        if (!folders.Contains(client.Inbox)) 
-        {
-            folders.Add(client.Inbox);
-        }
+        // we need all relevant folders to figure out what folders each message is in
+        var folders = await GetRelevantFolders(client, cancellationToken);
         
         emailBox.LastSyncAt = clock.UtcNow.DateTime;
         
-        // var saveToRepoTasks = new List<Task>();
+        var newMessagesDictionary = new Dictionary<string, Message>();
         
         foreach (var folder in folders)
         {
-            await folder.OpenAsync(FolderAccess.ReadOnly, cancellationToken);
-            
-            var messages = await folder.SearchAsync(SearchQuery.All, cancellationToken);
-        
-            foreach (var message in messages)
-            {
-                var mimeMessage = await folder.GetMessageAsync(message, cancellationToken);
-
-                var backedUpMessage = backedUpMessages
-                    .FirstOrDefault(x => x.Id == mimeMessage.MessageId);
-                
-                if (backedUpMessage is not null)
-                {
-                    if (!string.IsNullOrEmpty(folder.Name) && 
-                        backedUpMessage.Folders.Any(x => x.Name != folder.Name))
-                    {
-                        var existingFolder = existingFolders.FirstOrDefault(x => x.Name == folder.Name);
-                        if (existingFolder is not null)
-                        {
-                            backedUpMessage.Folders.Add(existingFolder);
-                        }
-                        else
-                        {
-                            var newFolder = new Folder()
-                            {
-                                Id = Guid.NewGuid(),
-                                Name = folder.Name!,
-                            };
-                        
-                            backedUpMessage.Folders.Add(
-                                newFolder
-                            );
-                        
-                            existingFolders.Add(newFolder);
-                            repository.Add(newFolder);
-                        }
-                        
-                        repository.Update(backedUpMessage);
-                    }
-
-                    if (!backedUpMessage.EmailBoxes.Contains(emailBox))
-                    {
-                        backedUpMessage.EmailBoxes.Add(emailBox);
-                        repository.Update(backedUpMessage);
-                    }
-                    continue;
-                }
-                
-                if (!newMessagesDictionary.TryGetValue(mimeMessage.MessageId, out var newMessage))
-                {
-                    newMessage = mapper.Map<Message>(mimeMessage);
-                    
-                    newMessage.EmailBoxes.Add(emailBox);
-
-                    var saveToRepoTasks = new List<Task>();
-                    
-                    if (mimeMessage.HtmlBody is not null)
-                    {
-                        saveToRepoTasks.Add(
-                             filesRepository.SaveBodyAsync(
-                                new MessageBodyKey
-                                {
-                                    MessageId = mimeMessage.MessageId
-                                },
-                                new MessageBody(
-                                    new MemoryStream(System.Text.Encoding.UTF8.GetBytes(mimeMessage.HtmlBody))
-                                ),
-                                cancellationToken
-                            ));
-                    }
-                    
-                    foreach (var attachment in mimeMessage.Attachments)
-                    {
-                        if (attachment.IsAttachment)
-                        {
-                            var fileName = attachment.ContentDisposition?.FileName ?? attachment.ContentType.Name;
-                            var contentType = attachment.ContentType.MimeType;
-                            var content = ((MimePart)attachment).Content.Open();
-                            var contentStream = new MemoryStream();
-                            await content.CopyToAsync(contentStream, cancellationToken);
-                                
-                            saveToRepoTasks.Add(
-                                filesRepository.SaveAttachmentAsync(
-                                    new MessageAttachmentKey
-                                    {
-                                        MessageId = mimeMessage.MessageId,
-                                        FileName = fileName
-                                    },
-                                    new MessageAttachment(
-                                        contentStream,
-                                        fileName,
-                                        contentType),
-                                    cancellationToken
-                                ));
-                            
-                            newMessage.AttachmentFilesNames.Add(fileName);
-                        }
-                    }
-                    
-                    newMessagesDictionary[mimeMessage.MessageId] = newMessage;
-                    
-                    await Task.WhenAll(saveToRepoTasks);
-                }
-        
-                if(!string.IsNullOrEmpty(folder.Name))
-                {
-                    var existingFolder = existingFolders.FirstOrDefault(x => x.Name == folder.Name);
-                    if (existingFolder is not null)
-                    {
-                        newMessage.Folders.Add(existingFolder);
-                    }
-                    else
-                    {
-                        var newFolder = new Folder()
-                        {
-                            Id = Guid.NewGuid(),
-                            Name = folder.Name!,
-                        };
-                        
-                        newMessage.Folders.Add(
-                            newFolder
-                        );
-                        
-                        existingFolders.Add(newFolder);
-                        repository.Add(newFolder);
-                    }
-                }
-            }
-            
-            await folder.CloseAsync(cancellationToken: cancellationToken);
+            await ProcessFolder(
+                folder, 
+                emailBox, 
+                backedUpMessages, 
+                existingFolders, 
+                newMessagesDictionary, 
+                cancellationToken);
         }
-        
-        await client.DisconnectAsync(true, cancellationToken);
 
+        await client.DisconnectAsync(true, cancellationToken);
+        
         if (newMessagesDictionary.Count > 0)
         {
-            var messagesToAdd = newMessagesDictionary.Values.ToList();
-
-            // Look at BackUpEmailBoxMessages command
-            // var alreadyTrackedMessages = repository.ChangeTrackerEntries<Message>()
-            //     .Where(e => messagesToAdd.Contains(e.Entity))
-            //     .Select(x => x.Entity)
-            //     .ToList();
-            //
-            // if (alreadyTrackedMessages.Count > 0)
-            // {
-            //     messagesToAdd.RemoveAll(x => alreadyTrackedMessages.Contains(x));
-            //     foreach (var alreadyTrackedMessage in alreadyTrackedMessages)
-            //     {
-            //         alreadyTrackedMessage.Folders.AddRange(
-            //             newMessagesDictionary[alreadyTrackedMessage.Id].Folders
-            //                 .Where(folder => !alreadyTrackedMessage.Folders.Contains(folder))
-            //         );
-            //         repository.Update(alreadyTrackedMessage);
-            //     }
-            // }
-            
-            repository.AddRange(messagesToAdd);
+            await SaveMessagesInBatches(newMessagesDictionary.Values.ToList(), cancellationToken);
         }
         
         repository.Update(emailBox);
-        
         await repository.PersistAsync(cancellationToken);
-        
-        // await Task.WhenAll(saveToRepoTasks);
 
         return new OkResult();
+    }
+
+    private async Task<(EmailBox? EmailBox, List<Message> BackedUpMessages, List<Folder> ExistingFolders)> 
+        LoadInitialData(Guid emailBoxId, CancellationToken cancellationToken)
+    {
+        return await repository.ReadAsync(async (r, ct) =>
+        {
+            var box = await r.Set<EmailBox>()
+                .FirstOrDefaultAsync(x => x.Id == emailBoxId, ct);
+
+            if (box == null)
+                return (null, [], []);
+
+            var messages = await r.Set<Message>()
+                .Include(x => x.EmailBoxes)
+                .Include(x => x.Folders)
+                // not .Where(x => x.EmailBoxId == emailBox.Id) for cases when emailBoxes with shared messages are backed up
+                .ToListAsync(ct);
+
+            var folders = await r.Set<Folder>()
+                .ToListAsync(ct);
+
+            return (box, messages, folders);
+        }, cancellationToken);
+    }
+
+    private async Task<IImapClient> ConnectToImapClient(EmailBox emailBox, CancellationToken cancellationToken)
+    {
+        var client = new ImapClient();
+        await client.ConnectAsync(
+            emailBox.EmailDomainConnectionHost,
+            emailBox.EmailDomainConnectionPort,
+            emailBox.UseSSl,
+            cancellationToken);
+        
+        await client.AuthenticateAsync(
+            emailBox.AuthenticateByEmail ? emailBox.Email : emailBox.UserName,
+            emailBox.Password,
+            cancellationToken);
+
+        return client;
+    }
+
+    private async Task<List<IMailFolder>> GetRelevantFolders(IImapClient client, CancellationToken cancellationToken)
+    {
+        var rootNamespace = client.PersonalNamespaces.Count > 0 
+            ? client.PersonalNamespaces[0] 
+            : new FolderNamespace('.', "");
+
+        var folders = (await client.GetFoldersAsync(rootNamespace, cancellationToken: cancellationToken))
+            .Where(f => 
+                !f.Attributes.HasFlag(FolderAttributes.NonExistent) &&
+                !f.Attributes.HasFlag(FolderAttributes.Drafts) &&
+                !f.Attributes.HasFlag(FolderAttributes.Trash) &&
+                !f.Attributes.HasFlag(FolderAttributes.Junk) &&
+                !f.Attributes.HasFlag(FolderAttributes.All))
+            .ToList();
+
+        // for cases when inbox is not in root namespace, or it filtered out
+        if (!folders.Contains(client.Inbox))
+        {
+            folders.Add(client.Inbox);
+        }
+
+        return folders;
+    }
+
+    private async Task ProcessFolder(
+        IMailFolder folder,
+        EmailBox emailBox,
+        List<Message> backedUpMessages,
+        List<Folder> existingFolders,
+        Dictionary<string, Message> newMessagesDictionary,
+        CancellationToken cancellationToken)
+    {
+        await folder.OpenAsync(FolderAccess.ReadOnly, cancellationToken);
+        var messages = await folder.SearchAsync(SearchQuery.All, cancellationToken);
+
+        foreach (var messageIndex in messages)
+        {
+            var mimeMessage = await folder.GetMessageAsync(messageIndex, cancellationToken);
+            await ProcessMessage(
+                mimeMessage, 
+                folder, 
+                emailBox, 
+                backedUpMessages, 
+                existingFolders, 
+                newMessagesDictionary, 
+                cancellationToken);
+        }
+
+        await folder.CloseAsync(cancellationToken: cancellationToken);
+    }
+
+    private async Task ProcessMessage(
+        MimeMessage mimeMessage,
+        IMailFolder folder,
+        EmailBox emailBox,
+        List<Message> backedUpMessages,
+        List<Folder> existingFolders,
+        Dictionary<string, Message> newMessagesDictionary,
+        CancellationToken cancellationToken)
+    {
+        var backedUpMessage = backedUpMessages
+            .FirstOrDefault(x => x.Id == mimeMessage.MessageId);
+        if (backedUpMessage != null)
+        {
+            await ProcessExistingMessage(
+                backedUpMessage, 
+                folder, 
+                emailBox, 
+                existingFolders);
+            return;
+        }
+
+        if (!newMessagesDictionary.TryGetValue(mimeMessage.MessageId, out var newMessage))
+        {
+            newMessage = await CreateNewMessage(
+                mimeMessage, 
+                emailBox, 
+                cancellationToken);
+            
+            newMessagesDictionary[mimeMessage.MessageId] = newMessage;
+        }
+
+        await ProcessMessageFolder(newMessage, folder, existingFolders);
+    }
+
+    private Task ProcessExistingMessage(
+        Message message, 
+        IMailFolder folder, 
+        EmailBox emailBox, 
+        List<Folder> existingFolders)
+    {
+        if (!string.IsNullOrEmpty(folder.Name) && 
+            message.Folders.All(x => x.Name != folder.Name))
+        {
+            var existingFolder = existingFolders.FirstOrDefault(x => x.Name == folder.Name) 
+                               ?? CreateNewFolder(folder.Name, existingFolders);
+            
+            message.Folders.Add(existingFolder);
+            repository.Update(message);
+        }
+
+        if (!message.EmailBoxes.Contains(emailBox))
+        {
+            message.EmailBoxes.Add(emailBox);
+            repository.Update(message);
+        }
+
+        return Task.CompletedTask;
+    }
+
+    private Folder CreateNewFolder(string folderName, List<Folder> existingFolders)
+    {
+        var newFolder = new Folder
+        {
+            Id = Guid.NewGuid(),
+            Name = folderName
+        };
+        
+        existingFolders.Add(newFolder);
+        repository.Add(newFolder);
+        return newFolder;
+    }
+
+    private async Task<Message> CreateNewMessage(
+        MimeMessage mimeMessage, 
+        EmailBox emailBox, 
+        CancellationToken cancellationToken)
+    {
+        var newMessage = mapper.Map<Message>(mimeMessage);
+        newMessage.EmailBoxes.Add(emailBox);
+
+        var saveToRepoTasks = new List<Task>();
+
+        if (mimeMessage.HtmlBody != null)
+        {
+            saveToRepoTasks.Add(SaveMessageBody(mimeMessage, cancellationToken));
+        }
+
+        await ProcessAttachments(mimeMessage, newMessage, saveToRepoTasks, cancellationToken);
+        await Task.WhenAll(saveToRepoTasks);
+
+        return newMessage;
+    }
+
+    private Task SaveMessageBody(MimeMessage mimeMessage, CancellationToken cancellationToken)
+    {
+        return filesRepository.SaveBodyAsync(
+            new MessageBodyKey { MessageId = mimeMessage.MessageId },
+            new MessageBody(new MemoryStream(System.Text.Encoding.UTF8.GetBytes(mimeMessage.HtmlBody!))),
+            cancellationToken);
+    }
+
+    private async Task ProcessAttachments(MimeMessage mimeMessage, Message newMessage, List<Task> saveToRepoTasks, CancellationToken cancellationToken)
+    {
+        foreach (var attachment in mimeMessage.Attachments)
+        {
+            if (!attachment.IsAttachment) continue;
+
+            var fileName = attachment.ContentDisposition?.FileName ?? attachment.ContentType.Name;
+            var content = ((MimePart)attachment).Content.Open();
+            var contentStream = new MemoryStream();
+            await content.CopyToAsync(contentStream, cancellationToken);
+
+            saveToRepoTasks.Add(
+                filesRepository.SaveAttachmentAsync(
+                    new MessageAttachmentKey
+                    {
+                        MessageId = mimeMessage.MessageId,
+                        FileName = fileName
+                    },
+                    new MessageAttachment(
+                        contentStream,
+                        fileName,
+                        attachment.ContentType.MimeType),
+                    cancellationToken));
+
+            newMessage.AttachmentFilesNames.Add(fileName);
+        }
+    }
+
+    private Task ProcessMessageFolder(Message message, IMailFolder folder, List<Folder> existingFolders)
+    {
+        if (string.IsNullOrEmpty(folder.Name)) 
+            return Task.CompletedTask;
+
+        var existingFolder = existingFolders.FirstOrDefault(x => x.Name == folder.Name) 
+                           ?? CreateNewFolder(folder.Name, existingFolders);
+        
+        message.Folders.Add(existingFolder);
+        return Task.CompletedTask;
+    }
+
+    private async Task SaveMessagesInBatches(List<Message> messages, CancellationToken cancellationToken)
+    {
+        for (var i = 0; i < messages.Count; i += BatchSize)
+        {
+            var batch = messages.Skip(i).Take(BatchSize).ToList();
+            repository.AddRange(batch);
+            await repository.PersistAsync(cancellationToken);
+        }
     }
 }

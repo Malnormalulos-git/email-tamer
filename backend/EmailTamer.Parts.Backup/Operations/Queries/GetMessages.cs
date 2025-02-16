@@ -15,10 +15,10 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace EmailTamer.Parts.Sync.Operations.Queries;
 
-public sealed record GetEmailBoxesMessages(string? FolderName, int Page, int Size)
+public sealed record GetMessages(string? FolderName, int Page, int Size)
     : IRequest<IActionResult>, IPagedRequest
 {
-    public class Validator : AbstractValidator<GetEmailBoxesMessages>
+    public class Validator : AbstractValidator<GetMessages>
     {
         public Validator(IValidator<IPagedRequest> prValidator)
         {
@@ -28,12 +28,12 @@ public sealed record GetEmailBoxesMessages(string? FolderName, int Page, int Siz
 }
 
 [UsedImplicitly]
-public class GetEmailBoxesMessagesQueryHandler(
+public class GetMessagesQueryHandler(
     [FromKeyedServices(nameof(TenantDbContext))] IEmailTamerRepository repository,
     IMapper mapper)
-    : IRequestHandler<GetEmailBoxesMessages, IActionResult>
+    : IRequestHandler<GetMessages, IActionResult>
 {
-    public async Task<IActionResult> Handle(GetEmailBoxesMessages query, CancellationToken cancellationToken)
+    public async Task<IActionResult> Handle(GetMessages query, CancellationToken cancellationToken)
     {
         if (query.FolderName != null)
         {

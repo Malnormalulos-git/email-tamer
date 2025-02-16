@@ -19,30 +19,24 @@ public class BackupsController(IMediator mediator) : Controller
     public Task<IActionResult> BackUpEmailBoxMessages([FromRoute(Name = "id")] Guid id, CancellationToken ct = default) =>
         mediator.Send(new BackUpEmailBoxMessages(id), ct);
     
-    // [HttpPost(Name = nameof(SyncEmailBoxes))]
+    // [HttpPost(Name = nameof(BackUpEmailBoxesMessages))]
     // [Authorize(Policy = AuthPolicy.User)]
     // [ProducesResponseType(200)]
     // [ProducesResponseType(404)]
-    // public Task<IActionResult> SyncEmailBoxes(CancellationToken ct = default) =>
-    //     mediator.Send(new Operations.Commands.SyncEmailBoxes(), ct);
+    // public Task<IActionResult> BackUpEmailBoxesMessages(CancellationToken ct = default) =>
+    //     mediator.Send(new Operations.Commands.BackUpEmailBoxesMessages(), ct);
     
-    // [HttpGet("{id:guid}", Name = nameof(GetMailBoxMessages))]
-    // [Authorize(Policy = AuthPolicy.User)]
-    // [ProducesResponseType(typeof(PagedResult<MessageDto>), 200)]
-    // [ProducesResponseType(404)]
-    // public Task<IActionResult> GetMailBoxMessages([FromRoute(Name = "id")] Guid id, CancellationToken ct = default) =>
-    //     mediator.Send(new GetMailBoxMessages(id), ct);
-    
-    // TODO: pass here the name of the folder?
-    [HttpGet(Name = nameof(GetEmailBoxesMessages))]
+    [HttpGet(Name = nameof(GetMessages))]
     [Authorize(Policy = AuthPolicy.User)]
     [ProducesResponseType(typeof(PagedResult<MessageDto>), 200)]
     [ProducesResponseType(404)]
-    public Task<IActionResult> GetEmailBoxesMessages(
-        [FromQuery(Name = "folder")] string? folder,
+    public Task<IActionResult> GetMessages(
+        [FromQuery(Name = "folderName")] string? folderName,
+        // TODO: [FromQuery(Name = "searchTerm")] string? searchTerm,
+        // TODO: [FromQuery(Name = "sortBy")] string sortBy = "byDate",
+        // TODO: [FromQuery(Name = "isByDescending")] bool isByDescending = true,
         [FromQuery(Name = "page")] int page,
         [FromQuery(Name = "size")] int size,
         CancellationToken ct = default) =>
-        mediator.Send(new GetEmailBoxesMessages(folder, page, size), ct);
-    
+        mediator.Send(new GetMessages(folderName, page, size), ct);
 }
