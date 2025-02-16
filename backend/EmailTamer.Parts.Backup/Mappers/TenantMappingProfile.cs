@@ -17,25 +17,23 @@ public class MessageMappingProfile : MappableProfile, IMappable
             .EasyMember(x => x.ResentDate, y => y.ResentDate.UtcDateTime)
             .EasyMember(x => x.References, y => y.References.ToList())
             .EasyMember(x => x.TextBody, y => GetTextBody(y))
-            .ForMember(x => x.To,
-                opt => opt.MapFrom(src =>
-                    src.To.OfType<MailboxAddress>()
-                        .Select(m => new EmailAddress { Name = m.Name, Address = m.Address, Domain = m.Domain })))
-            .ForMember(x => x.From,
-                opt => opt.MapFrom(src =>
-                    src.From.OfType<MailboxAddress>()
-                        .Select(m => new EmailAddress { Name = m.Name, Address = m.Address, Domain = m.Domain })))
+            .EasyMember(x => x.To, src => 
+                src.To.OfType<MailboxAddress>()
+                    .Select(ToEmailAddress))
+            .EasyMember(x => x.From,src => 
+                src.From.OfType<MailboxAddress>()
+                    .Select(ToEmailAddress))
             .IgnoreMember(x => x.EmailBoxes)
             .IgnoreMember(x => x.Folders)
             .IgnoreMember(x => x.AttachmentFilesNames);
     }
     
-    private static string GetTextBody(MimeMessage y)
+    private static string GetTextBody(MimeMessage message)
     {
-        var textBody = y.TextBody;
+        var textBody = message.TextBody;
         if (string.IsNullOrEmpty(textBody))
         {
-            var htmlBody = y.HtmlBody?.Substring(0, Math.Min(y.HtmlBody.Length, 10000));
+            var htmlBody = message.HtmlBody?.Substring(0, Math.Min(message.HtmlBody.Length, 10000));
             if (!string.IsNullOrEmpty(htmlBody))
             {
                 try
@@ -51,5 +49,10 @@ public class MessageMappingProfile : MappableProfile, IMappable
             }
         }
         return textBody?.Trim() ?? string.Empty;
+    }
+
+    private static EmailAddress ToEmailAddress(MailboxAddress mailboxAddress)
+    {
+        return new EmailAddress { Name = mailboxAddress.Name, Address = mailboxAddress.Address.ToLower(), Domain = mailboxAddress.Domain.ToLower() };
     }
 }

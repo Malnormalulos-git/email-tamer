@@ -43,19 +43,22 @@ public class Message : IEntity
 
             builder.HasKey(x => x.Id);
             
+            
             builder.HasMany(x => x.EmailBoxes)
                 .WithMany(x => x.Messages);
+            
+            builder.HasMany(x => x.Folders)
+                .WithMany(x => x.Messages);
+            
             
             builder.Property(x => x.Date).DateTime();
             
             builder.Property(x => x.ResentDate).DateTime();
             
+
+            builder.Property(x => x.References).Json();
+            
             builder.Property(p => p.AttachmentFilesNames).Json();
-            
-            builder.Property(p => p.References).Json();
-            
-            builder.HasMany(x => x.Folders)
-                .WithMany(x => x.Messages);
             
             builder.Property(p => p.To).Json();
             
@@ -64,7 +67,7 @@ public class Message : IEntity
     }
 }
 
-public sealed class EmailAddress // TODO: Store avatar?
+public sealed class EmailAddress 
 {
     public string? Name { get; set; }
     public string Address { get; set; }
