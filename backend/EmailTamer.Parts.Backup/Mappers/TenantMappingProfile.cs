@@ -14,7 +14,10 @@ public class MessageMappingProfile : MappableProfile, IMappable
         profile.CreateMap<MimeMessage, Message>(MemberList.Destination)
             .EasyMember(x => x.Id, y => y.MessageId)
             .EasyMember(x => x.Date, y => y.Date.UtcDateTime)
-            .EasyMember(x => x.ResentDate, y => y.ResentDate.UtcDateTime)
+            .EasyMember(x => x.ResentDate, y => 
+                y.ResentDate.UtcDateTime != DateTime.MinValue 
+                    ? y.ResentDate.UtcDateTime 
+                    : (DateTime?)null)
             .EasyMember(x => x.References, y => y.References.ToList())
             .EasyMember(x => x.TextBody, y => GetTextBody(y))
             .EasyMember(x => x.To, src => 
@@ -33,7 +36,7 @@ public class MessageMappingProfile : MappableProfile, IMappable
         var textBody = message.TextBody;
         if (string.IsNullOrEmpty(textBody))
         {
-            var htmlBody = message.HtmlBody?.Substring(0, Math.Min(message.HtmlBody.Length, 10000));
+            var htmlBody = message.HtmlBody;
             if (!string.IsNullOrEmpty(htmlBody))
             {
                 try

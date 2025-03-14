@@ -1,0 +1,62 @@
+using AutoMapper;
+using EmailTamer.Database.Persistence;
+using EmailTamer.Database.Tenant;
+using EmailTamer.Database.Tenant.Entities;
+using EmailTamer.Parts.Sync.Models;
+using EmailTamer.Parts.Sync.Persistence;
+using FluentValidation;
+using JetBrains.Annotations;
+using MediatR;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+
+namespace EmailTamer.Parts.Sync.Operations.Queries;
+
+public sealed record GetMessageDetails(GetMessageDetailsDto GetMessageDetailsDto) : IRequest<IActionResult>
+{
+    public class Validator : AbstractValidator<GetMessageDetails>
+    {
+        public Validator(IValidator<GetMessageDetailsDto> validator)
+        {
+            RuleFor(x => x.GetMessageDetailsDto).SetValidator(validator);
+        }
+    }
+}
+
+[UsedImplicitly]
+internal class GetMessageDetailsQueryHandler(
+    [FromKeyedServices(nameof(TenantDbContext))] IEmailTamerRepository repository,
+    IMapper mapper,
+    ITenantRepository filesRepository) 
+    : IRequestHandler<GetMessageDetails, IActionResult>
+{
+    public async Task<IActionResult> Handle(GetMessageDetails request, CancellationToken cancellationToken)
+    {
+        var message = await repository.ReadAsync((r, ct) => 
+                r.Set<Message>()
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync(x => x.Id == request.GetMessageDetailsDto.MessageId, ct),
+            cancellationToken);
+        
+        if (message == null)
+        {
+            return new NotFoundResult();
+        }
+        
+        var result = mapper.Map<MessageDetailsDto>(message);
+        
+        var messageBodyKey = MessageBodyKey.Create(message);
+        var htmlBody = await filesRepository.GetBodyAsync(messageBodyKey, cancellationToken);
+
+        if (htmlBody.Content.Length > 0)
+        {
+            using (var reader = new StreamReader(htmlBody.Content))
+            {
+                result.HtmlBody = await reader.ReadToEndAsync(cancellationToken);
+            }
+        }
+        
+        return new OkObjectResult(result);
+    }
+}

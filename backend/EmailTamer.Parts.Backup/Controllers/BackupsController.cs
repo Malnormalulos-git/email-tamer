@@ -3,6 +3,7 @@ using EmailTamer.Infrastructure.Auth;
 using EmailTamer.Parts.Sync.Models;
 using EmailTamer.Parts.Sync.Operations.Commands;
 using EmailTamer.Parts.Sync.Operations.Queries;
+using EmailTamer.Parts.Sync.Persistence;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -25,6 +26,27 @@ public class BackupsController(IMediator mediator) : Controller
     // [ProducesResponseType(404)]
     // public Task<IActionResult> BackUpEmailBoxesMessages(CancellationToken ct = default) =>
     //     mediator.Send(new Operations.Commands.BackUpEmailBoxesMessages(), ct);
+    
+    [HttpGet("message", Name = nameof(GetMessageDetails))]
+    [Authorize(Policy = AuthPolicy.User)]
+    [ProducesResponseType(typeof(MessageDetailsDto), 200)]
+    [ProducesResponseType(404)]
+    public Task<IActionResult> GetMessageDetails([FromBody] GetMessageDetailsDto messageDetailsDto, CancellationToken ct = default) =>
+        mediator.Send(new GetMessageDetails(messageDetailsDto), ct);
+    
+    [HttpGet("attachment", Name = nameof(GetMessageAttachment))]
+    [Authorize(Policy = AuthPolicy.User)]
+    [ProducesResponseType(typeof(FileContentResult), 200)]
+    [ProducesResponseType(404)]
+    public Task<IActionResult> GetMessageAttachment([FromBody] GetMessageAttachmentDto messageAttachmentDto, CancellationToken ct = default) =>
+        mediator.Send(new GetMessageAttachment(messageAttachmentDto), ct);
+    
+    // [HttpGet("thread/{messageId}", Name = nameof(GetMessagesThread))]
+    // [Authorize(Policy = AuthPolicy.User)]
+    // [ProducesResponseType(typeof(MessagesThreadDto), 200)]
+    // [ProducesResponseType(404)]
+    // public Task<IActionResult> GetMessagesThread([FromRoute(Name = "messageId")] string messageId, CancellationToken ct = default) =>
+    //     mediator.Send(new GetMessagesThread(messageId), ct);
     
     [HttpGet(Name = nameof(GetMessages))]
     [Authorize(Policy = AuthPolicy.User)]
