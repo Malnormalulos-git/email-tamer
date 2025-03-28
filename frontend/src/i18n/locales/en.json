@@ -1,3 +1,10 @@
 {
-
+  "header": {
+    "title": "EmailTamer",
+    "login": "Login"
+  },
+  "pageNotFound": {
+    "header": "Page does not exist",
+    "return": "HOME"
+  }
 }
