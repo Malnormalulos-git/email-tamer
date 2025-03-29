@@ -30,6 +30,7 @@
       "@components/*": ["./src/components/*"],
       "@router/*": ["./src/router/*"],
       "@api/*": ["./src/api/*"],
+      "@store/*": ["./src/store/*"]
     }
   },
   "include": ["src"],

@@ -25,6 +25,10 @@ export default defineConfig({
             {
                 find: '@api',
                 replacement: fileURLToPath(new URL('./src/api', import.meta.url))
+            },
+            {
+                find: '@store',
+                replacement: fileURLToPath(new URL('./src/store', import.meta.url))
             }
         ]
     }
