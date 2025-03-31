@@ -10,9 +10,10 @@ export const resources = {
     ua: {translation: ua},
 } as const;
 
+const savedLanguage = localStorage.getItem('language') || 'en';
 i18n.use(initReactI18next).init({
     debug: true,
-    fallbackLng: 'en',
+    fallbackLng: savedLanguage,
     resources: resources,
     defaultNS,
     interpolation: {

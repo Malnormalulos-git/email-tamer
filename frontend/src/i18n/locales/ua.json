@@ -1,10 +1,46 @@
 {
-  "layout": {
+  "header": {
     "title": "EmailTamer",
-    "login": "Увійти"
+    "login": "Увійти",
+    "register": "Зареєструватися",
+    "logout": "Вийти"
   },
-  "pageNotFound": {
+  "notFoundPage": {
     "header": "Сторінка не існує",
     "return": "НА ГОЛОВНУ"
+  },
+  "loginPage": {
+    "title": "Вхід",
+    "email": "Електронна пошта",
+    "password": "Пароль",
+    "loginButton": "Увійти",
+    "toRegister": "Немає акаунта? Зареєструватися",
+    "success": "Успішний вхід",
+    "error": "Помилка входу",
+    "validation": {
+      "emailRequired": "Електронна пошта обов'язкова",
+      "invalidEmail": "Недійсна електронна пошта",
+      "passwordMinLength": "Пароль має містити щонайменше 12 символів"
+    }
+  },
+  "registerPage": {
+    "title": "Реєстрація",
+    "email": "Електронна пошта",
+    "password": "Пароль",
+    "confirmPassword": "Підтвердіть пароль",
+    "registerButton": "Зареєструватися",
+    "toLogin": "Вже є акаунт? Увійти",
+    "success": "Успішна реєстрація",
+    "error": "Помилка реєстрації",
+    "validation": {
+      "emailRequired": "Електронна пошта обов'язкова",
+      "invalidEmail": "Має бути дійсна електронна пошта",
+      "passwordMinLength": "Пароль має містити щонайменше 12 символів",
+      "passwordLowercase": "Пароль має містити щонайменше одну малу літеру",
+      "passwordUppercase": "Пароль має містити щонайменше одну велику літеру",
+      "passwordDigit": "Пароль має містити щонайменше одну цифру",
+      "confirmPasswordRequired": "Підтвердження пароля обов'язкове",
+      "passwordsDontMatch": "Паролі не збігаються"
+    }
   }
 }

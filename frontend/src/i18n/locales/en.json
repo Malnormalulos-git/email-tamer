@@ -1,10 +1,46 @@
 {
   "header": {
     "title": "EmailTamer",
-    "login": "Login"
+    "login": "Login",
+    "register": "Register",
+    "logout": "Logout"
   },
-  "pageNotFound": {
+  "notFoundPage": {
     "header": "Page does not exist",
     "return": "HOME"
+  },
+  "loginPage": {
+    "title": "Login",
+    "email": "Email",
+    "password": "Password",
+    "loginButton": "Log In",
+    "toRegister": "Don't have an account? Register",
+    "success": "Logged in successfully",
+    "error": "Login failed",
+    "validation": {
+      "emailRequired": "Email is required",
+      "invalidEmail": "Invalid email address",
+      "passwordMinLength": "Password must be at least 12 characters"
+    }
+  },
+  "registerPage": {
+    "title": "Register",
+    "email": "Email",
+    "password": "Password",
+    "confirmPassword": "Confirm password",
+    "registerButton": "Sign Up",
+    "toLogin": "Already have an account? Log In",
+    "success": "Registered successfully",
+    "error": "Registration failed",
+    "validation": {
+      "emailRequired": "Email is required",
+      "invalidEmail": "Must be a valid email",
+      "passwordMinLength": "Password must be at least 12 characters",
+      "passwordLowercase": "Password must have at least one lowercase letter",
+      "passwordUppercase": "Password must have at least one uppercase letter",
+      "passwordDigit": "Password must have at least one digit",
+      "confirmPasswordRequired": "Confirm password is required",
+      "passwordsDontMatch": "Passwords don't match"
+    }
   }
 }

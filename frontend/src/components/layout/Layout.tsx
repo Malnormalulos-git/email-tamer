@@ -1,8 +1,10 @@
 ﻿import {Outlet} from 'react-router-dom';
 
-import Header from '@components/Header.tsx';
+import Header from '@components/layout/Header.tsx';
 
-import {TranslationScopeProvider} from '../i18n/contexts/TranslationScopeContext.tsx';
+import AppSnackbar from '@components/layout/AppSnackbar.tsx';
+
+import {TranslationScopeProvider} from '../../i18n/contexts/TranslationScopeContext.tsx';
 
 
 const Layout = () => {
@@ -13,6 +15,7 @@ const Layout = () => {
                 <Header/>
             </TranslationScopeProvider>
             <Outlet/>
+            <AppSnackbar/>
         </>
     );
 };
