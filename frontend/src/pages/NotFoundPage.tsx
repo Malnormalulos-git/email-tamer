@@ -3,7 +3,7 @@ import { Typography, Button } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 
 import { HOME_ROUTE } from '../router/routes';
-import useScopedContextTranslator from '../i18n/hooks/useScopedTranslator';
+import useScopedContextTranslator from '@hooks/useScopedTranslator.ts';
 
 const NotFoundPage = () => {
     const navigate = useNavigate();

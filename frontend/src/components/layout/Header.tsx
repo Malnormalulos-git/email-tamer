@@ -4,14 +4,17 @@ import {
     Toolbar,
     Typography,
     Button,
-    IconButton, MenuItem, Select, SelectChangeEvent, Stack,
+    IconButton, MenuItem, Select, SelectChangeEvent, Stack
 } from '@mui/material';
-import {HOME_ROUTE, LOGIN_ROUTE, REGISTER_ROUTE} from '@router/routes.ts';
+import {DEMO_ROUTE, HOME_ROUTE, LOGIN_ROUTE, REGISTER_ROUTE} from '@router/routes.ts';
 import {Logout as LogoutIcon} from '@mui/icons-material';
 
 import {getUserActions} from '@store/AuthStore.ts';
 
-import useScopedContextTranslator from '../../i18n/hooks/useScopedTranslator.ts';
+import Logo from '@components/Logo.tsx';
+
+import useScopedContextTranslator from '@hooks/useScopedTranslator.ts';
+
 import i18n from '../../i18n/i18n.ts';
 
 const Header = () => {
@@ -35,15 +38,27 @@ const Header = () => {
 
     return (
         <AppBar position='static'>
-            <Toolbar>
-                <Typography
-                    variant='h6'
+            <Toolbar
+                sx={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                }}
+            >
+                <Stack
+                    direction='row'
+                    alignItems='center'
                     component={Link}
-                    to={HOME_ROUTE}
-                    sx={{flexGrow: 1, textDecoration: 'none', color: 'inherit'}}
+                    to={isAuthenticated ? HOME_ROUTE : DEMO_ROUTE}
+                    sx={{textDecoration: 'none', color: 'inherit', flexGrow: 1}}
                 >
-                    {t('title')}
-                </Typography>
+                    <Logo sx={{width: 35, height: 35, marginRight: 1}}/>
+                    <Typography
+                        variant='h6'
+                    >
+                        {t('title')}
+                    </Typography>
+                </Stack>
                 <Select
                     value={i18n.language}
                     onChange={handleLanguageChange}

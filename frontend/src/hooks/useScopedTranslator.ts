@@ -1,8 +1,8 @@
 ﻿import {useMemo} from 'react';
 import {useTranslation} from 'react-i18next';
 
-import joinTranslatorKey from '../utils/joinTranslatorKey';
-import {useTranslationScopeContext} from '../contexts/TranslationScopeContext';
+import joinTranslatorKey from '../i18n/utils/joinTranslatorKey.ts';
+import {useTranslationScopeContext} from '../i18n/contexts/TranslationScopeContext.tsx';
 
 export type ScopedContextTranslatorFunction = {
     t: (key: string, options?: Record<string, any>) => string;

@@ -17,6 +17,7 @@
     "toRegister": "Don't have an account? Register",
     "success": "Logged in successfully",
     "error": "Login failed",
+    "error.invalidCredentials": "Invalid credentials",
     "validation": {
       "emailRequired": "Email is required",
       "invalidEmail": "Invalid email address",
@@ -42,5 +43,22 @@
       "confirmPasswordRequired": "Confirm password is required",
       "passwordsDontMatch": "Passwords don't match"
     }
+  },
+  "demoPage": {
+    "title": "Welcome to EmailTamer",
+    "subtitle": "Manage all your email accounts in one place with ease",
+    "imageAlt": "Multitasking professional managing multiple email accounts",
+    "targetAudienceTitle": "Who is EmailTamer for?",
+    "targetAudienceDescription": "EmailTamer is designed for busy professionals, students, and hobbyists who juggle multiple email accounts for work, studies, personal use, hobbies, and more. If you're overwhelmed by emails, we're here to help!",
+    "featuresTitle": "What EmailTamer Offers",
+    "features": {
+      "backupTitle": "Automatic Email Backups",
+      "backupDescription": "Connect your email accounts via IMAP, and we'll periodically back up your emails, metadata, and attachments to our secure database.",
+      "accessTitle": "Easy Access to Emails",
+      "accessDescription": "View your emails and email threads, download attachments, and manage everything from a single dashboard.",
+      "searchTitle": "Powerful Search & Filters",
+      "searchDescription": "Search emails by keywords, filter by folders, dates, or email accounts to quickly find what you need."
+    },
+    "ctaButton": "Get Started Now"
   }
 }

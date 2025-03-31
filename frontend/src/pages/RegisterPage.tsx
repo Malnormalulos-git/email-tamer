@@ -16,8 +16,9 @@ import PasswordInputControl from '@components/forms/controls/PasswordInputContro
 
 import {useState} from 'react';
 
-import useScopedContextTranslator from '../i18n/hooks/useScopedTranslator.ts';
-import {UserRole} from "@api/emailTamerApiSchemas.ts";
+import {UserRole} from '@api/emailTamerApiSchemas.ts';
+
+import useScopedContextTranslator from '@hooks/useScopedTranslator.ts';
 
 const createRegisterSchema = (t: (key: string) => string) =>
     z.object({
@@ -76,8 +77,9 @@ const RegisterPage = () => {
             title={t('title')}
             onSubmit={form.handleSubmit(onSubmit)}
         >
-            <TextInputControl label={t('email')} form={form} id='email' />
+            <TextInputControl disabled={isPending} label={t('email')} form={form} id='email' />
             <PasswordInputControl
+                disabled={isPending}
                 showPassword={showPassword}
                 handleClickShowPassword={handleClickShowPassword}
                 label={t('password')}
@@ -85,6 +87,7 @@ const RegisterPage = () => {
                 id='password'
             />
             <PasswordInputControl
+                disabled={isPending}
                 showPassword={showPassword}
                 handleClickShowPassword={handleClickShowPassword}
                 label={t('confirmPassword')}
