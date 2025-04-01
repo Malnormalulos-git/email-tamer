@@ -19,20 +19,20 @@ import {useEffect, useState} from 'react';
 import {UserRole} from '@api/emailTamerApiSchemas.ts';
 
 import useScopedContextTranslator from '@hooks/useScopedTranslator.ts';
-import useAuthStore from "@store/AuthStore.ts";
+import useAuthStore from '@store/AuthStore.ts';
 
 const createRegisterSchema = (t: (key: string) => string) =>
     z.object({
         email: z.string()
-            .min(1, { message: t('validation.emailRequired') })
-            .email({ message: t('validation.invalidEmail') }),
+            .min(1, {message: t('validation.emailRequired')})
+            .email({message: t('validation.invalidEmail')}),
         password: z.string()
-            .min(12, { message: t('validation.passwordMinLength') })
-            .regex(/[a-z]/, { message: t('validation.passwordLowercase') })
-            .regex(/[A-Z]/, { message: t('validation.passwordUppercase') })
-            .regex(/[0-9]/, { message: t('validation.passwordDigit') }),
+            .min(12, {message: t('validation.passwordMinLength')})
+            .regex(/[a-z]/, {message: t('validation.passwordLowercase')})
+            .regex(/[A-Z]/, {message: t('validation.passwordUppercase')})
+            .regex(/[0-9]/, {message: t('validation.passwordDigit')}),
         confirmPassword: z.string()
-            .min(1, { message: t('validation.confirmPasswordRequired') }),
+            .min(1, {message: t('validation.confirmPasswordRequired')}),
     }).refine((data) => data.password === data.confirmPassword, {
         path: ['confirmPassword'],
         message: t('validation.passwordsDontMatch'),
@@ -47,7 +47,7 @@ const RegisterPage = () => {
 
     useEffect(() => {
         if (isAuthenticated) {
-            navigate(HOME_ROUTE, { replace: true });
+            navigate(HOME_ROUTE, {replace: true});
         }
     }, [isAuthenticated, navigate]);
 
@@ -86,7 +86,7 @@ const RegisterPage = () => {
             title={t('title')}
             onSubmit={form.handleSubmit(onSubmit)}
         >
-            <TextInputControl disabled={isPending} label={t('email')} form={form} id='email' />
+            <TextInputControl disabled={isPending} label={t('email')} form={form} id='email'/>
             <PasswordInputControl
                 disabled={isPending}
                 showPassword={showPassword}

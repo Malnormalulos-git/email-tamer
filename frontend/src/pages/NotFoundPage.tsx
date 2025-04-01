@@ -2,8 +2,9 @@ import { DoNotDisturb as DoNotDisturbIcon } from '@mui/icons-material';
 import { Typography, Button } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 
-import { HOME_ROUTE } from '../router/routes';
 import useScopedContextTranslator from '@hooks/useScopedTranslator.ts';
+
+import { HOME_ROUTE } from '../router/routes';
 
 const NotFoundPage = () => {
     const navigate = useNavigate();
