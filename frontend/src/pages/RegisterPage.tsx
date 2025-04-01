@@ -4,7 +4,7 @@ import {zodResolver} from '@hookform/resolvers/zod';
 import {useNavigate} from 'react-router-dom';
 import {useRegister} from '@api/emailTamerApiComponents';
 import {CircularProgress} from '@mui/material';
-import {LOGIN_ROUTE} from '@router/routes';
+import {HOME_ROUTE, LOGIN_ROUTE} from '@router/routes';
 
 import {getAppControlActions} from '@store/AppControlStore.ts';
 import FormLayout from '@components/forms/FormLayout.tsx';
@@ -14,11 +14,12 @@ import SubmitButton from '@components/forms/controls/SubmitButton.tsx';
 
 import PasswordInputControl from '@components/forms/controls/PasswordInputControl.tsx';
 
-import {useState} from 'react';
+import {useEffect, useState} from 'react';
 
 import {UserRole} from '@api/emailTamerApiSchemas.ts';
 
 import useScopedContextTranslator from '@hooks/useScopedTranslator.ts';
+import useAuthStore from "@store/AuthStore.ts";
 
 const createRegisterSchema = (t: (key: string) => string) =>
     z.object({
@@ -42,6 +43,14 @@ type RegisterFormData = z.infer<ReturnType<typeof createRegisterSchema>>;
 const RegisterPage = () => {
     const {t} = useScopedContextTranslator();
     const navigate = useNavigate();
+    const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+
+    useEffect(() => {
+        if (isAuthenticated) {
+            navigate(HOME_ROUTE, { replace: true });
+        }
+    }, [isAuthenticated, navigate]);
+
     const {setErrorNotification, setSuccessNotification} = getAppControlActions();
 
     const [showPassword, setShowPassword] = useState(false);
@@ -52,8 +61,8 @@ const RegisterPage = () => {
             navigate(LOGIN_ROUTE);
             setSuccessNotification(t('success'));
         },
-        onError: (error) => {
-            setErrorNotification((error as any).payload || t('error'));
+        onError: () => {
+            setErrorNotification(t('error'));
         },
     });
 

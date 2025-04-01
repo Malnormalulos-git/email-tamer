@@ -1,74 +1,61 @@
-﻿import {z} from 'zod';
-import {createStore} from 'zustand/vanilla';
+﻿import {create} from 'zustand';
 import {devtools} from 'zustand/middleware';
-import _ from 'lodash';
-import {useStore} from 'zustand';
-
+import {z} from 'zod';
 
 import {UserDto, UserRole} from '@api/emailTamerApiSchemas.ts';
-
-import {ExtractState} from './types';
 
 const userRolesSchema = z.nativeEnum(UserRole);
 
 const userSchema = z.object({
     id: z.string(),
     email: z.string(),
-    role: userRolesSchema
+    role: userRolesSchema,
 });
 
 type User = z.infer<typeof userSchema>;
 
-type AuthStore = {
-    user: User | null,
+type AuthState = {
+    user: User | null;
+    token: string | null;
+    isAuthenticated: boolean;
+    setUser: (user: UserDto | null) => void;
+    setToken: (token: string | null) => void;
+    logout: () => void;
+};
 
-    actions: {
-        setUser: (user: UserDto | null) => void,
-        isUserAuthenticated: () => boolean,
-        logOutUser: () => void,
-        setAccessToken: (token: string | null) => void,
-        getAccessToken: () => string | null
-    }
-}
+const initialToken = localStorage.getItem('token') || null;
 
-const authStore = createStore<AuthStore>()(
-    devtools((set, get) => ({
-        user: null,
-        actions: {
-            getAccessToken: () => {
-                return localStorage.getItem('token');
-            },
-            setAccessToken: (token: string | null) => {
-                if (token) localStorage.setItem('token', token);
-            },
+const useAuthStore = create<AuthState>()(
+    devtools(
+        (set) => ({
+            user: null,
+            token: initialToken,
+            isAuthenticated: !!initialToken,
             setUser: (userDto: UserDto | null) => {
                 const user = userDto ? userSchema.parse(userDto) : null;
-                set({user});
+                set((state) => ({
+                    user,
+                    isAuthenticated: !!user && !!state.token,
+                }));
             },
-            logOutUser: () => {
-                set({user: undefined});
+            setToken: (token: string | null) => {
+                if (token) {
+                    localStorage.setItem('token', token);
+                } else {
+                    localStorage.removeItem('token');
+                }
+                set((state) => ({
+                    token,
+                    isAuthenticated: !!state.user && !!token,
+                }));
+            },
+            logout: () => {
                 localStorage.removeItem('token');
+                set({user: null, token: null, isAuthenticated: false});
             },
-            isUserAuthenticated: () => {
-                const user = get().user;
-                const token = localStorage.getItem('token');
-                return !_.isEmpty(user) && Boolean(token);
-            }
-        }
-    }),
-    {
-        name: 'auth-store'
-    })
+        }),
+        {name: 'auth-store'}
+    )
 );
 
-const userSelector = (state: ExtractState<typeof authStore>): User | null => state.user;
-const actionsSelector = (state: ExtractState<typeof authStore>) => state.actions;
-
-export const getUser = () => userSelector(authStore.getState());
-export const getUserActions = () => actionsSelector(authStore.getState());
-
-type UseStoreParams<U> = Parameters<typeof useStore<typeof authStore, U>>;
-
-export function useAuthStore<U>(selector: UseStoreParams<U>[1]) {
-    return useStore(authStore, selector);
-}
+export default useAuthStore;

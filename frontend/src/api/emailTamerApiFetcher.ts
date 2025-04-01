@@ -1,5 +1,6 @@
+import useAuthStore from '@store/AuthStore.ts';
+
 import { EmailTamerApiContext } from './emailTamerApiContext';
-import {getUserActions} from "@store/AuthStore.ts";
 
 const baseUrl = import.meta.env.VITE_API_URL;
 
@@ -45,8 +46,7 @@ export async function emailTamerApiFetch<
 >): Promise<TData> {
     let error: ErrorWrapper<TError>;
     try {
-        const { getAccessToken } = getUserActions();
-        const token = getAccessToken();
+        const token = useAuthStore.getState().token;
         const authHeader = token ? { ['Authorization']: `Bearer ${token}`} : null;
         const requestHeaders: HeadersInit = {
             'Content-Type': 'application/json',

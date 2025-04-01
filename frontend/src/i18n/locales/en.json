@@ -33,6 +33,7 @@
     "toLogin": "Already have an account? Log In",
     "success": "Registered successfully",
     "error": "Registration failed",
+    "error.alreadyRegistered": "User with this email already exist",
     "validation": {
       "emailRequired": "Email is required",
       "invalidEmail": "Must be a valid email",

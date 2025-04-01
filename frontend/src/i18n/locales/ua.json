@@ -17,6 +17,7 @@
     "toRegister": "Немає акаунта? Зареєструватися",
     "success": "Успішний вхід",
     "error": "Помилка входу",
+    "error.invalidCredentials": "Неправильні дані для входу",
     "validation": {
       "emailRequired": "Електронна пошта обов'язкова",
       "invalidEmail": "Недійсна електронна пошта",
@@ -32,7 +33,7 @@
     "toLogin": "Вже є акаунт? Увійти",
     "success": "Успішна реєстрація",
     "error": "Помилка реєстрації",
-    "error.invalidCredentials": "Неправильні дані для входу",
+    "error.alreadyRegistered": "Користувач із такою поштовою скринькою вже існує",
     "validation": {
       "emailRequired": "Електронна пошта обов'язкова",
       "invalidEmail": "Має бути дійсна електронна пошта",

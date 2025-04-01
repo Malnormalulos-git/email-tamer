@@ -5,7 +5,6 @@ import {useNavigate} from 'react-router-dom';
 import {useGetCurrentUser, useLogin} from '@api/emailTamerApiComponents';
 import {CircularProgress} from '@mui/material';
 import {HOME_ROUTE, REGISTER_ROUTE, LOGIN_ROUTE} from '@router/routes';
-import {getUserActions, useAuthStore} from '@store/AuthStore.ts';
 import {getAppControlActions} from '@store/AppControlStore.ts';
 import FormLayout from '@components/forms/FormLayout.tsx';
 import SubmitButton from '@components/forms/controls/SubmitButton.tsx';
@@ -15,6 +14,7 @@ import PasswordInputControl from '@components/forms/controls/PasswordInputContro
 import useScopedContextTranslator from '@hooks/useScopedTranslator.ts';
 import {useEffect} from 'react';
 import {useUrlParam} from '@hooks/useUrlParam.ts';
+import useAuthStore from '@store/AuthStore.ts';
 
 const createLoginSchema = (t: (key: string) => string) =>
     z.object({
@@ -29,39 +29,38 @@ type LoginFormData = z.infer<ReturnType<typeof createLoginSchema>>;
 
 const LoginPage = () => {
     const {t} = useScopedContextTranslator();
-    const {setAccessToken, setUser, getAccessToken} = getUserActions();
-    const isUserAuthenticated = useAuthStore((state) => state.actions.isUserAuthenticated());
+    const {setUser, setToken, isAuthenticated} = useAuthStore((state) => ({
+        setUser: state.setUser,
+        setToken: state.setToken,
+        isAuthenticated: state.isAuthenticated,
+    }));
     const {setErrorNotification, setSuccessNotification} = getAppControlActions();
 
     const navigate = useNavigate();
     const redirectToValue = useUrlParam('redirectTo');
     const redirect = () => {
-        const target = redirectToValue && redirectToValue !== LOGIN_ROUTE
-            ? redirectToValue
-            : HOME_ROUTE;
+        const target = redirectToValue && redirectToValue !== LOGIN_ROUTE ? redirectToValue : HOME_ROUTE;
         navigate(target, {replace: true});
     };
 
     const {
         isFetching: getCurrentUserProcessing,
         refetch: fetchCurrentUser,
-        data: currentUserData
-    } = useGetCurrentUser({}, {
-        onSuccess: (user) => {
-            setUser(user);
-            setSuccessNotification(t('success'));
-        },
-        onError: (error) => {
-            const statusCode = (error as any)?.stack?.status;
-            if (statusCode && statusCode === 401) {
-                setErrorNotification(t('error.invalidCredentials'));
-            } else {
+        data: currentUserData,
+    } = useGetCurrentUser(
+        {},
+        {
+            onSuccess: (user) => {
+                setUser(user);
+                setSuccessNotification(t('success'));
+            },
+            onError: () => {
                 setErrorNotification(t('error'));
-            }
-        },
-        retry: false,
-        enabled: false
-    });
+            },
+            retry: false,
+            enabled: false,
+        }
+    );
 
     useEffect(() => {
         if (currentUserData) {
@@ -71,18 +70,18 @@ const LoginPage = () => {
     }, [currentUserData, setUser, setSuccessNotification, t]);
 
     useEffect(() => {
-        const token = getAccessToken();
-        if (isUserAuthenticated) {
+        const token = useAuthStore.getState().token;
+        if (isAuthenticated) {
             redirect();
         } else if (token) {
             fetchCurrentUser();
         }
-    }, [isUserAuthenticated, getAccessToken, fetchCurrentUser]);
+    }, [isAuthenticated, fetchCurrentUser]);
 
     const {mutate: login, isPending} = useLogin({
         onSuccess: (data) => {
             if (data.token) {
-                setAccessToken(data.token);
+                setToken(data.token);
                 fetchCurrentUser();
             }
         },
