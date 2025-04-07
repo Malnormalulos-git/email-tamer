@@ -97,6 +97,14 @@ export type EmailBoxDtoPagedResult = {
   total?: number;
 };
 
+export type FolderDto = {
+  /**
+   * @format uuid
+   */
+  id?: string;
+  name?: string | null;
+};
+
 export type GetMessageAttachmentDto = {
   messageId?: string | null;
   fileName?: string | null;

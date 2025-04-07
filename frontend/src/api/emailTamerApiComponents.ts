@@ -563,6 +563,93 @@ export const useGetMessageAttachment = <TData = Blob,>(
     });
 };
 
+export type GetFoldersError = Fetcher.ErrorWrapper<undefined>;
+
+export type GetFoldersResponse = Schemas.FolderDto[];
+
+export type GetFoldersVariables = EmailTamerApiContext['fetcherOptions'];
+
+export const fetchGetFolders = (
+    variables: GetFoldersVariables,
+    signal?: AbortSignal,
+) =>
+    emailTamerApiFetch<
+    GetFoldersResponse,
+    GetFoldersError,
+    undefined,
+    {},
+    {},
+    {}
+  >({ url: '/api/backup/folders', method: 'get', ...variables, signal });
+
+export function getFoldersQuery(variables: GetFoldersVariables): {
+  queryKey: reactQuery.QueryKey;
+  queryFn: (options: QueryFnOptions) => Promise<GetFoldersResponse>;
+};
+
+export function getFoldersQuery(
+  variables: GetFoldersVariables | reactQuery.SkipToken,
+): {
+  queryKey: reactQuery.QueryKey;
+  queryFn:
+    | ((options: QueryFnOptions) => Promise<GetFoldersResponse>)
+    | reactQuery.SkipToken;
+};
+
+export function getFoldersQuery(
+    variables: GetFoldersVariables | reactQuery.SkipToken,
+) {
+    return {
+        queryKey: queryKeyFn({
+            path: '/api/backup/folders',
+            operationId: 'getFolders',
+            variables,
+        }),
+        queryFn:
+      variables === reactQuery.skipToken
+          ? reactQuery.skipToken
+          : ({ signal }: QueryFnOptions) => fetchGetFolders(variables, signal),
+    };
+}
+
+export const useSuspenseGetFolders = <TData = GetFoldersResponse,>(
+    variables: GetFoldersVariables,
+    options?: Omit<
+    reactQuery.UseQueryOptions<GetFoldersResponse, GetFoldersError, TData>,
+    'queryKey' | 'queryFn' | 'initialData'
+  >,
+) => {
+    const { queryOptions, fetcherOptions } = useEmailTamerApiContext(options);
+    return reactQuery.useSuspenseQuery<
+    GetFoldersResponse,
+    GetFoldersError,
+    TData
+  >({
+      ...getFoldersQuery(deepMerge(fetcherOptions, variables)),
+      ...options,
+      ...queryOptions,
+  });
+};
+
+export const useGetFolders = <TData = GetFoldersResponse,>(
+    variables: GetFoldersVariables | reactQuery.SkipToken,
+    options?: Omit<
+    reactQuery.UseQueryOptions<GetFoldersResponse, GetFoldersError, TData>,
+    'queryKey' | 'queryFn' | 'initialData'
+  >,
+) => {
+    const { queryOptions, fetcherOptions } = useEmailTamerApiContext(options);
+    return reactQuery.useQuery<GetFoldersResponse, GetFoldersError, TData>({
+        ...getFoldersQuery(
+            variables === reactQuery.skipToken
+                ? variables
+                : deepMerge(fetcherOptions, variables),
+        ),
+        ...options,
+        ...queryOptions,
+    });
+};
+
 export type CreateEmailBoxError = Fetcher.ErrorWrapper<undefined>;
 
 export type CreateEmailBoxVariables = {
@@ -936,6 +1023,11 @@ export type QueryOperation =
       path: '/api/backup/attachment';
       operationId: 'getMessageAttachment';
       variables: GetMessageAttachmentVariables | reactQuery.SkipToken;
+    }
+  | {
+      path: '/api/backup/folders';
+      operationId: 'getFolders';
+      variables: GetFoldersVariables | reactQuery.SkipToken;
     }
   | {
       path: '/api/emailBoxes';
