@@ -3,7 +3,6 @@ using EmailTamer.Infrastructure.Auth;
 using EmailTamer.Parts.Sync.Models;
 using EmailTamer.Parts.Sync.Operations.Commands;
 using EmailTamer.Parts.Sync.Operations.Queries;
-using EmailTamer.Parts.Sync.Persistence;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -17,36 +16,39 @@ public class BackupsController(IMediator mediator) : Controller
     [Authorize(Policy = AuthPolicy.User)]
     [ProducesResponseType(200)]
     [ProducesResponseType(404)]
-    public Task<IActionResult> BackUpEmailBoxMessages([FromRoute(Name = "id")] Guid id, CancellationToken ct = default) =>
+    public Task<IActionResult>
+        BackUpEmailBoxMessages([FromRoute(Name = "id")] Guid id, CancellationToken ct = default) =>
         mediator.Send(new BackUpEmailBoxMessages(id), ct);
-    
+
     [HttpPost(Name = nameof(BackUpEmailBoxesMessages))]
     [Authorize(Policy = AuthPolicy.User)]
     [ProducesResponseType(200)]
     public Task<IActionResult> BackUpEmailBoxesMessages(CancellationToken ct = default) =>
         mediator.Send(new BackUpEmailBoxesMessages(), ct);
-    
+
     [HttpGet("message", Name = nameof(GetMessageDetails))]
     [Authorize(Policy = AuthPolicy.User)]
     [ProducesResponseType(typeof(MessageDetailsDto), 200)]
     [ProducesResponseType(404)]
-    public Task<IActionResult> GetMessageDetails([FromBody] GetMessageDetailsDto messageDetailsDto, CancellationToken ct = default) =>
+    public Task<IActionResult> GetMessageDetails([FromBody] GetMessageDetailsDto messageDetailsDto,
+        CancellationToken ct = default) =>
         mediator.Send(new GetMessageDetails(messageDetailsDto), ct);
-    
+
     [HttpGet("attachment", Name = nameof(GetMessageAttachment))]
     [Authorize(Policy = AuthPolicy.User)]
     [ProducesResponseType(typeof(FileContentResult), 200)]
     [ProducesResponseType(404)]
-    public Task<IActionResult> GetMessageAttachment([FromBody] GetMessageAttachmentDto messageAttachmentDto, CancellationToken ct = default) =>
+    public Task<IActionResult> GetMessageAttachment([FromBody] GetMessageAttachmentDto messageAttachmentDto,
+        CancellationToken ct = default) =>
         mediator.Send(new GetMessageAttachment(messageAttachmentDto), ct);
-    
+
     // [HttpGet("thread/{messageId}", Name = nameof(GetMessagesThread))]
     // [Authorize(Policy = AuthPolicy.User)]
     // [ProducesResponseType(typeof(MessagesThreadDto), 200)]
     // [ProducesResponseType(404)]
     // public Task<IActionResult> GetMessagesThread([FromRoute(Name = "messageId")] string messageId, CancellationToken ct = default) =>
     //     mediator.Send(new GetMessagesThread(messageId), ct);
-    
+
     [HttpGet(Name = nameof(GetMessages))]
     [Authorize(Policy = AuthPolicy.User)]
     [ProducesResponseType(typeof(PagedResult<MessageDto>), 200)]
@@ -60,4 +62,10 @@ public class BackupsController(IMediator mediator) : Controller
         [FromQuery(Name = "size")] int size,
         CancellationToken ct = default) =>
         mediator.Send(new GetMessages(folderName, page, size), ct);
+
+    [HttpGet("folders", Name = nameof(GetFolders))]
+    [Authorize(Policy = AuthPolicy.User)]
+    [ProducesResponseType(typeof(List<FolderDto>), 200)]
+    public Task<IActionResult> GetFolders(CancellationToken ct = default) => 
+        mediator.Send(new GetFolders(), ct);
 }
