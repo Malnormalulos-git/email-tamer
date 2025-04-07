@@ -10,7 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace EmailTamer.Parts.Sync.Operations.Commands;
 
-public sealed record BackUpEmailBoxesMessages: IRequest<IActionResult>
+public sealed record BackUpEmailBoxesMessages : IRequest<IActionResult>
 {
     public class Validator : AbstractValidator<BackUpEmailBoxesMessages>;
 }
@@ -23,34 +23,17 @@ public class BackUpEmailBoxesMessagesCommandHandler(
 {
     public async Task<IActionResult> Handle(BackUpEmailBoxesMessages request, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
-        
-        /*
-         * Problem "System.InvalidOperationException: The instance of entity type 'Message' cannot be tracked
-         * because another instance with the key value '{Id: messageId}' is already being tracked.
-         * When attaching existing entities, ensure that only one entity instance with a given key value is attached."
-         *
-         * where emailBoxes with shared messages are backed up 
-        */
-        
         var emailBoxesIds = await repository.ReadAsync((r, ct) =>
                 r.Set<EmailBox>()
                     .AsNoTracking()
                     .Select(x => x.Id)
                     .ToListAsync(ct),
             cancellationToken);
-
-        var syncTasks = emailBoxesIds.Select(emailBoxId =>
-            mediator.Send(new BackUpEmailBoxMessages(emailBoxId), cancellationToken)
-        );
         
-        await Task.WhenAll(syncTasks);
-        
-        // foreach (var emailBoxId in emailBoxesIds)
-        // {
-        //     await mediator.Send(new BackUpEmailBoxMessages(emailBoxId), cancellationToken);
-        // }
-
+        foreach (var emailBoxId in emailBoxesIds)
+        {
+            await mediator.Send(new BackUpEmailBoxMessages(emailBoxId), cancellationToken);
+        }
         
         return new OkResult();
     }

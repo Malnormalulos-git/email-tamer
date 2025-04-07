@@ -20,12 +20,11 @@ public class BackupsController(IMediator mediator) : Controller
     public Task<IActionResult> BackUpEmailBoxMessages([FromRoute(Name = "id")] Guid id, CancellationToken ct = default) =>
         mediator.Send(new BackUpEmailBoxMessages(id), ct);
     
-    // [HttpPost(Name = nameof(BackUpEmailBoxesMessages))]
-    // [Authorize(Policy = AuthPolicy.User)]
-    // [ProducesResponseType(200)]
-    // [ProducesResponseType(404)]
-    // public Task<IActionResult> BackUpEmailBoxesMessages(CancellationToken ct = default) =>
-    //     mediator.Send(new Operations.Commands.BackUpEmailBoxesMessages(), ct);
+    [HttpPost(Name = nameof(BackUpEmailBoxesMessages))]
+    [Authorize(Policy = AuthPolicy.User)]
+    [ProducesResponseType(200)]
+    public Task<IActionResult> BackUpEmailBoxesMessages(CancellationToken ct = default) =>
+        mediator.Send(new BackUpEmailBoxesMessages(), ct);
     
     [HttpGet("message", Name = nameof(GetMessageDetails))]
     [Authorize(Policy = AuthPolicy.User)]
