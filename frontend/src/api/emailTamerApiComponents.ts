@@ -226,6 +226,157 @@ export const useBackUpEmailBoxMessages = (
   });
 };
 
+export type BackUpEmailBoxesMessagesError = Fetcher.ErrorWrapper<undefined>;
+
+export type BackUpEmailBoxesMessagesVariables =
+  EmailTamerApiContext['fetcherOptions'];
+
+export const fetchBackUpEmailBoxesMessages = (
+    variables: BackUpEmailBoxesMessagesVariables,
+    signal?: AbortSignal,
+) =>
+    emailTamerApiFetch<
+    undefined,
+    BackUpEmailBoxesMessagesError,
+    undefined,
+    {},
+    {},
+    {}
+  >({ url: '/api/backup', method: 'post', ...variables, signal });
+
+export const useBackUpEmailBoxesMessages = (
+    options?: Omit<
+    reactQuery.UseMutationOptions<
+      undefined,
+      BackUpEmailBoxesMessagesError,
+      BackUpEmailBoxesMessagesVariables
+    >,
+    'mutationFn'
+  >,
+) => {
+    const { fetcherOptions } = useEmailTamerApiContext();
+    return reactQuery.useMutation<
+    undefined,
+    BackUpEmailBoxesMessagesError,
+    BackUpEmailBoxesMessagesVariables
+  >({
+      mutationFn: (variables: BackUpEmailBoxesMessagesVariables) =>
+          fetchBackUpEmailBoxesMessages(deepMerge(fetcherOptions, variables)),
+      ...options,
+  });
+};
+
+export type GetMessagesQueryParams = {
+  folderName?: string;
+  /**
+   * @format int32
+   */
+  page?: number;
+  /**
+   * @format int32
+   */
+  size?: number;
+};
+
+export type GetMessagesError = Fetcher.ErrorWrapper<undefined>;
+
+export type GetMessagesVariables = {
+  queryParams?: GetMessagesQueryParams;
+} & EmailTamerApiContext['fetcherOptions'];
+
+export const fetchGetMessages = (
+    variables: GetMessagesVariables,
+    signal?: AbortSignal,
+) =>
+    emailTamerApiFetch<
+    Schemas.MessageDtoPagedResult,
+    GetMessagesError,
+    undefined,
+    {},
+    GetMessagesQueryParams,
+    {}
+  >({ url: '/api/backup', method: 'get', ...variables, signal });
+
+export function getMessagesQuery(variables: GetMessagesVariables): {
+  queryKey: reactQuery.QueryKey;
+  queryFn: (options: QueryFnOptions) => Promise<Schemas.MessageDtoPagedResult>;
+};
+
+export function getMessagesQuery(
+  variables: GetMessagesVariables | reactQuery.SkipToken,
+): {
+  queryKey: reactQuery.QueryKey;
+  queryFn:
+    | ((options: QueryFnOptions) => Promise<Schemas.MessageDtoPagedResult>)
+    | reactQuery.SkipToken;
+};
+
+export function getMessagesQuery(
+    variables: GetMessagesVariables | reactQuery.SkipToken,
+) {
+    return {
+        queryKey: queryKeyFn({
+            path: '/api/backup',
+            operationId: 'getMessages',
+            variables,
+        }),
+        queryFn:
+      variables === reactQuery.skipToken
+          ? reactQuery.skipToken
+          : ({ signal }: QueryFnOptions) => fetchGetMessages(variables, signal),
+    };
+}
+
+export const useSuspenseGetMessages = <TData = Schemas.MessageDtoPagedResult,>(
+    variables: GetMessagesVariables,
+    options?: Omit<
+    reactQuery.UseQueryOptions<
+      Schemas.MessageDtoPagedResult,
+      GetMessagesError,
+      TData
+    >,
+    'queryKey' | 'queryFn' | 'initialData'
+  >,
+) => {
+    const { queryOptions, fetcherOptions } = useEmailTamerApiContext(options);
+    return reactQuery.useSuspenseQuery<
+    Schemas.MessageDtoPagedResult,
+    GetMessagesError,
+    TData
+  >({
+      ...getMessagesQuery(deepMerge(fetcherOptions, variables)),
+      ...options,
+      ...queryOptions,
+  });
+};
+
+export const useGetMessages = <TData = Schemas.MessageDtoPagedResult,>(
+    variables: GetMessagesVariables | reactQuery.SkipToken,
+    options?: Omit<
+    reactQuery.UseQueryOptions<
+      Schemas.MessageDtoPagedResult,
+      GetMessagesError,
+      TData
+    >,
+    'queryKey' | 'queryFn' | 'initialData'
+  >,
+) => {
+    const { queryOptions, fetcherOptions } = useEmailTamerApiContext(options);
+    return reactQuery.useQuery<
+    Schemas.MessageDtoPagedResult,
+    GetMessagesError,
+    TData
+  >({
+      ...getMessagesQuery(
+          variables === reactQuery.skipToken
+              ? variables
+              : deepMerge(fetcherOptions, variables),
+      ),
+      ...options,
+      ...queryOptions,
+  });
+};
+
 export type GetMessageDetailsError = Fetcher.ErrorWrapper<undefined>;
 
 export type GetMessageDetailsVariables = {
@@ -410,117 +561,6 @@ export const useGetMessageAttachment = <TData = Blob,>(
         ...options,
         ...queryOptions,
     });
-};
-
-export type GetMessagesQueryParams = {
-  folderName?: string;
-  /**
-   * @format int32
-   */
-  page?: number;
-  /**
-   * @format int32
-   */
-  size?: number;
-};
-
-export type GetMessagesError = Fetcher.ErrorWrapper<undefined>;
-
-export type GetMessagesVariables = {
-  queryParams?: GetMessagesQueryParams;
-} & EmailTamerApiContext['fetcherOptions'];
-
-export const fetchGetMessages = (
-    variables: GetMessagesVariables,
-    signal?: AbortSignal,
-) =>
-    emailTamerApiFetch<
-    Schemas.MessageDtoPagedResult,
-    GetMessagesError,
-    undefined,
-    {},
-    GetMessagesQueryParams,
-    {}
-  >({ url: '/api/backup', method: 'get', ...variables, signal });
-
-export function getMessagesQuery(variables: GetMessagesVariables): {
-  queryKey: reactQuery.QueryKey;
-  queryFn: (options: QueryFnOptions) => Promise<Schemas.MessageDtoPagedResult>;
-};
-
-export function getMessagesQuery(
-  variables: GetMessagesVariables | reactQuery.SkipToken,
-): {
-  queryKey: reactQuery.QueryKey;
-  queryFn:
-    | ((options: QueryFnOptions) => Promise<Schemas.MessageDtoPagedResult>)
-    | reactQuery.SkipToken;
-};
-
-export function getMessagesQuery(
-    variables: GetMessagesVariables | reactQuery.SkipToken,
-) {
-    return {
-        queryKey: queryKeyFn({
-            path: '/api/backup',
-            operationId: 'getMessages',
-            variables,
-        }),
-        queryFn:
-      variables === reactQuery.skipToken
-          ? reactQuery.skipToken
-          : ({ signal }: QueryFnOptions) => fetchGetMessages(variables, signal),
-    };
-}
-
-export const useSuspenseGetMessages = <TData = Schemas.MessageDtoPagedResult,>(
-    variables: GetMessagesVariables,
-    options?: Omit<
-    reactQuery.UseQueryOptions<
-      Schemas.MessageDtoPagedResult,
-      GetMessagesError,
-      TData
-    >,
-    'queryKey' | 'queryFn' | 'initialData'
-  >,
-) => {
-    const { queryOptions, fetcherOptions } = useEmailTamerApiContext(options);
-    return reactQuery.useSuspenseQuery<
-    Schemas.MessageDtoPagedResult,
-    GetMessagesError,
-    TData
-  >({
-      ...getMessagesQuery(deepMerge(fetcherOptions, variables)),
-      ...options,
-      ...queryOptions,
-  });
-};
-
-export const useGetMessages = <TData = Schemas.MessageDtoPagedResult,>(
-    variables: GetMessagesVariables | reactQuery.SkipToken,
-    options?: Omit<
-    reactQuery.UseQueryOptions<
-      Schemas.MessageDtoPagedResult,
-      GetMessagesError,
-      TData
-    >,
-    'queryKey' | 'queryFn' | 'initialData'
-  >,
-) => {
-    const { queryOptions, fetcherOptions } = useEmailTamerApiContext(options);
-    return reactQuery.useQuery<
-    Schemas.MessageDtoPagedResult,
-    GetMessagesError,
-    TData
-  >({
-      ...getMessagesQuery(
-          variables === reactQuery.skipToken
-              ? variables
-              : deepMerge(fetcherOptions, variables),
-      ),
-      ...options,
-      ...queryOptions,
-  });
 };
 
 export type CreateEmailBoxError = Fetcher.ErrorWrapper<undefined>;
@@ -883,6 +923,11 @@ export type QueryOperation =
       variables: GetCurrentUserVariables | reactQuery.SkipToken;
     }
   | {
+      path: '/api/backup';
+      operationId: 'getMessages';
+      variables: GetMessagesVariables | reactQuery.SkipToken;
+    }
+  | {
       path: '/api/backup/message';
       operationId: 'getMessageDetails';
       variables: GetMessageDetailsVariables | reactQuery.SkipToken;
@@ -891,11 +936,6 @@ export type QueryOperation =
       path: '/api/backup/attachment';
       operationId: 'getMessageAttachment';
       variables: GetMessageAttachmentVariables | reactQuery.SkipToken;
-    }
-  | {
-      path: '/api/backup';
-      operationId: 'getMessages';
-      variables: GetMessagesVariables | reactQuery.SkipToken;
     }
   | {
       path: '/api/emailBoxes';
