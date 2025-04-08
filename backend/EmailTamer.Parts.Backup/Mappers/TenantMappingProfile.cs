@@ -28,7 +28,8 @@ public class MessageMappingProfile : MappableProfile, IMappable
                     .Select(ToEmailAddress))
             .IgnoreMember(x => x.EmailBoxes)
             .IgnoreMember(x => x.Folders)
-            .IgnoreMember(x => x.AttachmentFilesNames);
+            .IgnoreMember(x => x.AttachmentFilesNames)
+            .IgnoreMember(x => x.ThreadId);
     }
     
     private static string GetTextBody(MimeMessage message)

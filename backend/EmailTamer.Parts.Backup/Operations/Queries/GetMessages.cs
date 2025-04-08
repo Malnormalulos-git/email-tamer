@@ -49,15 +49,12 @@ public class GetMessagesQueryHandler(
         // TODO: refactor this
         var messagesPagedResult = await repository.ReadAsync(async (r, ct) =>
         {
-            
-            // Get all message IDs that are replies to other messages 
             var repliedToIds = await r.Set<Message>()
                 .Where(m => m.InReplyTo != null)
                 .Select(m => m.InReplyTo)
                 .Distinct()
                 .ToListAsync(ct);
             
-            // Main query for paged messages
             var pagedResult = await r.Set<Message>()
                 .Include(x => x.Folders)
                 .WhereIf(query.FolderName != null, msg => msg.Folders.Any(f => f.Name == query.FolderName))
@@ -71,13 +68,6 @@ public class GetMessagesQueryHandler(
                 .Distinct()
                 .ToList();
             
-            var messagesReferredToIds = r.Set<Message>()
-                .Where(msg => allReferences.Contains(msg.Id))
-                .Select(x => x.Id)
-                .AsNoTracking()
-                .ToList();
-            
-            // Map results efficiently
             var mappedData = pagedResult.Items
                 .Select(m =>
                 {
@@ -87,13 +77,7 @@ public class GetMessagesQueryHandler(
                         .Select(x => !string.IsNullOrEmpty(x.Name) ? x.Name : x.Address)
                         .Concat(m.To.Select(x => !string.IsNullOrEmpty(x.Name) ? x.Name : x.Address))
                         .ToList();
-
-                    result.ConversationChainLength = m.InReplyTo == null || 
-                                                     m.References.Count == 0 || 
-                                                     string.IsNullOrEmpty(m.References[0])
-                        ? 1
-                        : messagesReferredToIds.Count(id => m.References.Contains(id)) + 1;
-            
+                    
                     return result;
                 })
                 .ToList();

@@ -54,7 +54,7 @@ internal class BackUpEmailBoxMessagesCommandHandler(
         emailBox.LastSyncAt = clock.UtcNow.DateTime;
         
         var newMessagesDictionary = new Dictionary<string, Message>();
-        
+
         foreach (var folder in folders)
         {
             await ProcessFolder(
@@ -65,6 +65,8 @@ internal class BackUpEmailBoxMessagesCommandHandler(
                 newMessagesDictionary, 
                 cancellationToken);
         }
+
+        AssignThreadIds(backedUpMessages, newMessagesDictionary);
 
         await client.DisconnectAsync(true, cancellationToken);
         
@@ -184,25 +186,55 @@ internal class BackUpEmailBoxMessagesCommandHandler(
             .FirstOrDefault(x => x.Id == mimeMessage.MessageId);
         if (backedUpMessage != null)
         {
-            await ProcessExistingMessage(
-                backedUpMessage, 
-                folder, 
-                emailBox, 
-                existingFolders);
+            await ProcessExistingMessage(backedUpMessage, folder, emailBox, existingFolders);
             return;
         }
 
         if (!newMessagesDictionary.TryGetValue(mimeMessage.MessageId, out var newMessage))
         {
-            newMessage = await CreateNewMessage(
-                mimeMessage, 
-                emailBox, 
-                cancellationToken);
-            
+            newMessage = await CreateNewMessage(mimeMessage, emailBox, cancellationToken);
             newMessagesDictionary[mimeMessage.MessageId] = newMessage;
         }
 
         await ProcessMessageFolder(newMessage, folder, existingFolders);
+    }
+
+    private void AssignThreadIds(List<Message> backedUpMessages, Dictionary<string, Message> newMessagesDictionary)
+    {
+        var allMessages = backedUpMessages.Concat(newMessagesDictionary.Values).ToList();
+        var messageLookup = allMessages.ToDictionary(m => m.Id, m => m); 
+
+        foreach (var message in newMessagesDictionary.Values)
+        {
+            if (string.IsNullOrEmpty(message.InReplyTo) && 
+                (message.References.Count == 0))
+            {
+                message.ThreadId = message.Id;
+                continue;
+            }
+
+            string threadId = null;
+
+            if (!string.IsNullOrEmpty(message.InReplyTo) && 
+                messageLookup.TryGetValue(message.InReplyTo, out var repliedTo))
+            {
+                threadId = repliedTo.ThreadId ?? repliedTo.Id;
+            }
+
+            if (threadId == null && message.References.Count > 0)
+            {
+                foreach (var refId in message.References)
+                {
+                    if (messageLookup.TryGetValue(refId, out var refMessage))
+                    {
+                        threadId = refMessage.ThreadId ?? refId;
+                        break;
+                    }
+                }
+            }
+
+            message.ThreadId = threadId ?? message.Id;
+        }
     }
 
     private Task ProcessExistingMessage(
