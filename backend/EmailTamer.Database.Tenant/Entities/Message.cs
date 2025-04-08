@@ -15,6 +15,8 @@ public class Message : IEntity
     [Key]
     public string Id { get; set; } = null!;
     
+    public string? ThreadId { get; set; }
+    
     public string? InReplyTo { get; set; }
     
     public string? Subject { get; set; } 
@@ -49,6 +51,8 @@ public class Message : IEntity
             
             builder.HasMany(x => x.Folders)
                 .WithMany(x => x.Messages);
+
+            builder.HasIndex(x => x.ThreadId);
             
             
             builder.Property(x => x.Date).DateTime();
