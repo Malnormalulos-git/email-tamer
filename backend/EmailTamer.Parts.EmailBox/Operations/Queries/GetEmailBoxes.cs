@@ -13,17 +13,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace EmailTamer.Parts.EmailBox.Operations.Queries;
 
-public sealed record GetEmailBoxes(int Page, int Size)
-    : IRequest<IActionResult>, IPagedRequest
-{
-    public class Validator : AbstractValidator<GetEmailBoxes>
-    {
-        public Validator(IValidator<IPagedRequest> prValidator)
-        {
-            Include(prValidator);
-        }
-    }
-}
+public sealed record GetEmailBoxes() : IRequest<IActionResult>;
 
 [UsedImplicitly]
 public class GetEmailBoxesQueryHandler(
@@ -33,13 +23,13 @@ public class GetEmailBoxesQueryHandler(
 {
 	public async Task<IActionResult> Handle(GetEmailBoxes query, CancellationToken cancellationToken)
     {
-	    var emailBoxesPagedResult = await repository.ReadAsync((r, ct) =>
+	    var emailBoxes = await repository.ReadAsync((r, ct) =>
 			    r.Set<Database.Tenant.Entities.EmailBox>()
-				    .Select(t => mapper.Map<EmailBoxDto>(t))
 				    .AsNoTracking()
-				    .ToPagedResultAsync(query, ct),
+				    .Select(t => mapper.Map<EmailBoxDto>(t))
+				    .ToListAsync(ct),
 		    cancellationToken);
 
-        return new ObjectResult(emailBoxesPagedResult);
+        return new ObjectResult(emailBoxes);
     }
 }

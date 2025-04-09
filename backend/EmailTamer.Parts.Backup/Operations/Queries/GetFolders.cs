@@ -15,14 +15,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace EmailTamer.Parts.Sync.Operations.Queries;
 
-public sealed record GetFolders()
-    : IRequest<IActionResult>
-{
-    public class Validator : AbstractValidator<GetFolders>
-    {
-        public Validator(IValidator<IPagedRequest> prValidator){}
-    }
-}
+public sealed record GetFolders : IRequest<IActionResult>;
 
 [UsedImplicitly]
 public class GetFoldersQueryHandler(

@@ -14,7 +14,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace EmailTamer.Parts.Sync.Operations.Queries;
 
-public sealed record GetMessagesThreads(Guid[]? FoldersIds, Guid[]? EmailBoxesIds, int Page, int Size)
+public sealed record GetMessagesThreads(Guid? FolderId, Guid[]? EmailBoxesIds, int Page, int Size)
     : IRequest<IActionResult>, IPagedRequest
 {
     public class Validator : AbstractValidator<GetMessagesThreads>
@@ -35,15 +35,17 @@ public class GetMessagesThreadsQueryHandler(
 {
     public async Task<IActionResult> Handle(GetMessagesThreads query, CancellationToken cancellationToken)
     {
-        var filerByFolders = query.FoldersIds != null && query.FoldersIds.Length > 0;
+        var filerByFolder = query.FolderId != null;
         var filerByEmailBoxes = query.EmailBoxesIds != null && query.EmailBoxesIds.Length > 0;
 
-        if (filerByFolders)
+        if (filerByFolder)
         {
-            var folders = await repository.ReadAsync((r, ct) =>
-                    r.Set<Folder>().Where(f => query.FoldersIds!.Contains(f.Id)).ToListAsync(ct),
+            var folder = await repository.ReadAsync((r, ct) =>
+                    r.Set<Folder>()
+                        .FirstOrDefaultAsync(f => f.Id == query.FolderId, ct),
                 cancellationToken);
-            if (folders.Count == 0) return new NotFoundResult();
+            if (folder == null) 
+                return new NotFoundResult();
         }
 
         if (filerByEmailBoxes)
@@ -57,7 +59,7 @@ public class GetMessagesThreadsQueryHandler(
         var threadsPagedResult = await repository.ReadAsync(async (r, ct) =>
         {
             var baseQuery = r.Set<Message>()
-                .WhereIf(filerByFolders, msg => msg.Folders.Any(f => query.FoldersIds!.Contains(f.Id)))
+                .WhereIf(filerByFolder, msg => msg.Folders.Any(f => f.Id == query.FolderId))
                 .WhereIf(filerByEmailBoxes, msg => msg.EmailBoxes.Any(eb => query.EmailBoxesIds!.Contains(eb.Id)))
                 .Where(m => m.ThreadId != null)
                 .AsNoTracking();

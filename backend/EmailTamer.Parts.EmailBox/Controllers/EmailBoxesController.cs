@@ -20,13 +20,10 @@ public class EmailBoxesController(IMediator mediator) : Controller
     
     [HttpGet(Name = nameof(GetEmailBoxes))]
     [Authorize(Policy = AuthPolicy.User)]
-    [ProducesResponseType(typeof(PagedResult<EmailBoxDto>), 200)]
+    [ProducesResponseType(typeof(List<EmailBoxDto>), 200)]
     [ProducesResponseType(404)]
-    public Task<IActionResult> GetEmailBoxes(
-        [FromQuery(Name = "page")] int page,
-        [FromQuery(Name = "size")] int size,
-        CancellationToken ct = default)
-        => mediator.Send(new GetEmailBoxes(page, size), ct);
+    public Task<IActionResult> GetEmailBoxes(CancellationToken ct = default)
+        => mediator.Send(new GetEmailBoxes(), ct);
     
     [HttpGet("{id:guid}", Name = nameof(GetEmailBoxDetails))]
     [Authorize(Policy = AuthPolicy.User)]
