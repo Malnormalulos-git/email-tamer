@@ -141,21 +141,42 @@ export type MessageDetailsDto = {
 
 export type MessageDto = {
   id?: string | null;
+  threadId?: string | null;
   subject?: string | null;
   textBody?: string | null;
   /**
    * @format date-time
    */
   date?: string;
-  /**
-   * @format int32
-   */
-  conversationChainLength?: number;
   participants?: string[] | null;
 };
 
-export type MessageDtoPagedResult = {
-  items?: MessageDto[] | null;
+export type MessagesThreadDto = {
+  threadId?: string | null;
+  messages?: MessageDto[] | null;
+  lastMessage?: MessageDetailsDto;
+};
+
+export type MessagesThreadShortDto = {
+  threadId?: string | null;
+  lastMessage?: MessageDto;
+  subject?: string | null;
+  /**
+   * @format date-time
+   */
+  startDate?: string;
+  /**
+   * @format date-time
+   */
+  endDate?: string;
+  /**
+   * @format int32
+   */
+  length?: number;
+};
+
+export type MessagesThreadShortDtoPagedResult = {
+  items?: MessagesThreadShortDto[] | null;
   /**
    * @format int32
    */

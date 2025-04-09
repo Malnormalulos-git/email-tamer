@@ -266,8 +266,9 @@ export const useBackUpEmailBoxesMessages = (
   });
 };
 
-export type GetMessagesQueryParams = {
-  folderName?: string;
+export type GetMessagesThreadsQueryParams = {
+  foldersIds?: string[];
+  emailBoxesIds?: string[];
   /**
    * @format int32
    */
@@ -278,96 +279,107 @@ export type GetMessagesQueryParams = {
   size?: number;
 };
 
-export type GetMessagesError = Fetcher.ErrorWrapper<undefined>;
+export type GetMessagesThreadsError = Fetcher.ErrorWrapper<undefined>;
 
-export type GetMessagesVariables = {
-  queryParams?: GetMessagesQueryParams;
+export type GetMessagesThreadsVariables = {
+  queryParams?: GetMessagesThreadsQueryParams;
 } & EmailTamerApiContext['fetcherOptions'];
 
-export const fetchGetMessages = (
-    variables: GetMessagesVariables,
+export const fetchGetMessagesThreads = (
+    variables: GetMessagesThreadsVariables,
     signal?: AbortSignal,
 ) =>
     emailTamerApiFetch<
-    Schemas.MessageDtoPagedResult,
-    GetMessagesError,
+    Schemas.MessagesThreadShortDtoPagedResult,
+    GetMessagesThreadsError,
     undefined,
     {},
-    GetMessagesQueryParams,
+    GetMessagesThreadsQueryParams,
     {}
   >({ url: '/api/backup', method: 'get', ...variables, signal });
 
-export function getMessagesQuery(variables: GetMessagesVariables): {
+export function getMessagesThreadsQuery(
+  variables: GetMessagesThreadsVariables,
+): {
   queryKey: reactQuery.QueryKey;
-  queryFn: (options: QueryFnOptions) => Promise<Schemas.MessageDtoPagedResult>;
+  queryFn: (
+    options: QueryFnOptions,
+  ) => Promise<Schemas.MessagesThreadShortDtoPagedResult>;
 };
 
-export function getMessagesQuery(
-  variables: GetMessagesVariables | reactQuery.SkipToken,
+export function getMessagesThreadsQuery(
+  variables: GetMessagesThreadsVariables | reactQuery.SkipToken,
 ): {
   queryKey: reactQuery.QueryKey;
   queryFn:
-    | ((options: QueryFnOptions) => Promise<Schemas.MessageDtoPagedResult>)
+    | ((
+        options: QueryFnOptions,
+      ) => Promise<Schemas.MessagesThreadShortDtoPagedResult>)
     | reactQuery.SkipToken;
 };
 
-export function getMessagesQuery(
-    variables: GetMessagesVariables | reactQuery.SkipToken,
+export function getMessagesThreadsQuery(
+    variables: GetMessagesThreadsVariables | reactQuery.SkipToken,
 ) {
     return {
         queryKey: queryKeyFn({
             path: '/api/backup',
-            operationId: 'getMessages',
+            operationId: 'getMessagesThreads',
             variables,
         }),
         queryFn:
       variables === reactQuery.skipToken
           ? reactQuery.skipToken
-          : ({ signal }: QueryFnOptions) => fetchGetMessages(variables, signal),
+          : ({ signal }: QueryFnOptions) =>
+              fetchGetMessagesThreads(variables, signal),
     };
 }
 
-export const useSuspenseGetMessages = <TData = Schemas.MessageDtoPagedResult,>(
-    variables: GetMessagesVariables,
-    options?: Omit<
+export const useSuspenseGetMessagesThreads = <
+  TData = Schemas.MessagesThreadShortDtoPagedResult,
+>(
+        variables: GetMessagesThreadsVariables,
+        options?: Omit<
     reactQuery.UseQueryOptions<
-      Schemas.MessageDtoPagedResult,
-      GetMessagesError,
+      Schemas.MessagesThreadShortDtoPagedResult,
+      GetMessagesThreadsError,
       TData
     >,
     'queryKey' | 'queryFn' | 'initialData'
   >,
-) => {
+    ) => {
     const { queryOptions, fetcherOptions } = useEmailTamerApiContext(options);
     return reactQuery.useSuspenseQuery<
-    Schemas.MessageDtoPagedResult,
-    GetMessagesError,
+    Schemas.MessagesThreadShortDtoPagedResult,
+    GetMessagesThreadsError,
     TData
   >({
-      ...getMessagesQuery(deepMerge(fetcherOptions, variables)),
+      ...getMessagesThreadsQuery(deepMerge(fetcherOptions, variables)),
       ...options,
       ...queryOptions,
   });
 };
 
-export const useGetMessages = <TData = Schemas.MessageDtoPagedResult,>(
-    variables: GetMessagesVariables | reactQuery.SkipToken,
-    options?: Omit<
+export const useGetMessagesThreads = <
+  TData = Schemas.MessagesThreadShortDtoPagedResult,
+>(
+        variables: GetMessagesThreadsVariables | reactQuery.SkipToken,
+        options?: Omit<
     reactQuery.UseQueryOptions<
-      Schemas.MessageDtoPagedResult,
-      GetMessagesError,
+      Schemas.MessagesThreadShortDtoPagedResult,
+      GetMessagesThreadsError,
       TData
     >,
     'queryKey' | 'queryFn' | 'initialData'
   >,
-) => {
+    ) => {
     const { queryOptions, fetcherOptions } = useEmailTamerApiContext(options);
     return reactQuery.useQuery<
-    Schemas.MessageDtoPagedResult,
-    GetMessagesError,
+    Schemas.MessagesThreadShortDtoPagedResult,
+    GetMessagesThreadsError,
     TData
   >({
-      ...getMessagesQuery(
+      ...getMessagesThreadsQuery(
           variables === reactQuery.skipToken
               ? variables
               : deepMerge(fetcherOptions, variables),
@@ -561,6 +573,108 @@ export const useGetMessageAttachment = <TData = Blob,>(
         ...options,
         ...queryOptions,
     });
+};
+
+export type GetMessagesThreadError = Fetcher.ErrorWrapper<undefined>;
+
+export type GetMessagesThreadVariables = {
+  body?: Schemas.GetMessageDetailsDto;
+} & EmailTamerApiContext['fetcherOptions'];
+
+export const fetchGetMessagesThread = (
+    variables: GetMessagesThreadVariables,
+    signal?: AbortSignal,
+) =>
+    emailTamerApiFetch<
+    Schemas.MessagesThreadDto,
+    GetMessagesThreadError,
+    Schemas.GetMessageDetailsDto,
+    {},
+    {},
+    {}
+  >({ url: '/api/backup/thread', method: 'get', ...variables, signal });
+
+export function getMessagesThreadQuery(variables: GetMessagesThreadVariables): {
+  queryKey: reactQuery.QueryKey;
+  queryFn: (options: QueryFnOptions) => Promise<Schemas.MessagesThreadDto>;
+};
+
+export function getMessagesThreadQuery(
+  variables: GetMessagesThreadVariables | reactQuery.SkipToken,
+): {
+  queryKey: reactQuery.QueryKey;
+  queryFn:
+    | ((options: QueryFnOptions) => Promise<Schemas.MessagesThreadDto>)
+    | reactQuery.SkipToken;
+};
+
+export function getMessagesThreadQuery(
+    variables: GetMessagesThreadVariables | reactQuery.SkipToken,
+) {
+    return {
+        queryKey: queryKeyFn({
+            path: '/api/backup/thread',
+            operationId: 'getMessagesThread',
+            variables,
+        }),
+        queryFn:
+      variables === reactQuery.skipToken
+          ? reactQuery.skipToken
+          : ({ signal }: QueryFnOptions) =>
+              fetchGetMessagesThread(variables, signal),
+    };
+}
+
+export const useSuspenseGetMessagesThread = <
+  TData = Schemas.MessagesThreadDto,
+>(
+        variables: GetMessagesThreadVariables,
+        options?: Omit<
+    reactQuery.UseQueryOptions<
+      Schemas.MessagesThreadDto,
+      GetMessagesThreadError,
+      TData
+    >,
+    'queryKey' | 'queryFn' | 'initialData'
+  >,
+    ) => {
+    const { queryOptions, fetcherOptions } = useEmailTamerApiContext(options);
+    return reactQuery.useSuspenseQuery<
+    Schemas.MessagesThreadDto,
+    GetMessagesThreadError,
+    TData
+  >({
+      ...getMessagesThreadQuery(deepMerge(fetcherOptions, variables)),
+      ...options,
+      ...queryOptions,
+  });
+};
+
+export const useGetMessagesThread = <TData = Schemas.MessagesThreadDto,>(
+    variables: GetMessagesThreadVariables | reactQuery.SkipToken,
+    options?: Omit<
+    reactQuery.UseQueryOptions<
+      Schemas.MessagesThreadDto,
+      GetMessagesThreadError,
+      TData
+    >,
+    'queryKey' | 'queryFn' | 'initialData'
+  >,
+) => {
+    const { queryOptions, fetcherOptions } = useEmailTamerApiContext(options);
+    return reactQuery.useQuery<
+    Schemas.MessagesThreadDto,
+    GetMessagesThreadError,
+    TData
+  >({
+      ...getMessagesThreadQuery(
+          variables === reactQuery.skipToken
+              ? variables
+              : deepMerge(fetcherOptions, variables),
+      ),
+      ...options,
+      ...queryOptions,
+  });
 };
 
 export type GetFoldersError = Fetcher.ErrorWrapper<undefined>;
@@ -1011,8 +1125,8 @@ export type QueryOperation =
     }
   | {
       path: '/api/backup';
-      operationId: 'getMessages';
-      variables: GetMessagesVariables | reactQuery.SkipToken;
+      operationId: 'getMessagesThreads';
+      variables: GetMessagesThreadsVariables | reactQuery.SkipToken;
     }
   | {
       path: '/api/backup/message';
@@ -1023,6 +1137,11 @@ export type QueryOperation =
       path: '/api/backup/attachment';
       operationId: 'getMessageAttachment';
       variables: GetMessageAttachmentVariables | reactQuery.SkipToken;
+    }
+  | {
+      path: '/api/backup/thread';
+      operationId: 'getMessagesThread';
+      variables: GetMessagesThreadVariables | reactQuery.SkipToken;
     }
   | {
       path: '/api/backup/folders';
