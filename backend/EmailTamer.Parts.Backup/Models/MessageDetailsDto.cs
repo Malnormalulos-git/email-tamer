@@ -2,7 +2,6 @@ using AutoMapper;
 using EmailTamer.Core.Mappers;
 using EmailTamer.Core.Models;
 using EmailTamer.Database.Tenant.Entities;
-using EmailTamer.Parts.Sync.Persistence;
 
 namespace EmailTamer.Parts.Sync.Models;
 

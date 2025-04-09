@@ -42,26 +42,29 @@ public class BackupsController(IMediator mediator) : Controller
         CancellationToken ct = default) =>
         mediator.Send(new GetMessageAttachment(messageAttachmentDto), ct);
 
-    // [HttpGet("thread/{messageId}", Name = nameof(GetMessagesThread))]
-    // [Authorize(Policy = AuthPolicy.User)]
-    // [ProducesResponseType(typeof(MessagesThreadDto), 200)]
-    // [ProducesResponseType(404)]
-    // public Task<IActionResult> GetMessagesThread([FromRoute(Name = "messageId")] string messageId, CancellationToken ct = default) =>
-    //     mediator.Send(new GetMessagesThread(messageId), ct);
-
-    [HttpGet(Name = nameof(GetMessages))]
+    [HttpGet("thread", Name = nameof(GetMessagesThread))]
     [Authorize(Policy = AuthPolicy.User)]
-    [ProducesResponseType(typeof(PagedResult<MessageDto>), 200)]
+    [ProducesResponseType(typeof(MessagesThreadDto), 200)]
     [ProducesResponseType(404)]
-    public Task<IActionResult> GetMessages(
-        [FromQuery(Name = "folderName")] string? folderName,
+    public Task<IActionResult> GetMessagesThread(
+        [FromBody] GetMessageDetailsDto messageDetailsDto, 
+        CancellationToken ct = default) =>
+        mediator.Send(new GetMessagesThread(messageDetailsDto), ct);
+
+    [HttpGet(Name = nameof(GetMessagesThreads))]
+    [Authorize(Policy = AuthPolicy.User)]
+    [ProducesResponseType(typeof(PagedResult<MessagesThreadShortDto>), 200)]
+    [ProducesResponseType(404)]
+    public Task<IActionResult> GetMessagesThreads(
+        [FromQuery(Name = "foldersIds")] Guid[]? foldersIds,
+        [FromQuery(Name = "emailBoxesIds")] Guid[]? emailBoxesIds,
         // TODO: [FromQuery(Name = "searchTerm")] string? searchTerm,
         // TODO: [FromQuery(Name = "sortBy")] string sortBy = "byDate",
         // TODO: [FromQuery(Name = "isByDescending")] bool isByDescending = true,
         [FromQuery(Name = "page")] int page,
         [FromQuery(Name = "size")] int size,
         CancellationToken ct = default) =>
-        mediator.Send(new GetMessages(folderName, page, size), ct);
+        mediator.Send(new GetMessagesThreads(foldersIds, emailBoxesIds, page, size), ct);
 
     [HttpGet("folders", Name = nameof(GetFolders))]
     [Authorize(Policy = AuthPolicy.User)]
