@@ -61,5 +61,22 @@
       "searchDescription": "Search emails by keywords, filter by folders, dates, or email accounts to quickly find what you need."
     },
     "ctaButton": "Get Started Now"
+  },
+  "homePage": {
+    "foldersSection": {
+      "folders": "Your folders",
+      "all": "All"
+    },
+    "emailBoxesSection": {
+      "emailBoxes": "Email boxes",
+      "add": "Add"
+    },
+    "messagesSection": {
+      "messages": "Messages",
+      "page": "Page",
+      "messagesPerPage": "Per page",
+      "noSubject": "No subject",
+      "noMessagesFound": "No messages found"
+    }
   }
 }

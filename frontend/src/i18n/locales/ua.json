@@ -61,5 +61,22 @@
       "searchDescription": "Шукайте листи за ключовими словами, фільтруйте за папками, датами чи поштовими скриньками, щоб швидко знайти потрібне."
     },
     "ctaButton": "Почати зараз"
+  },
+  "homePage": {
+    "foldersSection": {
+      "folders": "Ваші папки",
+      "all": "Усі"
+    },
+    "emailBoxesSection": {
+      "emailBoxes": "Поштові скриньки",
+      "add": "Додати"
+    },
+    "messagesSection": {
+      "messages": "Повідомлення",
+      "page": "Стр.",
+      "messagesPerPage": "На стр.",
+      "noSubject": "Без теми",
+      "noMessagesFound": "Повідомлень не знайдено"
+    }
   }
 }

@@ -26,7 +26,10 @@ export const router = createBrowserRouter(
     createRoutesFromElements(
         <Route element={<Layout/>}>
             <Route path={HOME_ROUTE} element={
-                <GuardedRoute page={<HomePage />} roles={allowedRoles}/>}/>
+                <GuardedRoute page={
+                    <TranslationScopeProvider scope='homePage'>
+                        <HomePage/>
+                    </TranslationScopeProvider>} roles={allowedRoles}/>}/>
             <Route path={DEMO_ROUTE} element={
                 <TranslationScopeProvider scope='demoPage'>
                     <DemoPage/>
