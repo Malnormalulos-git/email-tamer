@@ -267,7 +267,10 @@ export const useBackUpEmailBoxesMessages = (
 };
 
 export type GetMessagesThreadsQueryParams = {
-  foldersIds?: string[];
+  /**
+   * @format uuid
+   */
+  folderId?: string;
   emailBoxesIds?: string[];
   /**
    * @format int32
@@ -805,39 +808,28 @@ export const useCreateEmailBox = (
   });
 };
 
-export type GetEmailBoxesQueryParams = {
-  /**
-   * @format int32
-   */
-  page?: number;
-  /**
-   * @format int32
-   */
-  size?: number;
-};
-
 export type GetEmailBoxesError = Fetcher.ErrorWrapper<undefined>;
 
-export type GetEmailBoxesVariables = {
-  queryParams?: GetEmailBoxesQueryParams;
-} & EmailTamerApiContext['fetcherOptions'];
+export type GetEmailBoxesResponse = Schemas.EmailBoxDto[];
+
+export type GetEmailBoxesVariables = EmailTamerApiContext['fetcherOptions'];
 
 export const fetchGetEmailBoxes = (
     variables: GetEmailBoxesVariables,
     signal?: AbortSignal,
 ) =>
     emailTamerApiFetch<
-    Schemas.EmailBoxDtoPagedResult,
+    GetEmailBoxesResponse,
     GetEmailBoxesError,
     undefined,
     {},
-    GetEmailBoxesQueryParams,
+    {},
     {}
   >({ url: '/api/emailBoxes', method: 'get', ...variables, signal });
 
 export function getEmailBoxesQuery(variables: GetEmailBoxesVariables): {
   queryKey: reactQuery.QueryKey;
-  queryFn: (options: QueryFnOptions) => Promise<Schemas.EmailBoxDtoPagedResult>;
+  queryFn: (options: QueryFnOptions) => Promise<GetEmailBoxesResponse>;
 };
 
 export function getEmailBoxesQuery(
@@ -845,7 +837,7 @@ export function getEmailBoxesQuery(
 ): {
   queryKey: reactQuery.QueryKey;
   queryFn:
-    | ((options: QueryFnOptions) => Promise<Schemas.EmailBoxDtoPagedResult>)
+    | ((options: QueryFnOptions) => Promise<GetEmailBoxesResponse>)
     | reactQuery.SkipToken;
 };
 
@@ -865,22 +857,20 @@ export function getEmailBoxesQuery(
     };
 }
 
-export const useSuspenseGetEmailBoxes = <
-  TData = Schemas.EmailBoxDtoPagedResult,
->(
-        variables: GetEmailBoxesVariables,
-        options?: Omit<
+export const useSuspenseGetEmailBoxes = <TData = GetEmailBoxesResponse,>(
+    variables: GetEmailBoxesVariables,
+    options?: Omit<
     reactQuery.UseQueryOptions<
-      Schemas.EmailBoxDtoPagedResult,
+      GetEmailBoxesResponse,
       GetEmailBoxesError,
       TData
     >,
     'queryKey' | 'queryFn' | 'initialData'
   >,
-    ) => {
+) => {
     const { queryOptions, fetcherOptions } = useEmailTamerApiContext(options);
     return reactQuery.useSuspenseQuery<
-    Schemas.EmailBoxDtoPagedResult,
+    GetEmailBoxesResponse,
     GetEmailBoxesError,
     TData
   >({
@@ -890,11 +880,11 @@ export const useSuspenseGetEmailBoxes = <
   });
 };
 
-export const useGetEmailBoxes = <TData = Schemas.EmailBoxDtoPagedResult,>(
+export const useGetEmailBoxes = <TData = GetEmailBoxesResponse,>(
     variables: GetEmailBoxesVariables | reactQuery.SkipToken,
     options?: Omit<
     reactQuery.UseQueryOptions<
-      Schemas.EmailBoxDtoPagedResult,
+      GetEmailBoxesResponse,
       GetEmailBoxesError,
       TData
     >,
@@ -902,19 +892,15 @@ export const useGetEmailBoxes = <TData = Schemas.EmailBoxDtoPagedResult,>(
   >,
 ) => {
     const { queryOptions, fetcherOptions } = useEmailTamerApiContext(options);
-    return reactQuery.useQuery<
-    Schemas.EmailBoxDtoPagedResult,
-    GetEmailBoxesError,
-    TData
-  >({
-      ...getEmailBoxesQuery(
-          variables === reactQuery.skipToken
-              ? variables
-              : deepMerge(fetcherOptions, variables),
-      ),
-      ...options,
-      ...queryOptions,
-  });
+    return reactQuery.useQuery<GetEmailBoxesResponse, GetEmailBoxesError, TData>({
+        ...getEmailBoxesQuery(
+            variables === reactQuery.skipToken
+                ? variables
+                : deepMerge(fetcherOptions, variables),
+        ),
+        ...options,
+        ...queryOptions,
+    });
 };
 
 export type EditEmailBoxError = Fetcher.ErrorWrapper<undefined>;

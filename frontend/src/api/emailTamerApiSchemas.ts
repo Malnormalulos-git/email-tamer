@@ -81,22 +81,6 @@ export type EmailBoxDto = {
   boxName?: string | null;
 };
 
-export type EmailBoxDtoPagedResult = {
-  items?: EmailBoxDto[] | null;
-  /**
-   * @format int32
-   */
-  page?: number;
-  /**
-   * @format int32
-   */
-  size?: number;
-  /**
-   * @format int32
-   */
-  total?: number;
-};
-
 export type FolderDto = {
   /**
    * @format uuid
