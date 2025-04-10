@@ -107,7 +107,7 @@ const EmailBoxesSection = ({emailBoxesIds, setEmailBoxesIds}: EmailBoxesSectionP
                                         disableRipple
                                     />
                                 </ListItemIcon>
-                                <ListItemText id={box.id} primary={box.boxName}/>
+                                <ListItemText id={box.id} primary={box.boxName} sx={{wordWrap: 'break-word'}}/>
                             </ListItemButton>
                         </ListItem>
                     ))}

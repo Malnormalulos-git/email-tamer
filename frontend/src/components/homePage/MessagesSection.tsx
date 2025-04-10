@@ -10,7 +10,7 @@
     MenuItem,
     Select,
     InputLabel,
-    FormControl,
+    FormControl, Divider, SelectChangeEvent,
 } from '@mui/material';
 import {useGetMessagesThreads} from '@api/emailTamerApiComponents.ts';
 import ContentLoading from '@components/ContentLoading.tsx';
@@ -18,6 +18,7 @@ import useScopedContextTranslator from '@hooks/useScopedTranslator.ts';
 import {useState} from 'react';
 import {ArrowBackIos, ArrowForwardIos} from '@mui/icons-material';
 import * as React from 'react';
+import {formatDate} from '@utils/formatDateTime.ts';
 
 interface MessagesSectionProps {
     selectedFolderId: string | null;
@@ -64,8 +65,8 @@ const MessagesSection = ({selectedFolderId, emailBoxesIds}: MessagesSectionProps
         }
     };
 
-    const handlePageSizeChange = (event: React.ChangeEvent<{ value: unknown }>) => {
-        const newSize = parseInt(event.target.value as string, 10);
+    const handlePageSizeChange = (event: SelectChangeEvent<number>) => {
+        const newSize = event.target.value as number;
         setMessagesPerPage(newSize);
         setPage(1);
     };
@@ -89,7 +90,7 @@ const MessagesSection = ({selectedFolderId, emailBoxesIds}: MessagesSectionProps
                         onChange={handlePageChange}
                         size='small'
                         sx={{width: 70, mr: 1}}
-                        slotProps={{
+                        inputProps={{
                             min: 1,
                             max: totalPages
                         }}
@@ -135,25 +136,29 @@ const MessagesSection = ({selectedFolderId, emailBoxesIds}: MessagesSectionProps
                 ? <ContentLoading/>
                 : <List sx={{width: '100%'}}>
                     {messagesThreads?.items?.map((thread) => (
-                        <ListItem key={thread.threadId} disablePadding>
-                            <ListItemButton>
-                                <ListItemText
-                                    primary={thread.subject || t('noSubject')}
-                                    secondary={
-                                        <>
-                                            {thread.lastMessage?.participants?.join(', ')}
-                                            {', '}
-                                            {new Date(thread.startDate!).toLocaleDateString()}
-                                            {' - '}
-                                            {new Date(thread.endDate!).toLocaleDateString()}
-                                            <br/>
-                                            {thread.lastMessage?.textBody}
-                                            <br/>
-                                        </>
-                                    }
-                                />
-                            </ListItemButton>
-                        </ListItem>
+                        <React.Fragment key={thread.threadId}>
+                            <ListItem key={thread.threadId} disablePadding>
+                                <ListItemButton>
+                                    <ListItemText
+                                        primary={thread.subject || t('noSubject')}
+                                        secondary={
+                                            <>
+                                                {thread.lastMessage?.participants?.join(', ')}
+                                                {', '}
+                                                    {`${formatDate(thread.startDate!)}
+                                                  ${thread.startDate! != thread.endDate!
+                                                        ? ` - ${formatDate(thread.endDate!)}`
+                                                        : ''}`}
+                                                    <br/>
+                                                    {thread.lastMessage?.textBody}
+                                                    <br/>
+                                            </>
+                                        }
+                                    />
+                                </ListItemButton>
+                            </ListItem>
+                            <Divider/>
+                        </React.Fragment>
                     ))}
                     {(!messagesThreads?.items || messagesThreads.items.length === 0) && (
                         <ListItem>

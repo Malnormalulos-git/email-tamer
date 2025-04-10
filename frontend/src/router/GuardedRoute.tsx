@@ -7,7 +7,7 @@ import {UserRole} from '@api/emailTamerApiSchemas.ts';
 
 import useAuthStore from '@store/AuthStore.ts';
 
-import {HOME_ROUTE, LOGIN_ROUTE} from './routes';
+import {DEMO_ROUTE, LOGIN_ROUTE} from './routes';
 
 interface GuardedRouteProps {
     page: ReactElement;
@@ -23,12 +23,12 @@ export const GuardedRoute: FC<GuardedRouteProps> = (props) => {
         user: state.user,
     }));
 
-    const isUserAuthorized = !_.isEmpty(roles) && user ? roles.includes(user.role) : true;
+    const isUserAuthorized = !_.isEmpty(roles) && user ? roles?.includes(user.role) : true;
 
     const isAccessAllowed = isAuthenticated && isUserAuthorized;
 
     if (isAccessAllowed) return <>{page}</>;
     if (!isAuthenticated)
         return <Navigate to={`${LOGIN_ROUTE}?redirectTo=${location.pathname + location.search}`}/>;
-    if (isAuthenticated && !isUserAuthorized) return <Navigate to={HOME_ROUTE} replace/>;
+    if (isAuthenticated && !isUserAuthorized) return <Navigate to={DEMO_ROUTE} replace/>;
 };

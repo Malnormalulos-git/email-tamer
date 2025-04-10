@@ -2,7 +2,7 @@
 
 type ContentLoadingProps = CircularProgressProps
 
-const ContentLoading = ({size = 24, ...restProps} : ContentLoadingProps) => {
+const ContentLoading = ({size = 64, ...restProps}: ContentLoadingProps) => {
     return (
         <Box
             sx={{

@@ -3,7 +3,6 @@ import {z} from 'zod';
 import {zodResolver} from '@hookform/resolvers/zod';
 import {useNavigate} from 'react-router-dom';
 import {useGetCurrentUser, useLogin} from '@api/emailTamerApiComponents';
-import {CircularProgress} from '@mui/material';
 import {HOME_ROUTE, REGISTER_ROUTE, LOGIN_ROUTE} from '@router/routes';
 import {getAppControlActions} from '@store/AppControlStore.ts';
 import FormLayout from '@components/forms/FormLayout.tsx';
@@ -15,6 +14,7 @@ import useScopedContextTranslator from '@hooks/useScopedTranslator.ts';
 import {useEffect} from 'react';
 import {useUrlParam} from '@hooks/useUrlParam.ts';
 import useAuthStore from '@store/AuthStore.ts';
+import ContentLoading from '@components/ContentLoading.tsx';
 
 const createLoginSchema = (t: (key: string) => string) =>
     z.object({
@@ -106,7 +106,7 @@ const LoginPage = () => {
             <TextInputControl disabled={isLoading} label={t('email')} form={form} id='email'/>
             <PasswordInputControl disabled={isLoading} label={t('password')} form={form} id='password'/>
             <SubmitButton disabled={isLoading}>
-                {isLoading ? <CircularProgress size={24}/> : t('loginButton')}
+                {isLoading ? <ContentLoading size={24}/> : t('loginButton')}
             </SubmitButton>
             <NavigateButton route={REGISTER_ROUTE}>{t('toRegister')}</NavigateButton>
         </FormLayout>
