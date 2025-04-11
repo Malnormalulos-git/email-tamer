@@ -69,7 +69,32 @@
     },
     "emailBoxesSection": {
       "emailBoxes": "Email boxes",
-      "add": "Add"
+      "add": "Add",
+      "emailBoxForm": {
+        "addEmailBox": "Add Email Box",
+        "boxName": "Box Name",
+        "userName": "Username",
+        "email": "Email",
+        "password": "Password",
+        "emailDomainConnectionHost": "Connection Host",
+        "emailDomainConnectionPort": "Connection Port",
+        "authenticateByEmail": "Authenticate by Email",
+        "useSSl": "Use SSL",
+        "useDefaultImapPorts": "Use Default IMAP Ports",
+        "submitButton": "Add Email Box",
+        "success": "Email box added successfully",
+        "error": "Failed to add email box",
+        "validation": {
+          "boxNameRequired": "Box name is required",
+          "userNameRequired": "Username is required when not authenticating by email",
+          "emailRequired": "Email is required",
+          "invalidEmail": "Invalid email format",
+          "passwordRequired": "Password  is required",
+          "hostRequired": "Connection host is required",
+          "portRequired": "Connection port is required",
+          "invalidPort": "Port must be a positive number"
+        }
+      }
     },
     "messagesSection": {
       "messages": "Messages",

@@ -13,7 +13,10 @@ import {useGetEmailBoxes} from '@api/emailTamerApiComponents.ts';
 import ContentLoading from '@components/ContentLoading.tsx';
 import useScopedContextTranslator from '@hooks/useScopedTranslator.ts';
 import {Add, MoreVert, Refresh} from '@mui/icons-material';
-import {useEffect} from 'react';
+import {useEffect, useState} from 'react';
+import AddEmailBoxDialogForm from '@components/forms/emailBox/AddEmailBoxDialogForm.tsx';
+
+import {TranslationScopeProvider} from '../../i18n/contexts/TranslationScopeContext.tsx';
 
 interface EmailBoxesSectionProps {
     emailBoxesIds: string[];
@@ -21,8 +24,9 @@ interface EmailBoxesSectionProps {
 }
 
 const EmailBoxesSection = ({emailBoxesIds, setEmailBoxesIds}: EmailBoxesSectionProps) => {
-    const {data: emailBoxes, isLoading} = useGetEmailBoxes({});
+    const {data: emailBoxes, isLoading, refetch} = useGetEmailBoxes({});
     const {t} = useScopedContextTranslator();
+    const [openAddEmailBoxDialog, setOpenAddEmailBoxDialog] = useState(false);
 
     useEffect(() => {
         if (emailBoxes) {
@@ -53,6 +57,10 @@ const EmailBoxesSection = ({emailBoxesIds, setEmailBoxesIds}: EmailBoxesSectionP
         }
     };
 
+    const handleCloseAddEmailBoxDialog = () => {
+        setOpenAddEmailBoxDialog(false);
+    };
+
     return (
         <>
             <Typography variant='h6'>
@@ -77,7 +85,7 @@ const EmailBoxesSection = ({emailBoxesIds, setEmailBoxesIds}: EmailBoxesSectionP
                         variant='contained'
                         size='small'
                         startIcon={<Add/>}
-                        onClick={() => console.log('add box')}
+                        onClick={() => setOpenAddEmailBoxDialog(true)}
                     >
                         {t('add')}
                     </Button>
@@ -113,6 +121,13 @@ const EmailBoxesSection = ({emailBoxesIds, setEmailBoxesIds}: EmailBoxesSectionP
                     ))}
                 </List>
             )}
+            <TranslationScopeProvider scope='emailBoxForm'>
+                <AddEmailBoxDialogForm
+                    open={openAddEmailBoxDialog}
+                    onClose={handleCloseAddEmailBoxDialog}
+                    refetch={refetch}
+                />
+            </TranslationScopeProvider>
         </>
     );
 };
