@@ -145,13 +145,14 @@ const MessagesSection = ({selectedFolderId, emailBoxesIds}: MessagesSectionProps
                                             <>
                                                 {thread.lastMessage?.participants?.join(', ')}
                                                 {', '}
-                                                    {`${formatDate(thread.startDate!)}
+                                                {`${formatDate(thread.startDate!)}
                                                   ${thread.startDate! != thread.endDate!
-                                                        ? ` - ${formatDate(thread.endDate!)}`
-                                                        : ''}`}
-                                                    <br/>
-                                                    {thread.lastMessage?.textBody}
-                                                    <br/>
+                                                    ? ` - ${formatDate(thread.endDate!)}`
+                                                    : ''}`}
+                                                <br/>
+                                                {thread.lastMessage?.textBody}
+                                                {thread.lastMessage?.textBody?.length == 200 ? '...' : ''}
+                                                <br/>
                                             </>
                                         }
                                     />

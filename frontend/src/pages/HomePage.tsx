@@ -6,6 +6,8 @@ import EmailBoxesSection from '@components/homePage/EmailBoxesSection.tsx';
 
 import MessagesSection from '@components/homePage/MessagesSection.tsx';
 
+import {HEADER_HEIGHT} from '@utils/constants.ts';
+
 import {TranslationScopeProvider} from '../i18n/contexts/TranslationScopeContext.tsx';
 
 const HomePage = () => {
@@ -13,8 +15,18 @@ const HomePage = () => {
     const [selectedEmailBoxesIds, setSelectedEmailBoxesIds] = useState<string[]>([]);
 
     return (
-        <Grid2 container sx={{height: 'calc(100vh - 64px)', mt: 2}}>
-            <Grid2 size={2} sx={{borderRight: '1px solid #e0e0e0', p: 2}}>
+        <Grid2 container>
+            <Grid2
+                size={2}
+                sx={{
+                    borderRight: '1px solid #e0e0e0',
+                    p: 2,
+                    position: 'sticky',
+                    top: HEADER_HEIGHT,
+                    height: `calc(100vh - ${HEADER_HEIGHT}px)`,
+                    overflowY: 'auto',
+                }}
+            >
                 <TranslationScopeProvider scope='foldersSection'>
                     <FoldersSection
                         selectedFolderId={selectedFolderId}
@@ -23,7 +35,13 @@ const HomePage = () => {
                 </TranslationScopeProvider>
             </Grid2>
 
-            <Grid2 size={6} sx={{p: 2, overflowY: 'auto'}}>
+            <Grid2
+                size={7}
+                sx={{
+                    p: 2,
+                    overflowY: 'auto'
+                }}
+            >
                 <TranslationScopeProvider scope='messagesSection'>
                     <MessagesSection
                         selectedFolderId={selectedFolderId}
@@ -32,7 +50,17 @@ const HomePage = () => {
                 </TranslationScopeProvider>
             </Grid2>
 
-            <Grid2 size={4} sx={{borderLeft: '1px solid #e0e0e0', p: 2}}>
+            <Grid2
+                size={3}
+                sx={{
+                    borderLeft: '1px solid #e0e0e0',
+                    p: 2,
+                    position: 'sticky',
+                    top: HEADER_HEIGHT,
+                    height: `calc(100vh - ${HEADER_HEIGHT}px)`,
+                    overflowY: 'auto',
+                }}
+            >
                 <TranslationScopeProvider scope='emailBoxesSection'>
                     <EmailBoxesSection
                         emailBoxesIds={selectedEmailBoxesIds}

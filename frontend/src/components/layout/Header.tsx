@@ -20,6 +20,8 @@ import useScopedContextTranslator from '@hooks/useScopedTranslator.ts';
 
 import useAuthStore from '@store/AuthStore.ts';
 
+import {HEADER_HEIGHT} from '@utils/constants.ts';
+
 import i18n from '../../i18n/i18n.ts';
 
 const Header = () => {
@@ -45,12 +47,13 @@ const Header = () => {
     };
 
     return (
-        <AppBar position='static'>
+        <AppBar position='sticky'>
             <Toolbar
                 sx={{
                     display: 'flex',
                     flexDirection: 'row',
                     alignItems: 'center',
+                    height: HEADER_HEIGHT,
                 }}
             >
                 <Stack
@@ -66,9 +69,12 @@ const Header = () => {
                 <Select
                     value={i18n.language}
                     onChange={handleLanguageChange}
-                    variant='standard'
+                    variant='outlined'
                     size='small'
                     sx={{
+                        '& fieldset': {
+                            border: 'none',
+                        },
                         mr: 2,
                         color: 'inherit'
                     }}
