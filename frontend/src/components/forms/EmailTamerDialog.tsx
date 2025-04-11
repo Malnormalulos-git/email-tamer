@@ -1,4 +1,4 @@
-﻿import {Dialog, DialogActions, DialogContent, DialogTitle, IconButton} from '@mui/material';
+﻿import {Dialog, DialogActions, DialogContent, DialogProps, DialogTitle, IconButton} from '@mui/material';
 import {Close} from '@mui/icons-material';
 import * as React from 'react';
 
@@ -9,11 +9,17 @@ interface EmailTamerDialogProps extends DialogProps {
 }
 
 const EmailTamerDialog = ({title, onClose, children, dialogActions, open, ...otherProps}: EmailTamerDialogProps) => {
+    const handleClose = (event: React.MouseEvent<HTMLButtonElement>) => {
+        if (onClose) {
+            onClose(event, 'backdropClick');
+        }
+    };
+
     return (
-        <Dialog onClose={onClose} open={open} {...otherProps}>
+        <Dialog scroll='body' onClose={onClose} open={open} {...otherProps}>
             {title && <DialogTitle sx={{m: 0, p: 2}}>{title}</DialogTitle>}
             <IconButton
-                onClick={onClose}
+                onClick={handleClose}
                 sx={(theme) => ({
                     position: 'absolute',
                     right: 8,

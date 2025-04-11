@@ -86,7 +86,7 @@ const RegisterPage = () => {
             title={t('title')}
             onSubmit={form.handleSubmit(onSubmit)}
         >
-            <TextInputControl disabled={isPending} label={t('email')} form={form} id='email'/>
+            <TextInputControl autoFocus type='email' disabled={isPending} label={t('email')} form={form} id='email'/>
             <PasswordInputControl
                 disabled={isPending}
                 showPassword={showPassword}

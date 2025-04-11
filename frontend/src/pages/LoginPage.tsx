@@ -29,10 +29,11 @@ type LoginFormData = z.infer<ReturnType<typeof createLoginSchema>>;
 
 const LoginPage = () => {
     const {t} = useScopedContextTranslator();
-    const {setUser, setToken, isAuthenticated} = useAuthStore((state) => ({
+    const {setUser, setToken, isAuthenticated, logout} = useAuthStore((state) => ({
         setUser: state.setUser,
         setToken: state.setToken,
         isAuthenticated: state.isAuthenticated,
+        logout: state.logout,
     }));
     const {setErrorNotification, setSuccessNotification} = getAppControlActions();
 
@@ -55,6 +56,7 @@ const LoginPage = () => {
                 setSuccessNotification(t('success'));
             },
             onError: () => {
+                logout();
                 setErrorNotification(t('error'));
             },
             retry: false,
@@ -103,7 +105,7 @@ const LoginPage = () => {
 
     return (
         <FormLayout title={t('title')} onSubmit={form.handleSubmit(onSubmit)}>
-            <TextInputControl disabled={isLoading} label={t('email')} form={form} id='email'/>
+            <TextInputControl autoFocus type='email' disabled={isLoading} label={t('email')} form={form} id='email'/>
             <PasswordInputControl disabled={isLoading} label={t('password')} form={form} id='password'/>
             <SubmitButton disabled={isLoading}>
                 {isLoading ? <ContentLoading size={24}/> : t('loginButton')}
