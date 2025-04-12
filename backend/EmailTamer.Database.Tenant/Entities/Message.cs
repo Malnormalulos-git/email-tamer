@@ -37,6 +37,8 @@ public class Message : IEntity
     
     public List<Folder> Folders { get; set; } = [];  
     
+    public bool HasHtmlBody { get; set; }
+    
     public class Configurator : EntityConfiguration<Message>
     {
         public override void Configure(EntityTypeBuilder<Message> builder)
