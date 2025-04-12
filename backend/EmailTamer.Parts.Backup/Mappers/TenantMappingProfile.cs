@@ -26,6 +26,7 @@ public class MessageMappingProfile : MappableProfile, IMappable
             .EasyMember(x => x.From,src => 
                 src.From.OfType<MailboxAddress>()
                     .Select(ToEmailAddress))
+            .EasyMember(x => x.HasHtmlBody, y => y.HtmlBody != null)
             .IgnoreMember(x => x.EmailBoxes)
             .IgnoreMember(x => x.Folders)
             .IgnoreMember(x => x.AttachmentFilesNames)

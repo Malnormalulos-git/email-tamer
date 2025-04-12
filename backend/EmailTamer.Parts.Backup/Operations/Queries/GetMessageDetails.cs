@@ -45,15 +45,18 @@ internal class GetMessageDetailsQueryHandler(
         }
         
         var result = mapper.Map<MessageDetailsDto>(message);
-        
-        var messageBodyKey = MessageBodyKey.Create(message);
-        var htmlBody = await filesRepository.GetBodyAsync(messageBodyKey, cancellationToken);
 
-        if (htmlBody.Content.Length > 0)
+        if (message.HasHtmlBody)
         {
-            using (var reader = new StreamReader(htmlBody.Content))
+            var messageBodyKey = MessageBodyKey.Create(message);
+            var htmlBody = await filesRepository.GetBodyAsync(messageBodyKey, cancellationToken);
+
+            if (htmlBody.Content.Length > 0)
             {
-                result.HtmlBody = await reader.ReadToEndAsync(cancellationToken);
+                using (var reader = new StreamReader(htmlBody.Content))
+                {
+                    result.HtmlBody = await reader.ReadToEndAsync(cancellationToken);
+                }
             }
         }
         
