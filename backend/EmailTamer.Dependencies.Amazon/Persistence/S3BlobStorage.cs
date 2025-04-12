@@ -41,9 +41,9 @@ internal sealed class S3BlobStorage(IAmazonS3 s3Client) : IBlobStorage
 		}, key, storageName, cancellationToken);
 
 	public Task DeleteAsync(string key, string storageName, CancellationToken cancellationToken = default)
-		=> ExecuteInErrorBoundaryAsync((s, k, token) => s3Client.DeleteObjectAsync(s, k, token),
-			storageName,
+		=> ExecuteInErrorBoundaryAsync(s3Client.DeleteObjectAsync,
 			key,
+			storageName,
 			cancellationToken);
 
 	private static async Task<T> ExecuteInErrorBoundaryAsync<T>(Func<string, string, CancellationToken, Task<T>> func,

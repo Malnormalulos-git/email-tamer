@@ -2,7 +2,7 @@ using EmailTamer.Database.Tenant.Entities;
 
 namespace EmailTamer.Parts.Sync.Persistence;
 
-internal sealed class MessageAttachmentKey : TenantRepositoryKey
+public sealed class MessageAttachmentKey : TenantRepositoryKey
 {
 	public string FileName { get; init; } = null!;
 

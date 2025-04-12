@@ -39,6 +39,11 @@ internal sealed class TenantRepository(
 		}
 	}
 
+	public Task DeleteBodyAsync(MessageBodyKey key, CancellationToken cancellationToken = default)
+	{
+		return blobStorage.DeleteAsync(key, CurrentBucketName(), cancellationToken);
+	}
+
 	public Task SaveAttachmentAsync(MessageAttachmentKey key,
 									MessageAttachment attachment,
 									CancellationToken cancellationToken = default)
@@ -68,6 +73,11 @@ internal sealed class TenantRepository(
 		{
 			throw new MessageAttachmentNotFoundException(key, e);
 		}
+	}
+
+	public Task DeleteAttachmentAsync(MessageAttachmentKey key, CancellationToken cancellationToken = default)
+	{
+		return blobStorage.DeleteAsync(key, CurrentBucketName(), cancellationToken);
 	}
 
 	private static string GetFileName(string key)

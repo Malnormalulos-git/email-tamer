@@ -2,7 +2,7 @@ using EmailTamer.Database.Tenant.Entities;
 
 namespace EmailTamer.Parts.Sync.Persistence;
 
-internal sealed class MessageBodyKey : TenantRepositoryKey
+public sealed class MessageBodyKey : TenantRepositoryKey
 {
 
     public static implicit operator string(MessageBodyKey key) => key.ToString();

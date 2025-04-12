@@ -1,6 +1,6 @@
 namespace EmailTamer.Parts.Sync.Persistence;
 
-internal abstract class TenantRepositoryKey
+public abstract class TenantRepositoryKey
 {
 	public string MessageId { get; init; } = null!;
 
