@@ -40,14 +40,14 @@ export type EditEmailBoxDto = {
   boxName?: string | null;
   userName?: string | null;
   email?: string | null;
-  authenticateByEmail?: boolean;
+  authenticateByEmail?: boolean | null;
   password?: string | null;
   emailDomainConnectionHost?: string | null;
   /**
    * @format int32
    */
-  emailDomainConnectionPort?: number;
-  useSSl?: boolean;
+  emailDomainConnectionPort?: number | null;
+  useSSl?: boolean | null;
 };
 
 export type EmailAddress = {
