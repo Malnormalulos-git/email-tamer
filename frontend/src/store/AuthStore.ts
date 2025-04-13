@@ -4,6 +4,8 @@ import {z} from 'zod';
 
 import {UserDto, UserRole} from '@api/emailTamerApiSchemas.ts';
 
+import isTokenExpired from './isTokenExpired';
+
 const userRolesSchema = z.nativeEnum(UserRole);
 
 const userSchema = z.object({
@@ -24,18 +26,19 @@ type AuthState = {
 };
 
 const initialToken = localStorage.getItem('token') || null;
+const isInitialTokenValid = initialToken && !isTokenExpired(initialToken);
 
 const useAuthStore = create<AuthState>()(
     devtools(
         (set) => ({
             user: null,
-            token: initialToken,
-            isAuthenticated: !!initialToken,
+            token: isInitialTokenValid ? initialToken : null,
+            isAuthenticated: !!isInitialTokenValid,
             setUser: (userDto: UserDto | null) => {
                 const user = userDto ? userSchema.parse(userDto) : null;
                 set((state) => ({
                     user,
-                    isAuthenticated: !!user && !!state.token,
+                    isAuthenticated: !!user && !!state.token && !isTokenExpired(state.token),
                 }));
             },
             setToken: (token: string | null) => {
@@ -46,7 +49,7 @@ const useAuthStore = create<AuthState>()(
                 }
                 set((state) => ({
                     token,
-                    isAuthenticated: !!state.user && !!token,
+                    isAuthenticated: !!state.user && !!token && !isTokenExpired(token),
                 }));
             },
             logout: () => {
