@@ -13,15 +13,17 @@ const TranslationScopeContext = createContext<TranslationScopeContextProps>({
 export function TranslationScopeProvider({
     scope,
     children,
+    rewriteScope = false
 }: {
     scope: string;
     children: ReactNode;
+    rewriteScope?: boolean;
 }) {
     const parentScope = useContext(TranslationScopeContext).scope;
     const fullScope = parentScope ? joinTranslatorKey(parentScope, scope) : scope;
 
     return (
-        <TranslationScopeContext.Provider value={{ scope: fullScope }}>
+        <TranslationScopeContext.Provider value={{ scope: rewriteScope ? scope : fullScope }}>
             {children}
         </TranslationScopeContext.Provider>
     );

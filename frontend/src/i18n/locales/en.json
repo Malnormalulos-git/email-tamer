@@ -74,6 +74,7 @@
       "notSynced": "Not synced",
       "emailBoxForm": {
         "addEmailBox": "Add Email Box",
+        "editEmailBox": "Edit Email Box",
         "boxName": "Box Name",
         "userName": "Username",
         "email": "Email",
@@ -83,9 +84,12 @@
         "authenticateByEmail": "Authenticate by Email",
         "useSSl": "Use SSL",
         "useDefaultImapPorts": "Use Default IMAP Ports",
-        "submitButton": "Add Email Box",
-        "success": "Email box added successfully",
-        "error": "Failed to add email box",
+        "addSubmitButton": "Add Email Box",
+        "editSubmitButton": "Edit Email Box",
+        "addSuccess": "Email box added successfully",
+        "editSuccess": "Email box changed successfully",
+        "addError": "Failed to add email box",
+        "editError": "Failed to edit email box",
         "validation": {
           "boxNameRequired": "Box name is required",
           "userNameRequired": "Username is required when not authenticating by email",
@@ -95,6 +99,17 @@
           "hostRequired": "Connection host is required",
           "portRequired": "Connection port is required",
           "invalidPort": "Port must be a positive number"
+        }
+      },
+      "moreMenu": {
+        "edit": "Edit",
+        "deleteItem": {
+          "delete": "Delete",
+          "confirmDelete": "Confirm Deletion",
+          "confirmDeleteMessage": "Are you sure you want to delete the email box '{0}'?",
+          "cancel": "Cancel",
+          "success": "Email box deleted successfully",
+          "error": "Failed to delete email box"
         }
       }
     },

@@ -14,9 +14,9 @@ import ContentLoading from '@components/ContentLoading.tsx';
 import useScopedContextTranslator from '@hooks/useScopedTranslator.ts';
 import {Add, Refresh} from '@mui/icons-material';
 import {useEffect, useState} from 'react';
-import AddEmailBoxDialogForm from '@components/forms/emailBox/AddEmailBoxDialogForm.tsx';
+import AddEmailBoxDialogForm from '@components/emailBox/AddEmailBoxDialogForm.tsx';
 
-import EmailBoxMoreMenu from '@components/forms/emailBox/EmailBoxMoreMenu.tsx';
+import EmailBoxMoreMenu from '@components/emailBox/moreMenu/EmailBoxMoreMenu.tsx';
 
 import Tooltip from '@mui/material/Tooltip';
 
@@ -106,9 +106,7 @@ const EmailBoxesSection = ({emailBoxesIds, setEmailBoxesIds}: EmailBoxesSectionP
                             key={box.id}
                             component='li'
                             secondaryAction={
-                                <IconButton edge='end' onClick={() => console.log('more')}>
-                                    <MoreVert/>
-                                </IconButton>
+                                <EmailBoxMoreMenu box={box} refetch={refetch} edge='end'/>
                             }
                             disablePadding
                         >
@@ -123,7 +121,7 @@ const EmailBoxesSection = ({emailBoxesIds, setEmailBoxesIds}: EmailBoxesSectionP
                                 </ListItemIcon>
                                 <Tooltip
                                     title={box.lastSyncAt !== null
-                                        ? t('lastSyncAt') + formatDateTime(box.lastSyncAt)
+                                        ? t('lastSyncAt') + formatDateTime(box.lastSyncAt!)
                                         : t('notSynced')}
                                     followCursor
                                 >

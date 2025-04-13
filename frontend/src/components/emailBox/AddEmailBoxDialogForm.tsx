@@ -10,7 +10,7 @@ import PasswordInputControl from '@components/forms/controls/PasswordInputContro
 import SubmitButton from '@components/forms/controls/SubmitButton.tsx';
 import ContentLoading from '@components/ContentLoading.tsx';
 import useScopedContextTranslator from '@hooks/useScopedTranslator.ts';
-import {useCreateEmailBox} from '@api/emailTamerApiComponents';
+import {useCreateEmailBox} from '@api/emailTamerApiComponents.ts';
 import {getAppControlActions} from '@store/AppControlStore.ts';
 
 interface AddEmailBoxDialogFormProps {
@@ -87,13 +87,13 @@ const AddEmailBoxDialogForm = ({open, onClose, refetch}: AddEmailBoxDialogFormPr
 
     const {mutate: createEmailBox, isPending} = useCreateEmailBox({
         onSuccess: () => {
-            setSuccessNotification(t('success'));
+            setSuccessNotification(t('addSuccess'));
             form.reset();
             refetch();
             onClose();
         },
         onError: () => {
-            setErrorNotification(t('error'));
+            setErrorNotification(t('addError'));
         },
     });
 
@@ -187,7 +187,7 @@ const AddEmailBoxDialogForm = ({open, onClose, refetch}: AddEmailBoxDialogFormPr
                     <Typography>{t('useDefaultImapPorts')}</Typography>
                 </Box>
                 <SubmitButton disabled={isPending}>
-                    {isPending ? <ContentLoading size={24}/> : t('submitButton')}
+                    {isPending ? <ContentLoading size={24}/> : t('addSubmitButton')}
                 </SubmitButton>
             </form>
         </EmailTamerDialog>
