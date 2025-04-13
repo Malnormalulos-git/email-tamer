@@ -70,6 +70,8 @@
     "emailBoxesSection": {
       "emailBoxes": "Email boxes",
       "add": "Add",
+      "lastSyncAt": "Last sync at: ",
+      "notSynced": "Not synced",
       "emailBoxForm": {
         "addEmailBox": "Add Email Box",
         "boxName": "Box Name",

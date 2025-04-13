@@ -12,9 +12,15 @@
 import {useGetEmailBoxes} from '@api/emailTamerApiComponents.ts';
 import ContentLoading from '@components/ContentLoading.tsx';
 import useScopedContextTranslator from '@hooks/useScopedTranslator.ts';
-import {Add, MoreVert, Refresh} from '@mui/icons-material';
+import {Add, Refresh} from '@mui/icons-material';
 import {useEffect, useState} from 'react';
 import AddEmailBoxDialogForm from '@components/forms/emailBox/AddEmailBoxDialogForm.tsx';
+
+import EmailBoxMoreMenu from '@components/forms/emailBox/EmailBoxMoreMenu.tsx';
+
+import Tooltip from '@mui/material/Tooltip';
+
+import {formatDateTime} from '@utils/formatDateTime.ts';
 
 import {TranslationScopeProvider} from '../../i18n/contexts/TranslationScopeContext.tsx';
 
@@ -115,7 +121,14 @@ const EmailBoxesSection = ({emailBoxesIds, setEmailBoxesIds}: EmailBoxesSectionP
                                         disableRipple
                                     />
                                 </ListItemIcon>
-                                <ListItemText id={box.id} primary={box.boxName} sx={{wordWrap: 'break-word'}}/>
+                                <Tooltip
+                                    title={box.lastSyncAt !== null
+                                        ? t('lastSyncAt') + formatDateTime(box.lastSyncAt)
+                                        : t('notSynced')}
+                                    followCursor
+                                >
+                                    <ListItemText id={box.id} primary={box.boxName} sx={{wordWrap: 'break-word'}}/>
+                                </Tooltip>
                             </ListItemButton>
                         </ListItem>
                     ))}

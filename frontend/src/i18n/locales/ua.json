@@ -70,6 +70,8 @@
     "emailBoxesSection": {
       "emailBoxes": "Поштові скриньки",
       "add": "Додати",
+      "lastSyncAt": "Синхронізовано о: ",
+      "notSynced": "Не синхронізовано",
       "emailBoxForm": {
         "addEmailBox": "Додати поштову скриньку",
         "boxName": "Назва скриньки",
