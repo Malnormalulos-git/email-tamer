@@ -25,9 +25,12 @@ public sealed record EditEmailBox(EditEmailBoxDto EditEmailBoxDto) : IRequest<IA
 public class EditEmailBoxCommandHandler([FromKeyedServices(nameof(TenantDbContext))] IEmailTamerRepository repository)
     : IRequestHandler<EditEmailBox, IActionResult>
 {
-    private record struct PropertyUpdate<T>(T CurrentValue, T NewValue)
+    private record struct PropertyUpdate<T>(T CurrentValue, T? NewValue)
     {
-        public bool HasChanged => !Equals(CurrentValue, NewValue);
+        public bool HasChanged(string propertyName) =>
+            propertyName is nameof(Database.Tenant.Entities.EmailBox.BoxName) or nameof(Database.Tenant.Entities.EmailBox.UserName)
+                ? !Equals(CurrentValue, NewValue) 
+                : NewValue != null && !Equals(CurrentValue, NewValue); 
     }
     
     public async Task<IActionResult> Handle(EditEmailBox command, CancellationToken cancellationToken)
@@ -54,7 +57,9 @@ public class EditEmailBoxCommandHandler([FromKeyedServices(nameof(TenantDbContex
             { nameof(emailBox.UseSSl), new(emailBox.UseSSl, command.EditEmailBoxDto.UseSSl) }
         };
 
-        var changedProperties = updates.Where(u => u.Value.HasChanged).ToList();
+        var changedProperties = updates
+            .Where(u => u.Value.HasChanged(u.Key))
+            .ToList();
         
         if (changedProperties.Count == 0)
         {

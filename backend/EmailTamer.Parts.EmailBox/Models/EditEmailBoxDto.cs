@@ -14,17 +14,17 @@ public sealed class EditEmailBoxDto : IMappable, IInbound
 
     public string? UserName { get; set; }
     
-    public string Email { get; set; } = null!;
+    public string? Email { get; set; }
 
-    public bool AuthenticateByEmail { get; set; } = true;
+    public bool? AuthenticateByEmail { get; set; }
     
-    public string Password { get; set; } = null!;
+    public string? Password { get; set; }
     
-    public string EmailDomainConnectionHost { get; set; } = null!;
+    public string? EmailDomainConnectionHost { get; set; }
 
-    public int EmailDomainConnectionPort { get; set; } = 993;
+    public int? EmailDomainConnectionPort { get; set; }
 
-    public bool UseSSl { get; set; } = true;
+    public bool? UseSSl { get; set; }
 
     public class EditEmailBoxDtoValidator : AbstractValidator<EditEmailBoxDto>
     {
@@ -37,14 +37,14 @@ public sealed class EditEmailBoxDto : IMappable, IInbound
                 .MaximumLength(30);
             RuleFor(x => x.Email)
                 .NotEmpty()
-                .NotNull()
+                .When(x => x.EmailDomainConnectionHost != null)!
                 .Email();
             RuleFor(x => x.Password)
-                .NotNull()
-                .NotEmpty();
+                .NotEmpty()
+                .When(x => x.Password != null);
             RuleFor(x => x.EmailDomainConnectionHost)
                 .NotNull()
-                .NotEmpty();
+                .When(x => x.Password != null);
         }
     }
 
