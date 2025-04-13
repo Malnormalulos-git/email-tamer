@@ -79,6 +79,10 @@ export type EmailBoxDto = {
    */
   id?: string;
   boxName?: string | null;
+  /**
+   * @format date-time
+   */
+  lastSyncAt?: string | null;
 };
 
 export type FolderDto = {
