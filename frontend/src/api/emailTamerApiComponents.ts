@@ -271,7 +271,7 @@ export type GetMessagesThreadsQueryParams = {
    * @format uuid
    */
   folderId?: string;
-  emailBoxesIds?: string[];
+  emailBoxesIds?: string;
   /**
    * @format int32
    */

@@ -30,6 +30,8 @@ const MessagesSection = ({selectedFolderId, emailBoxesIds}: MessagesSectionProps
     const [messagesPerPage, setMessagesPerPage] = useState(20);
     const pageSizeOptions = [10, 20, 50, 100];
 
+    const isAnyEmaiBoxSelected = emailBoxesIds.length > 0;
+
     const {data: messagesThreads, isLoading} = useGetMessagesThreads({
         queryParams: {
             folderId: selectedFolderId ?? undefined,
@@ -37,7 +39,11 @@ const MessagesSection = ({selectedFolderId, emailBoxesIds}: MessagesSectionProps
             page,
             size: messagesPerPage,
         },
-    });
+    },
+    {
+        enabled: isAnyEmaiBoxSelected,
+    }
+    );
 
     const {t} = useScopedContextTranslator();
 
@@ -76,97 +82,99 @@ const MessagesSection = ({selectedFolderId, emailBoxesIds}: MessagesSectionProps
             <Typography variant='h6' gutterBottom>
                 {t('messages')}
             </Typography>
-            <Box
-                display='flex'
-                justifyContent='flex-end'
-                alignItems='center'
-                sx={{mb: 2}}
-            >
-                <Box display='flex' alignItems='center'>
-                    <TextField
-                        label={t('page')}
-                        type='number'
-                        value={page}
-                        onChange={handlePageChange}
-                        size='small'
-                        sx={{width: 70, mr: 1}}
-                        inputProps={{
-                            min: 1,
-                            max: totalPages
-                        }}
-                    />
-                </Box>
-                <Box display='flex' alignItems='center'>
-                    <FormControl size='small' sx={{mr: 2}}>
-                        <InputLabel>{t('messagesPerPage')}</InputLabel>
-                        <Select
-                            value={messagesPerPage}
-                            onChange={handlePageSizeChange}
-                            label={t('messagesPerPage')}
-                        >
-                            {pageSizeOptions.map((size) => (
-                                <MenuItem key={size} value={size}>
-                                    {size}
-                                </MenuItem>
-                            ))}
-                        </Select>
-                    </FormControl>
-                </Box>
-                <Box display='flex' alignItems='center'>
-                    <Typography variant='body2' sx={{mr: 1}}>
-                        {`${startMessage}-${endMessage} of ${totalMessages}`}
-                    </Typography>
-                    <IconButton
-                        onClick={handlePreviousPage}
-                        disabled={page === 1}
-                        size='small'
+            {isAnyEmaiBoxSelected && messagesThreads?.items.length > 0 
+                ? <>
+                    <Box
+                        display='flex'
+                        justifyContent='flex-end'
+                        alignItems='center'
+                        sx={{mb: 2}}
                     >
-                        <ArrowBackIos fontSize='small'/>
-                    </IconButton>
-                    <IconButton
-                        onClick={handleNextPage}
-                        disabled={page === totalPages || totalPages === 0}
-                        size='small'
-                    >
-                        <ArrowForwardIos fontSize='small'/>
-                    </IconButton>
-                </Box>
-            </Box>
-            {isLoading
-                ? <ContentLoading/>
-                : <List sx={{width: '100%'}}>
-                    {messagesThreads?.items?.map((thread) => (
-                        <React.Fragment key={thread.threadId}>
-                            <ListItem key={thread.threadId} disablePadding>
-                                <ListItemButton>
-                                    <ListItemText
-                                        primary={thread.subject || t('noSubject')}
-                                        secondary={
-                                            <>
-                                                {thread.lastMessage?.participants?.join(', ')}
-                                                {', '}
-                                                {`${formatDate(thread.startDate!)}
+                        <Box display='flex' alignItems='center'>
+                            <TextField
+                                label={t('page')}
+                                type='number'
+                                value={page}
+                                onChange={handlePageChange}
+                                size='small'
+                                sx={{width: 70, mr: 1}}
+                                inputProps={{
+                                    min: 1,
+                                    max: totalPages
+                                }}
+                            />
+                        </Box>
+                        <Box display='flex' alignItems='center'>
+                            <FormControl size='small' sx={{mr: 2}}>
+                                <InputLabel>{t('messagesPerPage')}</InputLabel>
+                                <Select
+                                    value={messagesPerPage}
+                                    onChange={handlePageSizeChange}
+                                    label={t('messagesPerPage')}
+                                >
+                                    {pageSizeOptions.map((size) => (
+                                        <MenuItem key={size} value={size}>
+                                            {size}
+                                        </MenuItem>
+                                    ))}
+                                </Select>
+                            </FormControl>
+                        </Box>
+                        <Box display='flex' alignItems='center'>
+                            <Typography variant='body2' sx={{mr: 1}}>
+                                {`${startMessage}-${endMessage} of ${totalMessages}`}
+                            </Typography>
+                            <IconButton
+                                onClick={handlePreviousPage}
+                                disabled={page === 1}
+                                size='small'
+                            >
+                                <ArrowBackIos fontSize='small'/>
+                            </IconButton>
+                            <IconButton
+                                onClick={handleNextPage}
+                                disabled={page === totalPages || totalPages === 0}
+                                size='small'
+                            >
+                                <ArrowForwardIos fontSize='small'/>
+                            </IconButton>
+                        </Box>
+                    </Box>
+                    {isLoading
+                        ? <ContentLoading/>
+                        : <List sx={{width: '100%'}}>
+                            {messagesThreads?.items?.map((thread) => (
+                                <React.Fragment key={thread.threadId}>
+                                    <ListItem key={thread.threadId} disablePadding>
+                                        <ListItemButton>
+                                            <ListItemText
+                                                primary={thread.subject || t('noSubject')}
+                                                secondary={
+                                                    <>
+                                                        {thread.lastMessage?.participants?.join(', ')}
+                                                        {', '}
+                                                        {`${formatDate(thread.startDate!)}
                                                   ${thread.startDate! != thread.endDate!
-                                                    ? ` - ${formatDate(thread.endDate!)}`
-                                                    : ''}`}
-                                                <br/>
-                                                {thread.lastMessage?.textBody}
-                                                {thread.lastMessage?.textBody?.length == 200 ? '...' : ''}
-                                                <br/>
-                                            </>
-                                        }
-                                    />
-                                </ListItemButton>
-                            </ListItem>
-                            <Divider/>
-                        </React.Fragment>
-                    ))}
-                    {(!messagesThreads?.items || messagesThreads.items.length === 0) && (
-                        <ListItem>
-                            <ListItemText primary={t('noMessagesFound')}/>
-                        </ListItem>
-                    )}
-                </List>
+                                                            ? ` - ${formatDate(thread.endDate!)}`
+                                                            : ''}`}
+                                                        <br/>
+                                                        {thread.lastMessage?.textBody}
+                                                        {thread.lastMessage?.textBody?.length == 200 ? '...' : ''}
+                                                        <br/>
+                                                    </>
+                                                }
+                                            />
+                                        </ListItemButton>
+                                    </ListItem>
+                                    <Divider/>
+                                </React.Fragment>
+                            ))}
+                        </List>
+                    }
+                </>
+                : <Typography variant='p'>
+                    {t('noMessagesFound')}
+                </Typography>
             }
         </>
     );
