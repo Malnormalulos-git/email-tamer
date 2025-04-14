@@ -16,7 +16,13 @@ const EmailTamerDialog = ({title, onClose, children, dialogActions, open, ...oth
     };
 
     return (
-        <Dialog scroll='body' onClose={onClose} open={open} {...otherProps}>
+        <Dialog
+            scroll='body'
+            transitionDuration={{ enter: 400, exit: 300 }}
+            onClose={onClose}
+            open={open}
+            {...otherProps}
+        >
             {title && <DialogTitle sx={{m: 0, p: 2}}>{title}</DialogTitle>}
             <IconButton
                 onClick={handleClose}

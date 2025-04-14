@@ -117,79 +117,85 @@ const AddEmailBoxDialogForm = ({open, onClose, refetch}: AddEmailBoxDialogFormPr
             title={t('addEmailBox')}
             open={open}
             onClose={onClose}
-        >
-            <form onSubmit={form.handleSubmit(onSubmit)}>
-                <TextInputControl
-                    autoFocus
-                    disabled={isPending}
-                    label={t('boxName')}
-                    form={form}
-                    id='boxName'
-                />
-                {!authenticateByEmail && (
-                    <TextInputControl
-                        disabled={isPending}
-                        label={t('userName')}
-                        form={form}
-                        id='userName'
-                    />
-                )}
-                <TextInputControl
-                    disabled={isPending}
-                    label={t('email')}
-                    type='email'
-                    form={form}
-                    id='email'
-                />
-                <PasswordInputControl
-                    disabled={isPending}
-                    showPassword={showPassword}
-                    handleClickShowPassword={handleClickShowPassword}
-                    label={t('password')}
-                    form={form}
-                    id='password'
-                />
-                <TextInputControl
-                    disabled={isPending}
-                    label={t('emailDomainConnectionHost')}
-                    form={form}
-                    id='emailDomainConnectionHost'
-                />
-                <TextInputControl
-                    disabled={isPending || useDefaultImapPorts}
-                    label={t('emailDomainConnectionPort')}
-                    type='number'
-                    form={form}
-                    id='emailDomainConnectionPort'
-                />
-                <Box sx={{display: 'flex', alignItems: 'center', mt: 2}}>
-                    <Checkbox
-                        disabled={isPending}
-                        {...form.register('authenticateByEmail')}
-                        checked={authenticateByEmail}
-                    />
-                    <Typography>{t('authenticateByEmail')}</Typography>
-                </Box>
-                <Box sx={{display: 'flex', alignItems: 'center', mt: 1}}>
-                    <Checkbox
-                        disabled={isPending}
-                        {...form.register('useSSl')}
-                        checked={useSSl}
-                    />
-                    <Typography>{t('useSSl')}</Typography>
-                </Box>
-                <Box sx={{display: 'flex', alignItems: 'center', mt: 1}}>
-                    <Checkbox
-                        disabled={isPending}
-                        {...form.register('useDefaultImapPorts')}
-                        checked={useDefaultImapPorts}
-                    />
-                    <Typography>{t('useDefaultImapPorts')}</Typography>
-                </Box>
+            slotProps={{
+                paper: {
+                    component: 'form',
+                    onSubmit: form.handleSubmit(onSubmit),
+                },
+            }}
+            dialogActions={
                 <SubmitButton disabled={isPending}>
                     {isPending ? <ContentLoading size={24}/> : t('addSubmitButton')}
                 </SubmitButton>
-            </form>
+            }
+        >
+            <TextInputControl
+                autoFocus
+                disabled={isPending}
+                label={t('boxName')}
+                form={form}
+                id='boxName'
+            />
+            {!authenticateByEmail && (
+                <TextInputControl
+                    disabled={isPending}
+                    label={t('userName')}
+                    form={form}
+                    id='userName'
+                />
+            )}
+            <TextInputControl
+                disabled={isPending}
+                label={t('email')}
+                type='email'
+                form={form}
+                id='email'
+            />
+            <PasswordInputControl
+                disabled={isPending}
+                showPassword={showPassword}
+                handleClickShowPassword={handleClickShowPassword}
+                label={t('password')}
+                form={form}
+                id='password'
+            />
+            <TextInputControl
+                disabled={isPending}
+                label={t('emailDomainConnectionHost')}
+                form={form}
+                id='emailDomainConnectionHost'
+            />
+            <TextInputControl
+                disabled={isPending || useDefaultImapPorts}
+                label={t('emailDomainConnectionPort')}
+                type='number'
+                form={form}
+                id='emailDomainConnectionPort'
+            />
+            <Box sx={{display: 'flex', alignItems: 'center', mt: 2}}>
+                <Checkbox
+                    disabled={isPending}
+                    {...form.register('authenticateByEmail')}
+                    checked={authenticateByEmail}
+                />
+                <Typography>{t('authenticateByEmail')}</Typography>
+            </Box>
+            <Box sx={{display: 'flex', alignItems: 'center', mt: 1}}>
+                <Checkbox
+                    disabled={isPending}
+                    {...form.register('useSSl')}
+                    checked={useSSl}
+                />
+                <Typography>{t('useSSl')}</Typography>
+            </Box>
+            <Box sx={{display: 'flex', alignItems: 'center', mt: 1}}>
+                <Checkbox
+                    disabled={isPending}
+                    {...form.register('useDefaultImapPorts')}
+                    checked={useDefaultImapPorts}
+                />
+                <Typography>{t('useDefaultImapPorts')}</Typography>
+            </Box>
         </EmailTamerDialog>
     );
 };

@@ -137,11 +137,22 @@ const EditEmailBoxDialogForm = ({open, onClose, refetch, boxId}: EditEmailBoxDia
             title={t('editEmailBox')}
             open={open}
             onClose={onClose}
+            slotProps={{
+                paper: {
+                    component: 'form',
+                    onSubmit: form.handleSubmit(onSubmit),
+                },
+            }}
+            dialogActions={
+                <SubmitButton disabled={isPending || !haveFormValuesChanged}>
+                    {isPending ? <ContentLoading size={24}/> : t('editSubmitButton')}
+                </SubmitButton>
+            }
         >
             {isFetching ? (
                 <ContentLoading/>
             ) : (
-                <form onSubmit={form.handleSubmit(onSubmit)}>
+                <>
                     <TextInputControl
                         autoFocus
                         disabled={isPending}
@@ -209,10 +220,7 @@ const EditEmailBoxDialogForm = ({open, onClose, refetch, boxId}: EditEmailBoxDia
                         />
                         <Typography>{t('useDefaultImapPorts')}</Typography>
                     </Box>
-                    <SubmitButton disabled={isPending || !haveFormValuesChanged}>
-                        {isPending ? <ContentLoading size={24}/> : t('editSubmitButton')}
-                    </SubmitButton>
-                </form>
+                </>
             )}
         </EmailTamerDialog>
     );
