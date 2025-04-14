@@ -1,5 +1,6 @@
 using AutoMapper;
 using EmailTamer.Core.Extensions;
+using EmailTamer.Database.Extensions;
 using EmailTamer.Database.Persistence;
 using EmailTamer.Database.Tenant;
 using EmailTamer.Database.Tenant.Entities;
@@ -14,7 +15,13 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace EmailTamer.Parts.Sync.Operations.Queries;
 
-public sealed record GetMessagesThreads(Guid? FolderId, Guid[]? EmailBoxesIds, int Page, int Size)
+public sealed record GetMessagesThreads(
+    Guid? FolderId,
+    Guid[]? EmailBoxesIds,
+    string? SearchTerm,
+    int Page,
+    int Size,
+    bool IsByDescending = true)
     : IRequest<IActionResult>, IPagedRequest
 {
     public class Validator : AbstractValidator<GetMessagesThreads>
@@ -37,6 +44,7 @@ public class GetMessagesThreadsQueryHandler(
     {
         var filerByFolder = query.FolderId != null;
         var filerByEmailBoxes = query.EmailBoxesIds != null && query.EmailBoxesIds.Length > 0;
+        var searchTerm = query.SearchTerm?.ToUpper();
 
         if (filerByFolder)
         {
@@ -44,7 +52,7 @@ public class GetMessagesThreadsQueryHandler(
                     r.Set<Folder>()
                         .FirstOrDefaultAsync(f => f.Id == query.FolderId, ct),
                 cancellationToken);
-            if (folder == null) 
+            if (folder == null)
                 return new NotFoundResult();
         }
 
@@ -63,6 +71,17 @@ public class GetMessagesThreadsQueryHandler(
             var baseQuery = r.Set<Message>()
                 .WhereIf(filerByFolder, msg => msg.Folders.Any(f => f.Id == query.FolderId))
                 .WhereIf(filerByEmailBoxes, msg => msg.EmailBoxes.Any(eb => query.EmailBoxesIds!.Contains(eb.Id)))
+                .WhereIf(searchTerm != null, msg =>
+                    msg.Subject != null && msg.Subject.ToUpper().Contains(searchTerm) ||
+                    msg.TextBody != null && msg.TextBody.ToUpper().Contains(searchTerm)/* ||
+                    msg.To.Any(a =>
+                        a.Name != null && a.Name.ToUpper().Contains(searchTerm) ||
+                        a.Address.ToUpper().Contains(searchTerm)) ||
+                    msg.From.Any(a =>
+                        a.Name != null && a.Name.ToUpper().Contains(searchTerm) ||
+                        a.Address.ToUpper().Contains(searchTerm)) ||
+                    msg.AttachmentFilesNames.Any(fn =>
+                        fn.ToUpper().Contains(searchTerm))*/)
                 .Where(m => m.ThreadId != null)
                 .AsNoTracking();
 
@@ -87,16 +106,16 @@ public class GetMessagesThreadsQueryHandler(
                     FirstMessage = baseQuery
                         .FirstOrDefault(m => m.ThreadId == threadId && firstMessagesQuery.Contains(m.Id)),
                     Length = baseQuery.Count(m => m.ThreadId == threadId)
-                })
-                .OrderByDescending(t => t.LastMessage.Date);
+                });
+                
+            var orderedThreadQuery = query.IsByDescending  
+                ? threadQuery.OrderByDescending(t => t.LastMessage.Date)
+                : threadQuery.OrderBy(t => t.LastMessage.Date);
 
-            var totalCount = await threadIdsQuery.CountAsync(ct);
-            var pagedThreads = await threadQuery
-                .Skip((query.Page - 1) * query.Size)
-                .Take(query.Size)
-                .ToListAsync(ct);
+            var pagedThreads = await orderedThreadQuery
+                .ToPagedResultAsync(query, ct);
 
-            var result = pagedThreads.Select(t => new MessagesThreadShortDto
+            var result = pagedThreads.Items.Select(t => new MessagesThreadShortDto
             {
                 ThreadId = t.ThreadId,
                 LastMessage = mapper.Map<MessageDto>(t.LastMessage),
@@ -106,7 +125,7 @@ public class GetMessagesThreadsQueryHandler(
                 Length = t.Length
             }).ToList();
 
-            return new PagedResult<MessagesThreadShortDto>(result, query.Page, query.Size, totalCount);
+            return new PagedResult<MessagesThreadShortDto>(result, pagedThreads.Page, pagedThreads.Size, pagedThreads.Total);
         }, cancellationToken);
 
         return new OkObjectResult(threadsPagedResult);

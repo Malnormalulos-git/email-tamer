@@ -58,11 +58,10 @@ public class BackupsController(IMediator mediator) : Controller
     public Task<IActionResult> GetMessagesThreads(
         [FromQuery(Name = "folderId")] Guid? folderId,
         [FromQuery(Name = "emailBoxesIds")] string? emailBoxesIds,
-        // TODO: [FromQuery(Name = "searchTerm")] string? searchTerm,
-        // TODO: [FromQuery(Name = "sortBy")] string sortBy = "byDate",
-        // TODO: [FromQuery(Name = "isByDescending")] bool isByDescending = true,
+        [FromQuery(Name = "searchTerm")] string? searchTerm,
         [FromQuery(Name = "page")] int page,
         [FromQuery(Name = "size")] int size,
+        [FromQuery(Name = "isByDescending")] bool isByDescending = true,
         CancellationToken ct = default)
     {
         Guid[]? parsedEmailBoxesIds = null;
@@ -73,7 +72,7 @@ public class BackupsController(IMediator mediator) : Controller
                 .ToArray();
         }
         
-        return mediator.Send(new GetMessagesThreads(folderId, parsedEmailBoxesIds, page, size), ct);
+        return mediator.Send(new GetMessagesThreads(folderId, parsedEmailBoxesIds, searchTerm, page, size, isByDescending), ct);
     }
 
     [HttpGet("folders", Name = nameof(GetFolders))]
