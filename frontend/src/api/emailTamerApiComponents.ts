@@ -272,6 +272,7 @@ export type GetMessagesThreadsQueryParams = {
    */
   folderId?: string;
   emailBoxesIds?: string;
+  searchTerm?: string;
   /**
    * @format int32
    */
@@ -280,6 +281,10 @@ export type GetMessagesThreadsQueryParams = {
    * @format int32
    */
   size?: number;
+  /**
+   * @default true
+   */
+  isByDescending?: boolean;
 };
 
 export type GetMessagesThreadsError = Fetcher.ErrorWrapper<undefined>;
