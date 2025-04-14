@@ -51,7 +51,9 @@ public class GetMessagesThreadsQueryHandler(
         if (filerByEmailBoxes)
         {
             var emailBoxes = await repository.ReadAsync((r, ct) =>
-                    r.Set<EmailBox>().Where(eb => query.EmailBoxesIds!.Contains(eb.Id)).ToListAsync(ct),
+                    r.Set<EmailBox>()
+                        .Where(eb => query.EmailBoxesIds!.Contains(eb.Id))
+                        .ToListAsync(ct),
                 cancellationToken);
             if (emailBoxes.Count == 0) return new NotFoundResult();
         }
@@ -81,12 +83,8 @@ public class GetMessagesThreadsQueryHandler(
                 {
                     ThreadId = threadId,
                     LastMessage = baseQuery
-                        .Include(x => x.Folders)
-                        .Include(x => x.EmailBoxes)
                         .FirstOrDefault(m => m.ThreadId == threadId && lastMessagesQuery.Contains(m.Id)),
                     FirstMessage = baseQuery
-                        .Include(x => x.Folders)
-                        .Include(x => x.EmailBoxes)
                         .FirstOrDefault(m => m.ThreadId == threadId && firstMessagesQuery.Contains(m.Id)),
                     Length = baseQuery.Count(m => m.ThreadId == threadId)
                 })

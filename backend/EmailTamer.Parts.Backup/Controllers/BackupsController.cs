@@ -57,14 +57,24 @@ public class BackupsController(IMediator mediator) : Controller
     [ProducesResponseType(404)]
     public Task<IActionResult> GetMessagesThreads(
         [FromQuery(Name = "folderId")] Guid? folderId,
-        [FromQuery(Name = "emailBoxesIds")] Guid[]? emailBoxesIds,
+        [FromQuery(Name = "emailBoxesIds")] string? emailBoxesIds,
         // TODO: [FromQuery(Name = "searchTerm")] string? searchTerm,
         // TODO: [FromQuery(Name = "sortBy")] string sortBy = "byDate",
         // TODO: [FromQuery(Name = "isByDescending")] bool isByDescending = true,
         [FromQuery(Name = "page")] int page,
         [FromQuery(Name = "size")] int size,
-        CancellationToken ct = default) =>
-        mediator.Send(new GetMessagesThreads(folderId, emailBoxesIds, page, size), ct);
+        CancellationToken ct = default)
+    {
+        Guid[]? parsedEmailBoxesIds = null;
+        if (!string.IsNullOrEmpty(emailBoxesIds))
+        {
+            parsedEmailBoxesIds = emailBoxesIds.Split(',')
+                .Select(id => Guid.Parse(id.Trim()))
+                .ToArray();
+        }
+        
+        return mediator.Send(new GetMessagesThreads(folderId, parsedEmailBoxesIds, page, size), ct);
+    }
 
     [HttpGet("folders", Name = nameof(GetFolders))]
     [Authorize(Policy = AuthPolicy.User)]
