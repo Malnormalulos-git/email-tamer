@@ -49,7 +49,7 @@ const DeleteEmailBoxMenuItem = ({box, refetch, onCloseMenu}: DeleteEmailBoxMenuI
             <MenuItem onClick={handleOpenConfirmDialog}>
                 {t('delete')}
             </MenuItem>
-            <EmailTamerDialog
+            {openConfirmDialog && <EmailTamerDialog
                 title={t('confirmDelete')}
                 open={openConfirmDialog}
                 onClose={handleCloseConfirmDialog}
@@ -80,7 +80,7 @@ const DeleteEmailBoxMenuItem = ({box, refetch, onCloseMenu}: DeleteEmailBoxMenuI
                 <Typography>
                     {formatString(t('confirmDeleteMessage'), box.boxName!)}
                 </Typography>
-            </EmailTamerDialog>
+            </EmailTamerDialog>}
         </>
     );
 };

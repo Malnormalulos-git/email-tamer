@@ -132,13 +132,13 @@ const EmailBoxesSection = ({emailBoxesIds, setEmailBoxesIds}: EmailBoxesSectionP
                     ))}
                 </List>
             )}
-            <TranslationScopeProvider scope='emailBoxForm'>
+            {openAddEmailBoxDialog && <TranslationScopeProvider scope='emailBoxForm'>
                 <AddEmailBoxDialogForm
                     open={openAddEmailBoxDialog}
                     onClose={handleCloseAddEmailBoxDialog}
                     refetch={refetch}
                 />
-            </TranslationScopeProvider>
+            </TranslationScopeProvider>}
         </>
     );
 };

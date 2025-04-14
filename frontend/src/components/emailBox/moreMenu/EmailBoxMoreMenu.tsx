@@ -31,7 +31,7 @@ const EmailBoxMoreMenu = ({box, refetch, ...restProps}: EmailBoxMoreMenuProps) =
             <IconButton onClick={handleClick} {...restProps}>
                 <MoreVert/>
             </IconButton>
-            <Menu
+            {open && <Menu
                 anchorEl={anchorEl}
                 open={open}
                 onClose={handleClose}
@@ -50,7 +50,7 @@ const EmailBoxMoreMenu = ({box, refetch, ...restProps}: EmailBoxMoreMenuProps) =
                         />
                     </TranslationScopeProvider>
                 </TranslationScopeProvider>
-            </Menu>
+            </Menu>}
         </>
     );
 };
