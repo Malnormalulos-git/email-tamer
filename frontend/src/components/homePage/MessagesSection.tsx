@@ -15,8 +15,8 @@
 import {useGetMessagesThreads} from '@api/emailTamerApiComponents.ts';
 import ContentLoading from '@components/ContentLoading.tsx';
 import useScopedContextTranslator from '@hooks/useScopedTranslator.ts';
-import {useState} from 'react';
-import {ArrowBackIos, ArrowForwardIos} from '@mui/icons-material';
+import {useReducer, useState} from 'react';
+import {ArrowBackIos, ArrowForwardIos, ExpandMore} from '@mui/icons-material';
 import * as React from 'react';
 import {formatDate} from '@utils/formatDateTime.ts';
 
@@ -29,15 +29,20 @@ const MessagesSection = ({selectedFolderId, emailBoxesIds}: MessagesSectionProps
     const [page, setPage] = useState(1);
     const [messagesPerPage, setMessagesPerPage] = useState(20);
     const pageSizeOptions = [10, 20, 50, 100];
+    const [isByDescending, toggleIsByDescending] = useReducer((state) => {
+        setPage(1);
+        return !state;
+    }, true);
 
     const isAnyEmaiBoxSelected = emailBoxesIds.length > 0;
 
     const {data: messagesThreads, isLoading} = useGetMessagesThreads({
         queryParams: {
             folderId: selectedFolderId ?? undefined,
-            emailBoxesIds: emailBoxesIds.length > 0 ? emailBoxesIds : undefined,
+            emailBoxesIds: emailBoxesIds.length > 0 ? emailBoxesIds.join(', ') : undefined,
             page,
             size: messagesPerPage,
+            isByDescending: isByDescending,
         },
     },
     {
@@ -82,7 +87,7 @@ const MessagesSection = ({selectedFolderId, emailBoxesIds}: MessagesSectionProps
             <Typography variant='h6' gutterBottom>
                 {t('messages')}
             </Typography>
-            {isAnyEmaiBoxSelected && messagesThreads?.items.length > 0 
+            {isAnyEmaiBoxSelected && messagesThreads?.items?.length !== undefined && messagesThreads?.items?.length > 0
                 ? <>
                     <Box
                         display='flex'
@@ -90,6 +95,14 @@ const MessagesSection = ({selectedFolderId, emailBoxesIds}: MessagesSectionProps
                         alignItems='center'
                         sx={{mb: 2}}
                     >
+                        <IconButton onClick={toggleIsByDescending}>
+                            <ExpandMore
+                                sx={{
+                                    transform: isByDescending ? 'rotate(0deg)' : 'rotate(180deg)',
+                                    transition: 'transform 0.3s ease',
+                                }}
+                            />
+                        </IconButton>
                         <Box display='flex' alignItems='center'>
                             <TextField
                                 label={t('page')}
@@ -172,7 +185,7 @@ const MessagesSection = ({selectedFolderId, emailBoxesIds}: MessagesSectionProps
                         </List>
                     }
                 </>
-                : <Typography variant='p'>
+                : <Typography variant='body1'>
                     {t('noMessagesFound')}
                 </Typography>
             }
