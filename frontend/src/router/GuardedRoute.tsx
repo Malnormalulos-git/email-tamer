@@ -7,6 +7,8 @@ import {UserRole} from '@api/emailTamerApiSchemas.ts';
 
 import useAuthStore from '@store/AuthStore.ts';
 
+import {REDIRECT_TO_PARAM} from '@router/urlParams.ts';
+
 import {DEMO_ROUTE, LOGIN_ROUTE} from './routes';
 
 interface GuardedRouteProps {
@@ -29,6 +31,6 @@ export const GuardedRoute: FC<GuardedRouteProps> = (props) => {
 
     if (isAccessAllowed) return <>{page}</>;
     if (!isAuthenticated)
-        return <Navigate to={`${LOGIN_ROUTE}?redirectTo=${location.pathname + location.search}`}/>;
+        return <Navigate to={`${LOGIN_ROUTE}?${REDIRECT_TO_PARAM}=${location.pathname + location.search}`}/>;
     if (isAuthenticated && !isUserAuthorized) return <Navigate to={DEMO_ROUTE} replace/>;
 };

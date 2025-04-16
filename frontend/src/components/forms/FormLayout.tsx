@@ -12,7 +12,7 @@ const FormLayout = ({children, title, onSubmit, ...restProps}: FormLayoutProps) 
             sx={{
                 maxWidth: 400,
                 mx: 'auto',
-                mt: 10,
+                my: 10,
                 p: 3,
                 pb: 0,
                 borderRadius: 2,

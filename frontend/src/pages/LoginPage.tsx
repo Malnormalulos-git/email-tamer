@@ -15,6 +15,7 @@ import {useEffect} from 'react';
 import {useUrlParam} from '@hooks/useUrlParam.ts';
 import useAuthStore from '@store/AuthStore.ts';
 import ContentLoading from '@components/ContentLoading.tsx';
+import {REDIRECT_TO_PARAM} from "@router/urlParams.ts";
 
 const createLoginSchema = (t: (key: string) => string) =>
     z.object({
@@ -38,7 +39,7 @@ const LoginPage = () => {
     const {setErrorNotification, setSuccessNotification} = getAppControlActions();
 
     const navigate = useNavigate();
-    const redirectToValue = useUrlParam('redirectTo');
+    const redirectToValue = useUrlParam(REDIRECT_TO_PARAM);
     const redirect = () => {
         const target = redirectToValue && redirectToValue !== LOGIN_ROUTE ? redirectToValue : HOME_ROUTE;
         navigate(target, {replace: true});

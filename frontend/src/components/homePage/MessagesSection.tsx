@@ -19,6 +19,8 @@ import {useReducer, useState} from 'react';
 import {ArrowBackIos, ArrowForwardIos, ExpandMore} from '@mui/icons-material';
 import * as React from 'react';
 import {formatDate} from '@utils/formatDateTime.ts';
+import {SEARCH_PARAM} from '@router/urlParams.ts';
+import { useUrlParam } from '@hooks/useUrlParam';
 
 interface MessagesSectionProps {
     selectedFolderId: string | null;
@@ -34,6 +36,8 @@ const MessagesSection = ({selectedFolderId, emailBoxesIds}: MessagesSectionProps
         return !state;
     }, true);
 
+    const searchTerm = useUrlParam(SEARCH_PARAM);
+    
     const isAnyEmaiBoxSelected = emailBoxesIds.length > 0;
 
     const {data: messagesThreads, isLoading} = useGetMessagesThreads({
@@ -43,6 +47,7 @@ const MessagesSection = ({selectedFolderId, emailBoxesIds}: MessagesSectionProps
             page,
             size: messagesPerPage,
             isByDescending: isByDescending,
+            searchTerm: searchTerm ?? undefined,
         },
     },
     {

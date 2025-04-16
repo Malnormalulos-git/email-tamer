@@ -3,7 +3,8 @@
     "title": "EmailTamer",
     "login": "Login",
     "register": "Register",
-    "logout": "Logout"
+    "logout": "Logout",
+    "searchBarPlaceholder": "Search..."
   },
   "notFoundPage": {
     "header": "Page does not exist",

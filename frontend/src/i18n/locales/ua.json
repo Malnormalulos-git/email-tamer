@@ -3,7 +3,8 @@
     "title": "EmailTamer",
     "login": "Увійти",
     "register": "Зареєструватися",
-    "logout": "Вийти"
+    "logout": "Вийти",
+    "searchBarPlaceholder": "Пошук..."
   },
   "notFoundPage": {
     "header": "Сторінка не існує",
