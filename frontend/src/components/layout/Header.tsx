@@ -65,17 +65,6 @@ const Header = () => {
                         direction='row'
                         alignItems='center'
                         spacing={0.5}
-                        sx={{display: {xs: 'flex', md: 'none'}}}
-                    >
-                        <LanguageSelector/>
-                        <AuthControls/>
-                    </Stack>
-
-                    <Stack
-                        direction='row'
-                        alignItems='center'
-                        spacing={1}
-                        sx={{display: {xs: 'none', md: 'flex'}}}
                     >
                         <LanguageSelector/>
                         <AuthControls/>
