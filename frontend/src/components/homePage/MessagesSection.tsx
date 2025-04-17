@@ -139,8 +139,11 @@ const MessagesSection = ({selectedFolderId, emailBoxesIds}: MessagesSectionProps
                             </FormControl>
                         </Box>
                         <Box display='flex' alignItems='center'>
-                            <Typography variant='body2' sx={{mr: 1}}>
+                            <Typography variant='body2' sx={{mr: 1, display: {xs: 'none', sm: 'block'}}}>
                                 {`${startMessage}-${endMessage} of ${totalMessages}`}
+                            </Typography>
+                            <Typography variant='body2' sx={{mr: 1, display: {xs: 'block', sm: 'none'}}}>
+                                {`${page}/${totalPages}`}
                             </Typography>
                             <IconButton
                                 onClick={handlePreviousPage}

@@ -15,7 +15,7 @@ import {useEffect} from 'react';
 import {useUrlParam} from '@hooks/useUrlParam.ts';
 import useAuthStore from '@store/AuthStore.ts';
 import ContentLoading from '@components/ContentLoading.tsx';
-import {REDIRECT_TO_PARAM} from "@router/urlParams.ts";
+import {REDIRECT_TO_PARAM} from '@router/urlParams.ts';
 
 const createLoginSchema = (t: (key: string) => string) =>
     z.object({

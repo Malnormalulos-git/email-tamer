@@ -77,7 +77,7 @@ const DeleteEmailBoxMenuItem = ({box, refetch, onCloseMenu}: DeleteEmailBoxMenuI
                     </>
                 }
             >
-                <Typography>
+                <Typography sx={{wordWrap: 'break-word'}}>
                     {formatString(t('confirmDeleteMessage'), box.boxName!)}
                 </Typography>
             </EmailTamerDialog>}

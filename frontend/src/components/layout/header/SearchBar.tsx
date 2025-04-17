@@ -37,10 +37,10 @@ const SearchBar = () => {
                 p: 0.5,
                 display: 'flex',
                 alignItems: 'center',
-                width: {xs: '100%', sm: '250px', md: '500px', lg: '800px'},
+                width: {xs: '100%', sm: '220px', md: '500px', lg: '800px'},
                 borderRadius: 3,
                 transition: 'width 0.3s ease',
-                '&:focus-within': {width: {sm: '300px', md: '550px', lg: '850px'}},
+                '&:focus-within': {width: {sm: '250px', md: '550px', lg: '850px'}},
                 boxShadow: '0 1px 2px rgba(0,0,0,0.1)',
             }}
         >

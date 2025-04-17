@@ -22,7 +22,6 @@ const SearchToggle = () => {
                     bgcolor: 'background.paper',
                     boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
                     display: searchOpen ? 'block' : 'none',
-                    zIndex: 1000,
                 }}
             >
                 <SearchBar/>
