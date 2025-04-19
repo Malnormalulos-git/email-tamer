@@ -397,10 +397,14 @@ export const useGetMessagesThreads = <
   });
 };
 
+export type GetMessageDetailsQueryParams = {
+  messageId?: string;
+};
+
 export type GetMessageDetailsError = Fetcher.ErrorWrapper<undefined>;
 
 export type GetMessageDetailsVariables = {
-  body?: Schemas.GetMessageDetailsDto;
+  queryParams?: GetMessageDetailsQueryParams;
 } & EmailTamerApiContext['fetcherOptions'];
 
 export const fetchGetMessageDetails = (
@@ -410,9 +414,9 @@ export const fetchGetMessageDetails = (
     emailTamerApiFetch<
     Schemas.MessageDetailsDto,
     GetMessageDetailsError,
-    Schemas.GetMessageDetailsDto,
+    undefined,
     {},
-    {},
+    GetMessageDetailsQueryParams,
     {}
   >({ url: '/api/backup/message', method: 'get', ...variables, signal });
 
@@ -499,10 +503,15 @@ export const useGetMessageDetails = <TData = Schemas.MessageDetailsDto,>(
   });
 };
 
+export type GetMessageAttachmentQueryParams = {
+  messageId?: string;
+  fileName?: string;
+};
+
 export type GetMessageAttachmentError = Fetcher.ErrorWrapper<undefined>;
 
 export type GetMessageAttachmentVariables = {
-  body?: Schemas.GetMessageAttachmentDto;
+  queryParams?: GetMessageAttachmentQueryParams;
 } & EmailTamerApiContext['fetcherOptions'];
 
 export const fetchGetMessageAttachment = (
@@ -512,9 +521,9 @@ export const fetchGetMessageAttachment = (
     emailTamerApiFetch<
     Blob,
     GetMessageAttachmentError,
-    Schemas.GetMessageAttachmentDto,
+    undefined,
     {},
-    {},
+    GetMessageAttachmentQueryParams,
     {}
   >({ url: '/api/backup/attachment', method: 'get', ...variables, signal });
 
@@ -583,10 +592,14 @@ export const useGetMessageAttachment = <TData = Blob,>(
     });
 };
 
+export type GetMessagesThreadQueryParams = {
+  messageId?: string;
+};
+
 export type GetMessagesThreadError = Fetcher.ErrorWrapper<undefined>;
 
 export type GetMessagesThreadVariables = {
-  body?: Schemas.GetMessageDetailsDto;
+  queryParams?: GetMessagesThreadQueryParams;
 } & EmailTamerApiContext['fetcherOptions'];
 
 export const fetchGetMessagesThread = (
@@ -596,9 +609,9 @@ export const fetchGetMessagesThread = (
     emailTamerApiFetch<
     Schemas.MessagesThreadDto,
     GetMessagesThreadError,
-    Schemas.GetMessageDetailsDto,
+    undefined,
     {},
-    {},
+    GetMessagesThreadQueryParams,
     {}
   >({ url: '/api/backup/thread', method: 'get', ...variables, signal });
 

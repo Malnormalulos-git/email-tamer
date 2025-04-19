@@ -93,15 +93,6 @@ export type FolderDto = {
   name?: string | null;
 };
 
-export type GetMessageAttachmentDto = {
-  messageId?: string | null;
-  fileName?: string | null;
-};
-
-export type GetMessageDetailsDto = {
-  messageId?: string | null;
-};
-
 export type LogInDto = {
   email?: string | null;
   password?: string | null;
