@@ -16,9 +16,11 @@ import {UserRole} from '@api/emailTamerApiSchemas.ts';
 
 import {GuardedRoute} from '@router/GuardedRoute.tsx';
 
+import ThreadPage from '@pages/ThreadPage.tsx';
+
 import {TranslationScopeProvider} from '../i18n/contexts/TranslationScopeContext.tsx';
 
-import {DEMO_ROUTE, HOME_ROUTE, LOGIN_ROUTE, NOT_FOUND_ROUTE, REGISTER_ROUTE} from './routes';
+import {DEMO_ROUTE, HOME_ROUTE, LOGIN_ROUTE, NOT_FOUND_ROUTE, REGISTER_ROUTE, threadRoute} from './routes';
 
 const allowedRoles: UserRole[] = [UserRole.User, UserRole.Admin];
 
@@ -42,6 +44,11 @@ export const router = createBrowserRouter(
                 <TranslationScopeProvider scope='registerPage'>
                     <RegisterPage/>
                 </TranslationScopeProvider>}/>
+            <Route path={threadRoute.template} element={
+                <GuardedRoute page={
+                    <TranslationScopeProvider scope='threadPage'>
+                        <ThreadPage/>
+                    </TranslationScopeProvider>} roles={allowedRoles}/>}/>
             <Route path={NOT_FOUND_ROUTE} element={
                 <TranslationScopeProvider scope='notFoundPage'>
                     <NotFoundPage/>

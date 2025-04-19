@@ -18,9 +18,11 @@ import useScopedContextTranslator from '@hooks/useScopedTranslator.ts';
 import {useReducer, useState} from 'react';
 import {ArrowBackIos, ArrowForwardIos, ExpandMore} from '@mui/icons-material';
 import * as React from 'react';
-import {formatDate} from '@utils/formatDateTime.ts';
+import {formatDateTime} from '@utils/formatDateTime.ts';
 import {SEARCH_PARAM} from '@router/urlParams.ts';
 import {useUrlParam} from '@hooks/useUrlParam';
+import {THREAD_ID_PARAM_NAME, threadRoute} from '@router/routes.ts';
+import {useNavigate} from 'react-router-dom';
 
 interface MessagesSectionProps {
     selectedFolderId: string | null;
@@ -37,6 +39,8 @@ const MessagesSection = ({selectedFolderId, emailBoxesIds}: MessagesSectionProps
     }, true);
 
     const searchTerm = useUrlParam(SEARCH_PARAM);
+
+    const navigate = useNavigate();
 
     const isAnyEmaiBoxSelected = emailBoxesIds.length > 0;
 
@@ -167,16 +171,21 @@ const MessagesSection = ({selectedFolderId, emailBoxesIds}: MessagesSectionProps
                             {messagesThreads?.items?.map((thread) => (
                                 <React.Fragment key={thread.threadId}>
                                     <ListItem key={thread.threadId} disablePadding>
-                                        <ListItemButton>
+                                        <ListItemButton onClick={() => 
+                                            navigate(threadRoute.getLink({
+                                                routeParams: {
+                                                    [THREAD_ID_PARAM_NAME]: encodeURIComponent(thread.threadId!)
+                                                }
+                                            }))}>
                                             <ListItemText
                                                 primary={thread.subject || t('noSubject')}
                                                 secondary={
                                                     <>
                                                         {thread.lastMessage?.participants?.join(', ')}
                                                         {', '}
-                                                        {`${formatDate(thread.startDate!)}
+                                                        {`${formatDateTime(thread.startDate!)}
                                                   ${thread.startDate! != thread.endDate!
-                                                            ? ` - ${formatDate(thread.endDate!)}`
+                                                            ? ` - ${formatDateTime(thread.endDate!)}`
                                                             : ''}`}
                                                         <br/>
                                                         {thread.lastMessage?.textBody}
