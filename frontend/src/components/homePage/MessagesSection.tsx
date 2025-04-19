@@ -178,7 +178,8 @@ const MessagesSection = ({selectedFolderId, emailBoxesIds}: MessagesSectionProps
                                                 }
                                             }))}>
                                             <ListItemText
-                                                primary={thread.subject || t('noSubject')}
+                                                primary={`${thread.subject || t('noSubject')}
+                                                ${thread.length > 1 ? ` (${thread.length})` : ''}`}
                                                 secondary={
                                                     <>
                                                         {thread.lastMessage?.participants?.join(', ')}
