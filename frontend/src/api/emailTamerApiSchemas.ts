@@ -133,6 +133,7 @@ export type MessageDto = {
 export type MessagesThreadDto = {
   threadId?: string | null;
   messages?: MessageDto[] | null;
+  subject?: string | null;
   lastMessage?: MessageDetailsDto;
 };
 
