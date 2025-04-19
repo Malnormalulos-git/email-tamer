@@ -30,26 +30,28 @@ public class BackupsController(IMediator mediator) : Controller
     [Authorize(Policy = AuthPolicy.User)]
     [ProducesResponseType(typeof(MessageDetailsDto), 200)]
     [ProducesResponseType(404)]
-    public Task<IActionResult> GetMessageDetails([FromBody] GetMessageDetailsDto messageDetailsDto,
+    public Task<IActionResult> GetMessageDetails([FromQuery] string messageId,
         CancellationToken ct = default) =>
-        mediator.Send(new GetMessageDetails(messageDetailsDto), ct);
+        mediator.Send(new GetMessageDetails(messageId), ct);
 
     [HttpGet("attachment", Name = nameof(GetMessageAttachment))]
     [Authorize(Policy = AuthPolicy.User)]
     [ProducesResponseType(typeof(FileContentResult), 200)]
     [ProducesResponseType(404)]
-    public Task<IActionResult> GetMessageAttachment([FromBody] GetMessageAttachmentDto messageAttachmentDto,
+    public Task<IActionResult> GetMessageAttachment(
+        [FromQuery] string messageId,
+        [FromQuery] string fileName,
         CancellationToken ct = default) =>
-        mediator.Send(new GetMessageAttachment(messageAttachmentDto), ct);
+        mediator.Send(new GetMessageAttachment(messageId, fileName), ct);
 
     [HttpGet("thread", Name = nameof(GetMessagesThread))]
     [Authorize(Policy = AuthPolicy.User)]
     [ProducesResponseType(typeof(MessagesThreadDto), 200)]
     [ProducesResponseType(404)]
     public Task<IActionResult> GetMessagesThread(
-        [FromBody] GetMessageDetailsDto messageDetailsDto, 
+        [FromQuery] string messageId, 
         CancellationToken ct = default) =>
-        mediator.Send(new GetMessagesThread(messageDetailsDto), ct);
+        mediator.Send(new GetMessagesThread(messageId), ct);
 
     [HttpGet(Name = nameof(GetMessagesThreads))]
     [Authorize(Policy = AuthPolicy.User)]

@@ -1,3 +1,4 @@
+using System.Web;
 using AutoMapper;
 using EmailTamer.Database.Persistence;
 using EmailTamer.Database.Tenant;
@@ -13,13 +14,13 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace EmailTamer.Parts.Sync.Operations.Queries;
 
-public sealed record GetMessagesThread(GetMessageDetailsDto GetMessageDetailsDto)  : IRequest<IActionResult>
+public sealed record GetMessagesThread(string MessageId)  : IRequest<IActionResult>
 {
     public class Validator : AbstractValidator<GetMessageDetails>
     {
-        public Validator(IValidator<GetMessageDetailsDto> validator)
+        public Validator()
         {
-            RuleFor(x => x.GetMessageDetailsDto).SetValidator(validator);
+            RuleFor(x => x.MessageId).NotNull().NotEmpty();
         }
     }
 }
@@ -33,7 +34,7 @@ internal class GetMessagesThreadQueryHandler(
 {
     public async Task<IActionResult> Handle(GetMessagesThread query, CancellationToken cancellationToken)
     {
-        var messageId = query.GetMessageDetailsDto.MessageId;
+        var messageId = HttpUtility.UrlDecode(query.MessageId);
         
         var thread = await repository.ReadAsync(async (r, ct) =>
         {

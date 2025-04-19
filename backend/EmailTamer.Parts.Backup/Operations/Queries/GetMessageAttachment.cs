@@ -1,4 +1,4 @@
-using EmailTamer.Parts.Sync.Models;
+using System.Web;
 using EmailTamer.Parts.Sync.Persistence;
 using FluentValidation;
 using JetBrains.Annotations;
@@ -7,13 +7,14 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace EmailTamer.Parts.Sync.Operations.Queries;
 
-public sealed record GetMessageAttachment(GetMessageAttachmentDto GetMessageAttachmentDto) : IRequest<IActionResult>
+public sealed record GetMessageAttachment(string MessageId, string FileName) : IRequest<IActionResult>
 {
     public class Validator : AbstractValidator<GetMessageAttachment>
     {
-        public Validator(IValidator<GetMessageAttachmentDto> validator)
-        { 
-            RuleFor(x => x.GetMessageAttachmentDto).SetValidator(validator);
+        public Validator()
+        {
+            RuleFor(x => x.MessageId).NotNull().NotEmpty();
+            RuleFor(x => x.FileName).NotNull().NotEmpty();
         }
     }
 }
@@ -24,17 +25,20 @@ internal class GetMessageAttachmentQueryHandler(ITenantRepository filesRepositor
 {
     public async Task<IActionResult> Handle(GetMessageAttachment request, CancellationToken cancellationToken)
     {
+        var messageId = HttpUtility.UrlDecode(request.MessageId);
+        var fileName = HttpUtility.UrlDecode(request.FileName);
+        
         var messageAttachmentKey = new MessageAttachmentKey
         {
-            MessageId = request.GetMessageAttachmentDto.MessageId,
-            FileName = request.GetMessageAttachmentDto.FileName
+            MessageId = messageId,
+            FileName = fileName
         };
         
         var attachment = await filesRepository.GetAttachmentAsync(messageAttachmentKey, cancellationToken);
          
         return new FileStreamResult(attachment.Content, attachment.ContentType)
         {
-            FileDownloadName = request.GetMessageAttachmentDto.FileName,
+            FileDownloadName = fileName,
             EnableRangeProcessing = true
         };
     }
