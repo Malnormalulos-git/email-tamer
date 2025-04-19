@@ -80,6 +80,7 @@ internal class GetMessagesThreadQueryHandler(
         {
             ThreadId = thread.First().ThreadId,
             Messages = messagesDto,
+            Subject = thread.First().Subject,
             LastMessage = lastMessageDto
         };
 
