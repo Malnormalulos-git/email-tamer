@@ -1,5 +1,13 @@
-import {format} from 'date-fns/format';
+export const formatDateTime = (date: string) => {
+    const utcDate = new Date(date.endsWith('Z') ? date : date + 'Z');
 
-export const formatDate = (date: string) => format(new Date(date).toLocaleDateString(), 'dd.MM.yyyy');
+    const pad = (num: number) => num.toString().padStart(2, '0');
 
-export const formatDateTime = (date: string) => format(new Date(date).toLocaleDateString(), 'dd.MM.yyyy HH:mm');
+    const day = pad(utcDate.getDate());
+    const month = pad(utcDate.getMonth() + 1);
+    const year = utcDate.getFullYear();
+    const hours = pad(utcDate.getHours());
+    const minutes = pad(utcDate.getMinutes());
+
+    return `${day}.${month}.${year} ${hours}:${minutes}`;
+};
