@@ -61,13 +61,17 @@ internal class GetMessagesThreadQueryHandler(
         var lastMessage = thread.Last();
         var lastMessageDto = mapper.Map<MessageDetailsDto>(lastMessage);
 
-        var messageBodyKey = MessageBodyKey.Create(lastMessage);
-        var htmlBody = await filesRepository.GetBodyAsync(messageBodyKey, cancellationToken);
-        if (htmlBody.Content.Length > 0)
+        if (lastMessage.HasHtmlBody)
         {
-            using (var reader = new StreamReader(htmlBody.Content))
+            var messageBodyKey = MessageBodyKey.Create(lastMessage);
+            var htmlBody = await filesRepository.GetBodyAsync(messageBodyKey, cancellationToken);
+
+            if (htmlBody.Content.Length > 0)
             {
-                lastMessageDto.HtmlBody = await reader.ReadToEndAsync(cancellationToken);
+                using (var reader = new StreamReader(htmlBody.Content))
+                {
+                    lastMessageDto.HtmlBody = await reader.ReadToEndAsync(cancellationToken);
+                }
             }
         }
 
