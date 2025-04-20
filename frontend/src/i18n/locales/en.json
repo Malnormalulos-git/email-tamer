@@ -121,5 +121,14 @@
       "noSubject": "No subject",
       "noMessagesFound": "No messages found"
     }
+  },
+  "threadPage": {
+    "noThreadSubject": "No subject",
+    "from": "From: ",
+    "to": "To: ",
+    "attachments": "Attachments",
+    "unknown": "Unknown",
+    "failDuringLoadAttachment": "Failed to download attachment",
+    "emptyBody": "Message body is empty."
   }
 }

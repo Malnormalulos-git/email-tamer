@@ -121,5 +121,14 @@
       "noSubject": "Без теми",
       "noMessagesFound": "Повідомлень не знайдено"
     }
+  },
+  "threadPage": {
+    "noThreadSubject": "Без теми",
+    "from": "Від: ",
+    "to": "До: ",
+    "attachments": "Вкладення",
+    "unknown": "Невідомо",
+    "failDuringLoadAttachment": "Помилка завантаження вкладення",
+    "emptyBody": "У повідомлення відсутній вміст."
   }
 }

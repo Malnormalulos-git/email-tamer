@@ -22,7 +22,7 @@ const ThreadPreview = ({messagesThreads}: ThreadPreviewProps) => {
                         <ListItemButton onClick={() =>
                             navigate(threadRoute.getLink({
                                 routeParams: {
-                                    [THREAD_ID_PARAM_NAME]: encodeURIComponent(thread.threadId!)
+                                    [THREAD_ID_PARAM_NAME]: encodeURIComponent(thread.threadId!.replace('.', '%2E'))
                                 }
                             }))}>
                             <ListItemText
