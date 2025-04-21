@@ -10,10 +10,14 @@ export const resources = {
     ua: {translation: ua},
 } as const;
 
-const savedLanguage = localStorage.getItem('language') || 'en';
+const savedPreferences = localStorage.getItem('preferences');
+const initialLanguage = savedPreferences
+    ? JSON.parse(savedPreferences).language
+    : 'en';
+
 i18n.use(initReactI18next).init({
     debug: true,
-    fallbackLng: savedLanguage,
+    fallbackLng: initialLanguage,
     resources: resources,
     defaultNS,
     interpolation: {

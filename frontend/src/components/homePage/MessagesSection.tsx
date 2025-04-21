@@ -7,6 +7,7 @@ import {SEARCH_PARAM} from '@router/urlParams.ts';
 import {useUrlParam} from '@hooks/useUrlParam';
 import ThreadPreview from '@components/homePage/messagesSection/ThreadPreview.tsx';
 import PagesHandler from '@components/homePage/messagesSection/PagesHandler.tsx';
+import usePreferencesStore from '@store/PreferencesStore.ts';
 
 interface MessagesSectionProps {
     selectedFolderId: string | null;
@@ -15,7 +16,10 @@ interface MessagesSectionProps {
 
 const MessagesSection = ({selectedFolderId, emailBoxesIds}: MessagesSectionProps) => {
     const [page, setPage] = useState(1);
-    const [messagesPerPage, setMessagesPerPage] = useState(20);
+
+    const {preferences, setMessagesPerPage: setMessagesPerPageToStore} = usePreferencesStore();
+    const [messagesPerPage, setMessagesPerPage] = useState(preferences.messagesPerPage);
+
     const [isByDescending, toggleIsByDescending] = useReducer((state) => {
         setPage(1);
         return !state;
@@ -42,6 +46,10 @@ const MessagesSection = ({selectedFolderId, emailBoxesIds}: MessagesSectionProps
 
     const {t} = useScopedContextTranslator();
 
+    const handleSetMessagesPerPage = (messagesPerPage: number) => {
+        setMessagesPerPage(messagesPerPage);
+        setMessagesPerPageToStore(messagesPerPage);
+    };
 
     return (
         <>
@@ -50,13 +58,13 @@ const MessagesSection = ({selectedFolderId, emailBoxesIds}: MessagesSectionProps
             </Typography>
             {isAnyEmaiBoxSelected && messagesThreads?.items?.length !== undefined && messagesThreads?.items?.length > 0
                 ? <>
-                    <PagesHandler 
-                        isByDescending={isByDescending} 
-                        toggleIsByDescending={toggleIsByDescending} 
-                        page={page} 
+                    <PagesHandler
+                        isByDescending={isByDescending}
+                        toggleIsByDescending={toggleIsByDescending}
+                        page={page}
                         setPage={setPage}
                         messagesPerPage={messagesPerPage}
-                        setMessagesPerPage={setMessagesPerPage}
+                        setMessagesPerPage={handleSetMessagesPerPage}
                         totalMessages={messagesThreads?.total}
                     />
                     {isLoading

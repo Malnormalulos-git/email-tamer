@@ -2,6 +2,7 @@
 import {IconButton, Menu, MenuItem} from '@mui/material';
 
 import i18n from '../../../i18n/i18n.ts';
+import usePreferencesStore from "@store/PreferencesStore.ts";
 
 interface LanguageSelectorProps {
     onLanguageChange?: () => void;
@@ -10,6 +11,8 @@ interface LanguageSelectorProps {
 const LanguageSelector = ({onLanguageChange}: LanguageSelectorProps) => {
     const [langMenuAnchor, setLangMenuAnchor] = useState<null | HTMLElement>(null);
     const open = Boolean(langMenuAnchor);
+
+    const {setLanguage} = usePreferencesStore();
 
     const handleLangMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
         setLangMenuAnchor(event.currentTarget);
@@ -21,7 +24,7 @@ const LanguageSelector = ({onLanguageChange}: LanguageSelectorProps) => {
 
     const handleLanguageChange = (lang: string) => {
         i18n.changeLanguage(lang);
-        localStorage.setItem('language', lang);
+        setLanguage(lang);
         handleLangMenuClose();
         if (onLanguageChange) onLanguageChange();
     };
