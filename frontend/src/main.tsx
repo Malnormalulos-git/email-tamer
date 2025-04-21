@@ -1,7 +1,7 @@
 import {StrictMode} from 'react';
 import {createRoot} from 'react-dom/client';
 
-import {ThemeProvider} from '@mui/styles';
+import {ThemeProvider} from '@mui/material/styles';
 
 import {I18nextProvider} from 'react-i18next';
 
