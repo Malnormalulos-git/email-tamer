@@ -1,7 +1,8 @@
-﻿import {List, ListItemButton, ListItemText, Typography} from '@mui/material';
+﻿import {Typography} from '@mui/material';
 import {useGetFolders} from '@api/emailTamerApiComponents.ts';
 import ContentLoading from '@components/ContentLoading.tsx';
 import useScopedContextTranslator from '@hooks/useScopedTranslator.ts';
+import GenericEmailTamerList from '@components/GenericEmailTamerList.tsx';
 
 interface FoldersSectionProps {
     selectedFolderId: string | null;
@@ -12,6 +13,21 @@ const FoldersSection = ({selectedFolderId, setSelectedFolderId}: FoldersSectionP
     const {data: folders, isLoading} = useGetFolders({});
     const {t} = useScopedContextTranslator();
 
+    const items = [
+        {
+            id: 'allFoldersIndex',
+            label: t('all'),
+            onClick: () => setSelectedFolderId(null),
+            selected: selectedFolderId === null,
+        },
+        ...(folders?.map((folder) => ({
+            id: folder.id!,
+            label: folder.name!,
+            onClick: () => setSelectedFolderId(folder.id!),
+            selected: selectedFolderId === folder.id,
+        })) || []),
+    ];
+
     return (
         <>
             <Typography variant='h6' gutterBottom>
@@ -19,26 +35,7 @@ const FoldersSection = ({selectedFolderId, setSelectedFolderId}: FoldersSectionP
             </Typography>
             {isLoading
                 ? <ContentLoading/>
-                : <List component='nav' sx={{width: '100%'}}>
-                    <ListItemButton
-                        key={'allFoldersIndex'}
-                        selected={selectedFolderId === null}
-                        onClick={() => setSelectedFolderId(null)}
-                    >
-                        <ListItemText primary={t('all')}/>
-                    </ListItemButton>
-                    {folders?.map((folder) => {
-                        return (
-                            <ListItemButton
-                                key={folder.id}
-                                selected={selectedFolderId === folder.id}
-                                onClick={() => setSelectedFolderId(folder.id!)}
-                            >
-                                <ListItemText primary={folder.name}/>
-                            </ListItemButton>
-                        );
-                    })}
-                </List>
+                : <GenericEmailTamerList items={items}/>
             }
         </>
     );

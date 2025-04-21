@@ -1,26 +1,14 @@
-﻿import {
-    Box, Button,
-    Checkbox,
-    IconButton,
-    List,
-    ListItem,
-    ListItemButton,
-    ListItemIcon,
-    ListItemText,
-    Typography
-} from '@mui/material';
+﻿import {Checkbox, IconButton, Typography, Box, Button} from '@mui/material';
 import {useGetEmailBoxes} from '@api/emailTamerApiComponents.ts';
 import ContentLoading from '@components/ContentLoading.tsx';
 import useScopedContextTranslator from '@hooks/useScopedTranslator.ts';
 import {Add, Refresh} from '@mui/icons-material';
 import {useEffect, useState} from 'react';
 import AddEmailBoxDialogForm from '@components/emailBox/AddEmailBoxDialogForm.tsx';
-
 import EmailBoxMoreMenu from '@components/emailBox/moreMenu/EmailBoxMoreMenu.tsx';
-
-import Tooltip from '@mui/material/Tooltip';
-
 import {formatDateTime} from '@utils/formatDateTime.ts';
+
+import GenericEmailTamerList from '@components/GenericEmailTamerList.tsx';
 
 import {TranslationScopeProvider} from '../../i18n/contexts/TranslationScopeContext.tsx';
 
@@ -42,7 +30,7 @@ const EmailBoxesSection = ({emailBoxesIds, setEmailBoxesIds}: EmailBoxesSectionP
 
     const handleToggle = (boxId: string) => () => {
         const currentIndex = emailBoxesIds?.indexOf(boxId);
-        const newEmailBoxesIds = [...emailBoxesIds ?? []];
+        const newEmailBoxesIds = [...(emailBoxesIds ?? [])];
 
         if (currentIndex === -1 || currentIndex === undefined) {
             newEmailBoxesIds.push(boxId);
@@ -67,11 +55,26 @@ const EmailBoxesSection = ({emailBoxesIds, setEmailBoxesIds}: EmailBoxesSectionP
         setOpenAddEmailBoxDialog(false);
     };
 
+    const items = emailBoxes?.map((box) => ({
+        id: box.id!,
+        label: box.boxName!,
+        onClick: handleToggle(box.id!),
+        icon: (
+            <Checkbox
+                edge='start'
+                checked={emailBoxesIds.includes(box.id!)}
+                tabIndex={-1}
+                disableRipple
+            />
+        ),
+        secondaryAction: <EmailBoxMoreMenu box={box} refetch={refetch} edge='end'/>,
+        tooltip: box.lastSyncAt !== null ? `${t('lastSyncAt')} ${formatDateTime(box.lastSyncAt!)}` : t('notSynced'),
+        dense: true,
+    })) || [];
+
     return (
         <>
-            <Typography variant='h6'>
-                {t('emailBoxes')}
-            </Typography>
+            <Typography variant='h6'>{t('emailBoxes')}</Typography>
             <Box
                 display='flex'
                 justifyContent='space-between'
@@ -100,45 +103,17 @@ const EmailBoxesSection = ({emailBoxesIds, setEmailBoxesIds}: EmailBoxesSectionP
             {isLoading ? (
                 <ContentLoading/>
             ) : (
-                <List sx={{width: '100%'}}>
-                    {emailBoxes?.map((box) => (
-                        <ListItem
-                            key={box.id}
-                            component='li'
-                            secondaryAction={
-                                <EmailBoxMoreMenu box={box} refetch={refetch} edge='end'/>
-                            }
-                            disablePadding
-                        >
-                            <ListItemButton role={undefined} onClick={handleToggle(box.id!)} dense>
-                                <ListItemIcon>
-                                    <Checkbox
-                                        edge='start'
-                                        checked={emailBoxesIds.includes(box.id!)}
-                                        tabIndex={-1}
-                                        disableRipple
-                                    />
-                                </ListItemIcon>
-                                <Tooltip
-                                    title={box.lastSyncAt !== null
-                                        ? t('lastSyncAt') + formatDateTime(box.lastSyncAt!)
-                                        : t('notSynced')}
-                                    followCursor
-                                >
-                                    <ListItemText id={box.id} primary={box.boxName} sx={{wordWrap: 'break-word'}}/>
-                                </Tooltip>
-                            </ListItemButton>
-                        </ListItem>
-                    ))}
-                </List>
+                <GenericEmailTamerList items={items} sx={{width: '100%'}}/>
             )}
-            {openAddEmailBoxDialog && <TranslationScopeProvider scope='emailBoxForm'>
-                <AddEmailBoxDialogForm
-                    open={openAddEmailBoxDialog}
-                    onClose={handleCloseAddEmailBoxDialog}
-                    refetch={refetch}
-                />
-            </TranslationScopeProvider>}
+            {openAddEmailBoxDialog && (
+                <TranslationScopeProvider scope='emailBoxForm'>
+                    <AddEmailBoxDialogForm
+                        open={openAddEmailBoxDialog}
+                        onClose={handleCloseAddEmailBoxDialog}
+                        refetch={refetch}
+                    />
+                </TranslationScopeProvider>
+            )}
         </>
     );
 };
