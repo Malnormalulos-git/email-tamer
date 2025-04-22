@@ -2,7 +2,7 @@
 import {z} from 'zod';
 import {zodResolver} from '@hookform/resolvers/zod';
 import {useEffect, useState} from 'react';
-import {Box, Checkbox, Typography} from '@mui/material';
+import {Stack} from '@mui/material';
 
 import EmailTamerDialog from '@components/forms/EmailTamerDialog.tsx';
 import TextInputControl from '@components/forms/controls/TextInputControl.tsx';
@@ -12,6 +12,9 @@ import ContentLoading from '@components/ContentLoading.tsx';
 import useScopedContextTranslator from '@hooks/useScopedTranslator.ts';
 import {useEditEmailBox, useGetEmailBoxDetails} from '@api/emailTamerApiComponents.ts';
 import {getAppControlActions} from '@store/AppControlStore.ts';
+import DoubleLabeledSwitch from '@components/forms/controls/DoubleLabeledSwitch.tsx';
+import LabeledCheckbox from '@components/forms/controls/LabeledCheckbox.tsx';
+import Fieldset from '@components/forms/Fieldset.tsx';
 
 interface EditEmailBoxDialogFormProps {
     open: boolean;
@@ -39,14 +42,9 @@ const editEmailBoxSchema = (t: (key: string) => string) =>
         authenticateByEmail: z.boolean(),
         useSSl: z.boolean(),
         useDefaultImapPorts: z.boolean(),
-    }).superRefine((data, ctx) => {
-        if (!data.authenticateByEmail && !data.userName) {
-            ctx.addIssue({
-                code: z.ZodIssueCode.custom,
-                path: ['userName'],
-                message: t('validation.userNameRequired'),
-            });
-        }
+    }).refine((data) => data.authenticateByEmail || !!data.userName, {
+        message: t('validation.userNameRequired'),
+        path: ['userName'],
     });
 
 type EmailBoxFormData = z.infer<ReturnType<typeof editEmailBoxSchema>>;
@@ -152,31 +150,26 @@ const EditEmailBoxDialogForm = ({open, onClose, refetch, boxId}: EditEmailBoxDia
             {isFetching ? (
                 <ContentLoading/>
             ) : (
-                <>
+                <Fieldset disabled={isPending}>
                     <TextInputControl
                         autoFocus
-                        disabled={isPending}
                         label={t('boxName')}
                         form={form}
                         id='boxName'
                     />
-                    {!authenticateByEmail && (
-                        <TextInputControl
-                            disabled={isPending}
-                            label={t('userName')}
-                            form={form}
-                            id='userName'
-                        />
-                    )}
                     <TextInputControl
-                        disabled={isPending}
+                        disabled={authenticateByEmail}
+                        label={t('userName')}
+                        form={form}
+                        id='userName'
+                    />
+                    <TextInputControl
                         label={t('email')}
                         type='email'
                         form={form}
                         id='email'
                     />
                     <PasswordInputControl
-                        disabled={isPending}
                         showPassword={showPassword}
                         handleClickShowPassword={handleClickShowPassword}
                         label={t('password')}
@@ -184,43 +177,39 @@ const EditEmailBoxDialogForm = ({open, onClose, refetch, boxId}: EditEmailBoxDia
                         id='password'
                     />
                     <TextInputControl
-                        disabled={isPending}
                         label={t('emailDomainConnectionHost')}
                         form={form}
                         id='emailDomainConnectionHost'
                     />
                     <TextInputControl
-                        disabled={isPending || useDefaultImapPorts}
+                        disabled={useDefaultImapPorts}
                         label={t('emailDomainConnectionPort')}
                         type='number'
                         form={form}
                         id='emailDomainConnectionPort'
                     />
-                    <Box sx={{display: 'flex', alignItems: 'center', mt: 2}}>
-                        <Checkbox
+                    <Stack gap={1} ml={3} mt={1}>
+                        <DoubleLabeledSwitch
+                            leftLabel={t('authenticateByUsername')}
+                            rightLabel={t('authenticateByEmail')}
+                            id={'authenticateByEmail'}
+                            form={form}
                             disabled={isPending}
-                            {...form.register('authenticateByEmail')}
-                            checked={authenticateByEmail}
                         />
-                        <Typography>{t('authenticateByEmail')}</Typography>
-                    </Box>
-                    <Box sx={{display: 'flex', alignItems: 'center', mt: 1}}>
-                        <Checkbox
+                        <LabeledCheckbox
+                            label={t('useSSl')}
+                            id={'useSSl'}
+                            form={form}
                             disabled={isPending}
-                            {...form.register('useSSl')}
-                            checked={useSSl}
                         />
-                        <Typography>{t('useSSl')}</Typography>
-                    </Box>
-                    <Box sx={{display: 'flex', alignItems: 'center', mt: 1}}>
-                        <Checkbox
+                        <LabeledCheckbox
+                            label={t('useDefaultImapPorts')}
+                            id={'useDefaultImapPorts'}
+                            form={form}
                             disabled={isPending}
-                            {...form.register('useDefaultImapPorts')}
-                            checked={useDefaultImapPorts}
                         />
-                        <Typography>{t('useDefaultImapPorts')}</Typography>
-                    </Box>
-                </>
+                    </Stack>
+                </Fieldset>
             )}
         </EmailTamerDialog>
     );

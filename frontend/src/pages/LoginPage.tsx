@@ -16,6 +16,7 @@ import {useUrlParam} from '@hooks/useUrlParam.ts';
 import useAuthStore from '@store/AuthStore.ts';
 import ContentLoading from '@components/ContentLoading.tsx';
 import {REDIRECT_TO_PARAM} from '@router/urlParams.ts';
+import Fieldset from '@components/forms/Fieldset.tsx';
 
 const createLoginSchema = (t: (key: string) => string) =>
     z.object({
@@ -70,7 +71,7 @@ const LoginPage = () => {
             setUser(currentUserData);
             setSuccessNotification(t('success'));
         }
-    }, [currentUserData, setUser, setSuccessNotification, t]);
+    }, [currentUserData, setUser]);
 
     useEffect(() => {
         const token = useAuthStore.getState().token;
@@ -106,12 +107,24 @@ const LoginPage = () => {
 
     return (
         <FormLayout title={t('title')} onSubmit={form.handleSubmit(onSubmit)}>
-            <TextInputControl autoFocus type='email' disabled={isLoading} label={t('email')} form={form} id='email'/>
-            <PasswordInputControl disabled={isLoading} label={t('password')} form={form} id='password'/>
-            <SubmitButton disabled={isLoading}>
-                {isLoading ? <ContentLoading size={24}/> : t('loginButton')}
-            </SubmitButton>
-            <NavigateButton route={REGISTER_ROUTE}>{t('toRegister')}</NavigateButton>
+            <Fieldset disabled={isLoading}>
+                <TextInputControl
+                    autoFocus
+                    type='email'
+                    label={t('email')}
+                    form={form}
+                    id='email'
+                />
+                <PasswordInputControl
+                    label={t('password')}
+                    form={form}
+                    id='password'
+                />
+                <SubmitButton disabled={isLoading}>
+                    {isLoading ? <ContentLoading size={24}/> : t('loginButton')}
+                </SubmitButton>
+                <NavigateButton route={REGISTER_ROUTE}>{t('toRegister')}</NavigateButton>
+            </Fieldset>
         </FormLayout>
     );
 };

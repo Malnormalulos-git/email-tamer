@@ -105,15 +105,13 @@ const EmailBoxesSection = ({emailBoxesIds, setEmailBoxesIds}: EmailBoxesSectionP
             ) : (
                 <GenericEmailTamerList items={items} sx={{width: '100%'}}/>
             )}
-            {openAddEmailBoxDialog && (
-                <TranslationScopeProvider scope='emailBoxForm'>
-                    <AddEmailBoxDialogForm
-                        open={openAddEmailBoxDialog}
-                        onClose={handleCloseAddEmailBoxDialog}
-                        refetch={refetch}
-                    />
-                </TranslationScopeProvider>
-            )}
+            <TranslationScopeProvider scope='emailBoxForm'>
+                <AddEmailBoxDialogForm
+                    open={openAddEmailBoxDialog}
+                    onClose={handleCloseAddEmailBoxDialog}
+                    refetch={refetch}
+                />
+            </TranslationScopeProvider>
         </>
     );
 };

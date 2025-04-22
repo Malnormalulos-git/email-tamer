@@ -2,7 +2,6 @@
 import {z} from 'zod';
 import {zodResolver} from '@hookform/resolvers/zod';
 import {useEffect, useState} from 'react';
-import {Box, Checkbox, Typography} from '@mui/material';
 
 import EmailTamerDialog from '@components/forms/EmailTamerDialog.tsx';
 import TextInputControl from '@components/forms/controls/TextInputControl.tsx';
@@ -12,6 +11,10 @@ import ContentLoading from '@components/ContentLoading.tsx';
 import useScopedContextTranslator from '@hooks/useScopedTranslator.ts';
 import {useCreateEmailBox} from '@api/emailTamerApiComponents.ts';
 import {getAppControlActions} from '@store/AppControlStore.ts';
+import DoubleLabeledSwitch from '@components/forms/controls/DoubleLabeledSwitch.tsx';
+import LabeledCheckbox from '@components/forms/controls/LabeledCheckbox.tsx';
+import {Stack} from '@mui/material';
+import Fieldset from '@components/forms/Fieldset.tsx';
 
 interface AddEmailBoxDialogFormProps {
     open: boolean;
@@ -40,14 +43,9 @@ const createEmailBoxSchema = (t: (key: string) => string) =>
         authenticateByEmail: z.boolean(),
         useSSl: z.boolean(),
         useDefaultImapPorts: z.boolean(),
-    }).superRefine((data, ctx) => {
-        if (!data.authenticateByEmail && !data.userName) {
-            ctx.addIssue({
-                code: z.ZodIssueCode.custom,
-                path: ['userName'],
-                message: t('validation.userNameRequired'),
-            });
-        }
+    }).refine((data) => data.authenticateByEmail || !!data.userName, {
+        message: t('validation.userNameRequired'),
+        path: ['userName'],
     });
 
 type EmailBoxFormData = z.infer<ReturnType<typeof createEmailBoxSchema>>;
@@ -101,7 +99,7 @@ const AddEmailBoxDialogForm = ({open, onClose, refetch}: AddEmailBoxDialogFormPr
         createEmailBox({
             body: {
                 boxName: data.boxName || null,
-                userName: data.userName || null,
+                userName: !data.authenticateByEmail ? data.userName : null,
                 email: data.email,
                 password: data.password,
                 emailDomainConnectionHost: data.emailDomainConnectionHost,
@@ -129,73 +127,66 @@ const AddEmailBoxDialogForm = ({open, onClose, refetch}: AddEmailBoxDialogFormPr
                 </SubmitButton>
             }
         >
-            <TextInputControl
-                autoFocus
-                disabled={isPending}
-                label={t('boxName')}
-                form={form}
-                id='boxName'
-            />
-            {!authenticateByEmail && (
+            <Fieldset disabled={isPending}>
                 <TextInputControl
-                    disabled={isPending}
+                    autoFocus
+                    label={t('boxName')}
+                    form={form}
+                    id='boxName'
+                />
+                <TextInputControl
+                    disabled={authenticateByEmail}
                     label={t('userName')}
                     form={form}
                     id='userName'
                 />
-            )}
-            <TextInputControl
-                disabled={isPending}
-                label={t('email')}
-                type='email'
-                form={form}
-                id='email'
-            />
-            <PasswordInputControl
-                disabled={isPending}
-                showPassword={showPassword}
-                handleClickShowPassword={handleClickShowPassword}
-                label={t('password')}
-                form={form}
-                id='password'
-            />
-            <TextInputControl
-                disabled={isPending}
-                label={t('emailDomainConnectionHost')}
-                form={form}
-                id='emailDomainConnectionHost'
-            />
-            <TextInputControl
-                disabled={isPending || useDefaultImapPorts}
-                label={t('emailDomainConnectionPort')}
-                type='number'
-                form={form}
-                id='emailDomainConnectionPort'
-            />
-            <Box sx={{display: 'flex', alignItems: 'center', mt: 2}}>
-                <Checkbox
-                    disabled={isPending}
-                    {...form.register('authenticateByEmail')}
-                    checked={authenticateByEmail}
+                <TextInputControl
+                    label={t('email')}
+                    type='email'
+                    form={form}
+                    id='email'
                 />
-                <Typography>{t('authenticateByEmail')}</Typography>
-            </Box>
-            <Box sx={{display: 'flex', alignItems: 'center', mt: 1}}>
-                <Checkbox
-                    disabled={isPending}
-                    {...form.register('useSSl')}
-                    checked={useSSl}
+                <PasswordInputControl
+                    showPassword={showPassword}
+                    handleClickShowPassword={handleClickShowPassword}
+                    label={t('password')}
+                    form={form}
+                    id='password'
                 />
-                <Typography>{t('useSSl')}</Typography>
-            </Box>
-            <Box sx={{display: 'flex', alignItems: 'center', mt: 1}}>
-                <Checkbox
-                    disabled={isPending}
-                    {...form.register('useDefaultImapPorts')}
-                    checked={useDefaultImapPorts}
+                <TextInputControl
+                    label={t('emailDomainConnectionHost')}
+                    form={form}
+                    id='emailDomainConnectionHost'
                 />
-                <Typography>{t('useDefaultImapPorts')}</Typography>
-            </Box>
+                <TextInputControl
+                    disabled={useDefaultImapPorts}
+                    label={t('emailDomainConnectionPort')}
+                    type='number'
+                    form={form}
+                    id='emailDomainConnectionPort'
+                />
+                <Stack gap={1} ml={3} mt={1}>
+                    <DoubleLabeledSwitch
+                        leftLabel={t('authenticateByUsername')}
+                        rightLabel={t('authenticateByEmail')}
+                        id={'authenticateByEmail'}
+                        form={form}
+                        disabled={isPending}
+                    />
+                    <LabeledCheckbox
+                        label={t('useSSl')}
+                        id={'useSSl'}
+                        form={form}
+                        disabled={isPending}
+                    />
+                    <LabeledCheckbox
+                        label={t('useDefaultImapPorts')}
+                        id={'useDefaultImapPorts'}
+                        form={form}
+                        disabled={isPending}
+                    />
+                </Stack>
+            </Fieldset>
         </EmailTamerDialog>
     );
 };
