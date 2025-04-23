@@ -90,8 +90,8 @@ const Message = ({messageId, messageShort, messageDetailed}: MessageProps) => {
                             {!isExpanded && (
                                 <Typography variant='body2' color='text.secondary'
                                     sx={{mt: 0.5, fontSize: {xs: '0.8rem', sm: '0.875rem'}}}>
-                                    {message.textBody?.substring(0, 100)}
-                                    {message.textBody?.substring(0, 100).length === 100 ? '...' : ''}
+                                    {message.textBody?.substring(0, 100) || ''}
+                                    {message.textBody && message.textBody.length > 100 ? '...' : ''}
                                 </Typography>
                             )}
                         </Stack>
