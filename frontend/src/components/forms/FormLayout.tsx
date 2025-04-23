@@ -1,9 +1,10 @@
 ﻿import {Card, CardContent, CardProps, Typography} from '@mui/material';
-import {ReactNode} from 'react';
+import {FormEventHandler, ReactNode} from 'react';
 
-interface FormLayoutProps extends CardProps {
+type FormLayoutProps = Omit <CardProps, 'onSubmit'> & {
     children: ReactNode;
     title?: string;
+    onSubmit: FormEventHandler<HTMLFormElement>;
 }
 
 const FormLayout = ({children, title, onSubmit, ...restProps}: FormLayoutProps) => {
