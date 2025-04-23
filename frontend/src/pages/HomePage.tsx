@@ -128,7 +128,7 @@ const HomePage = () => {
                 }}
                 variant='temporary'
             >
-                <Box sx={{ p: 2 }}>
+                <Box sx={{p: 2}}>
                     <TranslationScopeProvider scope='foldersSection'>
                         <FoldersSection
                             selectedFolderId={selectedFolderId}
@@ -156,7 +156,7 @@ const HomePage = () => {
                 }}
                 variant='temporary'
             >
-                <Box sx={{ p: 2 }}>
+                <Box sx={{p: 2}}>
                     <TranslationScopeProvider scope='emailBoxesSection'>
                         <EmailBoxesSection
                             emailBoxesIds={selectedEmailBoxesIds}

@@ -1,8 +1,9 @@
 ﻿import {useState} from 'react';
 import {IconButton, Menu, MenuItem} from '@mui/material';
 
+import usePreferencesStore from '@store/PreferencesStore.ts';
+
 import i18n from '../../../i18n/i18n.ts';
-import usePreferencesStore from "@store/PreferencesStore.ts";
 
 interface LanguageSelectorProps {
     onLanguageChange?: () => void;

@@ -2,7 +2,7 @@
 import {z} from 'zod';
 import {zodResolver} from '@hookform/resolvers/zod';
 import {useNavigate} from 'react-router-dom';
-import {RegisterError, useRegister} from '@api/emailTamerApiComponents';
+import {useRegister} from '@api/emailTamerApiComponents';
 import {HOME_ROUTE, LOGIN_ROUTE} from '@router/routes';
 
 import {getAppControlActions} from '@store/AppControlStore.ts';
