@@ -130,6 +130,8 @@
     "attachments": "Attachments",
     "unknown": "Unknown",
     "failDuringLoadAttachment": "Failed to download attachment",
-    "emptyBody": "Message body is empty."
+    "emptyBody": "Message body is empty.",
+    "back": "Back",
+    "messages": "messages"
   }
 }

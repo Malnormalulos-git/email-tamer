@@ -39,26 +39,27 @@ const Attachment = ({messageId, fileName}: AttachmentProps) => {
                 display: 'flex',
                 alignItems: 'center',
                 mt: 1,
-                p: 1,
-                borderRadius: 1,
+                p: 0.5,
+                borderRadius: 2,
                 border: '1px solid',
                 borderColor: 'grey.200',
                 backgroundColor: 'background.paper',
                 transition: 'all 0.2s',
                 '&:hover': {
                     backgroundColor: 'grey.50',
-                    boxShadow: 1,
+                    boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
                 },
             }}
         >
             <img
                 src={getFileIconUrl(fileName, 32)}
                 alt={`${fileName} icon`}
-                style={{width: 32, height: 32, marginRight: 8}}
+                style={{width: 24, height: 24, marginRight: 8}}
             />
             <Typography
                 variant='body2'
                 sx={{
+                    wordBreak: 'break-word',
                     flexGrow: 1,
                     color: 'text.primary',
                     '&:hover': {
@@ -77,9 +78,8 @@ const Attachment = ({messageId, fileName}: AttachmentProps) => {
                 size='small'
                 sx={{
                     ml: 1,
-                    color: 'grey.600',
+                    color: 'primary.main',
                     '&:hover': {
-                        color: 'primary.main',
                         backgroundColor: 'grey.100',
                     },
                 }}
