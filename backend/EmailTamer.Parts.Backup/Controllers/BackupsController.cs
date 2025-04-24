@@ -16,6 +16,7 @@ public class BackupsController(IMediator mediator) : Controller
     [Authorize(Policy = AuthPolicy.User)]
     [ProducesResponseType(200)]
     [ProducesResponseType(404)]
+    [ProducesResponseType(400)]
     public Task<IActionResult>
         BackUpEmailBoxMessages([FromRoute(Name = "id")] Guid id, CancellationToken ct = default) =>
         mediator.Send(new BackUpEmailBoxMessages(id), ct);
