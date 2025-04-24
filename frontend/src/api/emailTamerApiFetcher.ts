@@ -6,7 +6,7 @@ const baseUrl = import.meta.env.VITE_API_URL;
 
 export type ErrorWrapper<TError> =
   | TError
-  | { status: 'unknown'; payload: string };
+  | { status: number; payload: string };
 
 export type EmailTamerApiFetcherOptions<
   TBody,
@@ -86,7 +86,7 @@ export async function emailTamerApiFetch<
                 error = await response.json();
             } catch (e) {
                 error = {
-                    status: 'unknown' as const,
+                    status: response.status,
                     payload:
             e instanceof Error
                 ? `Unexpected error (${e.message})`

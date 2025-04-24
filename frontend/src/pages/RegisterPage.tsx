@@ -61,8 +61,11 @@ const RegisterPage = () => {
             navigate(LOGIN_ROUTE);
             setSuccessNotification(t('success'));
         },
-        onError: () => {
-            setErrorNotification(t('error'));
+        onError: (error) => {
+            if(error?.status == 409)
+                setErrorNotification(t('error.alreadyRegistered'));
+            else
+                setErrorNotification(t('error'));
         },
     });
 
