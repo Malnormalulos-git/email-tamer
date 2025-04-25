@@ -1,0 +1,1 @@
+dotnet ef migrations add $1 --project .\..\..\..\EmailTamer.Database.Tenant\EmailTamer.Database.Tenant.csproj --startup-project .\..\..\..\EmailTamer.Application\EmailTamer.Application.csproj --context EmailTamer.Database.Tenant.TenantDbContext

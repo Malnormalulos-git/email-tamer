@@ -1,0 +1,1 @@
+dotnet ef database update %1 --project .\..\..\..\EmailTamer.Database\EmailTamer.Database.csproj --startup-project .\..\..\..\EmailTamer.Application\EmailTamer.Application.csproj --context EmailTamer.Database.EmailTamerDbContext

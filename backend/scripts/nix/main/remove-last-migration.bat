@@ -1,0 +1,1 @@
+dotnet ef migrations remove --project .\..\..\..\EmailTamer.Database\EmailTamer.Database.csproj --startup-project .\..\..\..\EmailTamer.Application\EmailTamer.Application.csproj --context EmailTamer.Database.EmailTamerDbContext
