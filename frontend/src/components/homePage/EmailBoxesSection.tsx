@@ -77,19 +77,19 @@ const EmailBoxesSection = ({emailBoxesIds, setEmailBoxesIds}: EmailBoxesSectionP
             <Typography variant='h6'>{t('emailBoxes')}</Typography>
             <Box
                 display='flex'
-                justifyContent='space-between'
+                justifyContent={items.length > 0 ? 'space-between' : 'end'}
                 alignItems='center'
                 sx={{m: 1, ml: 0.5}}
             >
-                <Checkbox
+                {items.length > 0 && <Checkbox
                     checked={emailBoxesIds.length === emailBoxes?.length && emailBoxes?.length > 0}
                     onChange={handleSelectAll}
                     sx={{mr: 1}}
-                />
+                />}
                 <Box>
-                    <IconButton onClick={() => console.log('sync all')} sx={{mr: 1}}>
+                    {items.length > 0 && <IconButton onClick={() => console.log('sync all')} sx={{mr: 1}}>
                         <Refresh/>
-                    </IconButton>
+                    </IconButton>}
                     <Button
                         variant='contained'
                         size='small'
