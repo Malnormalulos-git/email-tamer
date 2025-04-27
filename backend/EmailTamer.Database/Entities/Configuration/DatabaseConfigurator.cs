@@ -1,4 +1,6 @@
 using EmailTamer.Core.Extensions;
+using EmailTamer.Database.Extensions;
+using EmailTamer.Database.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.Logging;
@@ -10,7 +12,7 @@ public sealed class DatabaseConfigurator(
 	ILogger<DatabaseConfigurator> logger)
 	: IDatabaseConfigurator
 {
-	public void OnModelCreating(ModelBuilder modelBuilder)
+	public void OnModelCreating(ModelBuilder modelBuilder, IEncryptionService? encryptionService = null)
 	{
 		logger.Time(() =>
 		{
@@ -27,6 +29,11 @@ public sealed class DatabaseConfigurator(
 				}
 			}
 		}, $"{nameof(OnModelCreating)}({{Count}})", configurations.Count());
+
+		if (encryptionService != null)
+		{
+			modelBuilder.UseEncryption(encryptionService, logger);
+		}
 	}
 
 	public void ConfigureConventions(ModelConfigurationBuilder modelConfigurationBuilder, DatabaseFacade databaseFacade)

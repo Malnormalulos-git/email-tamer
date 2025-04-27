@@ -1,8 +1,10 @@
 using EmailTamer.Database.Entities.Configuration;
+using EmailTamer.Database.Services;
 using EmailTamer.Database.Tenant.Accessor;
 using EmailTamer.Database.Tenant.Config;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace EmailTamer.Database.Tenant;
@@ -18,11 +20,11 @@ public class TenantDbContextFactory(
         return CreateDbContextInternal(connectionString);
     }
     
-    public TenantDbContext CreateDbContext(Guid tenantId)
-    {
-        var connectionString = GetConnectionString(tenantId.ToString());
-        return CreateDbContextInternal(connectionString);
-    }
+    // public TenantDbContext CreateDbContext(Guid tenantId)
+    // {
+    //     var connectionString = GetConnectionString(tenantId.ToString());
+    //     return CreateDbContextInternal(connectionString);
+    // }
 
     private TenantDbContext CreateDbContextInternal(string connectionString)
     {
@@ -37,7 +39,9 @@ public class TenantDbContextFactory(
             });
 
         var configurator = serviceProvider.GetRequiredService<IDatabaseConfigurator>();
-        var dbContext = new TenantDbContext(options.Options, configurator);
+        var encryptionService = serviceProvider.GetRequiredService<IEncryptionService>();
+        
+        var dbContext = new TenantDbContext(options.Options, configurator, encryptionService);
         dbContext.Database.Migrate();
         
         return dbContext;

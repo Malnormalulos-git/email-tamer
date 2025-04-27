@@ -1,5 +1,6 @@
 using System.Reflection;
 using EmailTamer.Database.Entities.Configuration;
+using EmailTamer.Database.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Logging;
@@ -7,7 +8,6 @@ using Microsoft.Extensions.Logging;
 namespace EmailTamer.Database.Tenant;
 
 // This class exists only for creating TenantDbContext migrations
-
 public class TenantDbDesignTimeFactory : IDesignTimeDbContextFactory<TenantDbContext>
 {
     public TenantDbContext CreateDbContext(string[] args)
@@ -23,7 +23,9 @@ public class TenantDbDesignTimeFactory : IDesignTimeDbContextFactory<TenantDbCon
 
         var configurator = new DatabaseConfigurator(entityConfigurations, logger);
 
-        return new TenantDbContext(optionsBuilder.Options, configurator);
+        var encryptionService = new MockedEncryptionService();
+
+        return new TenantDbContext(optionsBuilder.Options, configurator, encryptionService);
     }
     
     private List<INonGenericEntityConfiguration> LoadEntityConfigurations()
@@ -37,5 +39,18 @@ public class TenantDbDesignTimeFactory : IDesignTimeDbContextFactory<TenantDbCon
             .ToList();
 
         return configurations;
+    }
+
+    private class MockedEncryptionService : IEncryptionService
+    {
+        public string Encrypt(string value)
+        {
+            throw new NotImplementedException();
+        }
+
+        public string Decrypt(string value)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
