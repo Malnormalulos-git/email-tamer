@@ -2,6 +2,7 @@ using AutoMapper;
 using EmailTamer.Auth;
 using EmailTamer.Core.Mappers;
 using EmailTamer.Core.Models;
+using EmailTamer.Database.Tenant.Entities;
 using FluentValidation;
 
 namespace EmailTamer.Parts.EmailBox.Models;
@@ -13,6 +14,8 @@ public sealed class EmailBoxDto : IMappable, IOutbound
     public string BoxName { get; set; }
 
     public DateTime? LastSyncAt { get; set; }
+    
+    public ConnectionFault? ConnectionFault { get; set; } 
 
     public static void AddProfileMapping(Profile profile)
     {
