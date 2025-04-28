@@ -30,15 +30,20 @@ public sealed class CreateEmailBoxDto : IMappable, IInbound
         {
             RuleFor(x => x.BoxName)
                 .MaximumLength(30);
+            
+            RuleFor(x => x.UserName)
+                .NotNull()
+                .NotEmpty()
+                .When(x => x.AuthenticateByEmail == false);
+            
             RuleFor(x => x.Email)
                 .NotEmpty()
-                .NotNull()
                 .Email();
+            
             RuleFor(x => x.Password)
-                .NotNull()
                 .NotEmpty();
+            
             RuleFor(x => x.EmailDomainConnectionHost)
-                .NotNull()
                 .NotEmpty();
         }
     }

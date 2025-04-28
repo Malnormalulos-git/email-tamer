@@ -31,20 +31,32 @@ public sealed class EditEmailBoxDto : IMappable, IInbound
         public EditEmailBoxDtoValidator()
         {
             RuleFor(x => x.Id)
-                .NotEmpty()
-                .NotNull();
+                .NotNull()
+                .NotEmpty();
+            
             RuleFor(x => x.BoxName)
                 .MaximumLength(30);
-            RuleFor(x => x.Email)
+            
+            RuleFor(x => x.UserName)
+                .NotNull()
                 .NotEmpty()
-                .When(x => x.EmailDomainConnectionHost != null)!
+                .When(x => x.AuthenticateByEmail == false);
+            
+            RuleFor(x => x.Email)
+                .NotNull()
+                .NotEmpty()
+                .When(x => x.Email != null)!
                 .Email();
+            
             RuleFor(x => x.Password)
+                .NotNull()
                 .NotEmpty()
                 .When(x => x.Password != null);
+            
             RuleFor(x => x.EmailDomainConnectionHost)
                 .NotNull()
-                .When(x => x.Password != null);
+                .NotEmpty()
+                .When(x => x.EmailDomainConnectionHost != null);
         }
     }
 
