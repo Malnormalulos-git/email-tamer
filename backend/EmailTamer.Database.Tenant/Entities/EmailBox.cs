@@ -32,6 +32,8 @@ public class EmailBox : UniqueIdEntity, IDateAuditableEntity
     
     public DateTime LastSyncAt { get; set; }
     
+    public ConnectionFault? ConnectionFault { get; set; } 
+    
     public List<Message> Messages { get; set; } = [];
     
     
