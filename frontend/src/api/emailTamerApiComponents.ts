@@ -185,7 +185,10 @@ export type BackUpEmailBoxMessagesPathParams = {
   id: string;
 };
 
-export type BackUpEmailBoxMessagesError = Fetcher.ErrorWrapper<undefined>;
+export type BackUpEmailBoxMessagesError = Fetcher.ErrorWrapper<{
+  status: 400;
+  payload: Schemas.ConnectionFault;
+}>;
 
 export type BackUpEmailBoxMessagesVariables = {
   pathParams: BackUpEmailBoxMessagesPathParams;
@@ -1117,6 +1120,55 @@ export const useDeleteEmailBox = (
   >({
       mutationFn: (variables: DeleteEmailBoxVariables) =>
           fetchDeleteEmailBox(deepMerge(fetcherOptions, variables)),
+      ...options,
+  });
+};
+
+export type TestConnectionError = Fetcher.ErrorWrapper<{
+  status: 400;
+  payload: Schemas.ConnectionFault;
+}>;
+
+export type TestConnectionVariables = {
+  body?: Schemas.TestConnectionDto;
+} & EmailTamerApiContext['fetcherOptions'];
+
+export const fetchTestConnection = (
+    variables: TestConnectionVariables,
+    signal?: AbortSignal,
+) =>
+    emailTamerApiFetch<
+    undefined,
+    TestConnectionError,
+    Schemas.TestConnectionDto,
+    {},
+    {},
+    {}
+  >({
+      url: '/api/emailBoxes/testConnection',
+      method: 'post',
+      ...variables,
+      signal,
+  });
+
+export const useTestConnection = (
+    options?: Omit<
+    reactQuery.UseMutationOptions<
+      undefined,
+      TestConnectionError,
+      TestConnectionVariables
+    >,
+    'mutationFn'
+  >,
+) => {
+    const { fetcherOptions } = useEmailTamerApiContext();
+    return reactQuery.useMutation<
+    undefined,
+    TestConnectionError,
+    TestConnectionVariables
+  >({
+      mutationFn: (variables: TestConnectionVariables) =>
+          fetchTestConnection(deepMerge(fetcherOptions, variables)),
       ...options,
   });
 };

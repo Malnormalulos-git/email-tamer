@@ -3,6 +3,13 @@
  *
  * @version v1
  */
+export enum ConnectionFault {
+  Other = 'other',
+  ConnectionRefused = 'connectionRefused',
+  PortOutOfRange = 'portOutOfRange',
+  WrongAuthenticationCredentials = 'wrongAuthenticationCredentials',
+}
+
 export enum UserRole {
   User = 'user',
   Admin = 'admin',
@@ -71,6 +78,7 @@ export type EmailBoxDetailsDto = {
    */
   emailDomainConnectionPort?: number;
   useSSl?: boolean;
+  connectionFault?: ConnectionFault;
 };
 
 export type EmailBoxDto = {
@@ -83,6 +91,7 @@ export type EmailBoxDto = {
    * @format date-time
    */
   lastSyncAt?: string | null;
+  connectionFault?: ConnectionFault;
 };
 
 export type FolderDto = {
@@ -169,6 +178,19 @@ export type MessagesThreadShortDtoPagedResult = {
    * @format int32
    */
   total?: number;
+};
+
+export type TestConnectionDto = {
+  userName?: string | null;
+  email?: string | null;
+  authenticateByEmail?: boolean;
+  password?: string | null;
+  emailDomainConnectionHost?: string | null;
+  /**
+   * @format int32
+   */
+  emailDomainConnectionPort?: number;
+  useSSl?: boolean;
 };
 
 export type UserDto = {
