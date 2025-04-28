@@ -1,4 +1,4 @@
-using EmailTamer.Database.Utilities.Paging;
+using EmailTamer.Database.Tenant.Entities;
 using EmailTamer.Infrastructure.Auth;
 using EmailTamer.Parts.EmailBox.Models;
 using EmailTamer.Parts.EmailBox.Operations.Commands;
@@ -45,4 +45,11 @@ public class EmailBoxesController(IMediator mediator) : Controller
     [ProducesResponseType(404)]
     public Task<IActionResult> DeleteEmailBox([FromRoute(Name = "id")] Guid id, CancellationToken ct = default) =>
         mediator.Send(new DeleteEmailBox(id), ct);
+    
+    [HttpPost("testConnection", Name = nameof(TestConnection))]
+    [Authorize(Policy = AuthPolicy.User)]
+    [ProducesResponseType(200)]
+    [ProducesResponseType(typeof(ConnectionFault), 400)]
+    public Task<IActionResult> TestConnection([FromBody] TestConnectionDto testConnectionDto, CancellationToken ct = default) =>
+        mediator.Send(new TestConnection(testConnectionDto), ct);
 }
