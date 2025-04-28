@@ -72,7 +72,14 @@
       "emailBoxes": "Email boxes",
       "add": "Add",
       "lastSyncAt": "Last sync at: ",
+      "lastSuccessfulSyncAt": "Last successful sync at: ",
       "notSynced": "Not synced",
+      "connectionFault": {
+        "other": "Unhandled connection fault",
+        "connectionRefused": "Email domain host connection has been refused",
+        "portOutOfRange": "Host port is out of range",
+        "wrongAuthenticationCredentials": "Wrong authentication credentials"
+      },
       "emailBoxForm": {
         "addEmailBox": "Add Email Box",
         "editEmailBox": "Edit Email Box",

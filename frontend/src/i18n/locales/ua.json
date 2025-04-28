@@ -72,7 +72,14 @@
       "emailBoxes": "Поштові скриньки",
       "add": "Додати",
       "lastSyncAt": "Синхронізовано о: ",
+      "lastSuccessfulSyncAt": "Останнє успішне синхронізування о: ",
       "notSynced": "Не синхронізовано",
+      "connectionFault": {
+        "other": "Невідома помилка підключення",
+        "connectionRefused": "Підключення до хоста поштового домену відхилено",
+        "portOutOfRange": "Порт хоста поза допустимим діапазоном",
+        "wrongAuthenticationCredentials": "Неправильні дані для автентифікації"
+      },
       "emailBoxForm": {
         "addEmailBox": "Додати поштову скриньку",
         "editEmailBox": "Редагувати поштову скриньку",

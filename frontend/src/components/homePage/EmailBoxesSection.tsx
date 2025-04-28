@@ -1,8 +1,8 @@
-﻿import {Checkbox, IconButton, Typography, Box, Button} from '@mui/material';
+﻿import {Checkbox, IconButton, Typography, Box, Button, Stack} from '@mui/material';
 import {useGetEmailBoxes} from '@api/emailTamerApiComponents.ts';
 import ContentLoading from '@components/ContentLoading.tsx';
 import useScopedContextTranslator from '@hooks/useScopedTranslator.ts';
-import {Add, Refresh} from '@mui/icons-material';
+import {Add, Refresh, Warning} from '@mui/icons-material';
 import {useEffect, useState} from 'react';
 import AddEmailBoxDialogForm from '@components/emailBox/AddEmailBoxDialogForm.tsx';
 import EmailBoxMoreMenu from '@components/emailBox/moreMenu/EmailBoxMoreMenu.tsx';
@@ -11,6 +11,7 @@ import {formatDateTime} from '@utils/formatDateTime.ts';
 import GenericEmailTamerList from '@components/GenericEmailTamerList.tsx';
 
 import {TranslationScopeProvider} from '../../i18n/contexts/TranslationScopeContext.tsx';
+import Tooltip from "@mui/material/Tooltip";
 
 interface EmailBoxesSectionProps {
     emailBoxesIds: string[];
@@ -67,8 +68,16 @@ const EmailBoxesSection = ({emailBoxesIds, setEmailBoxesIds}: EmailBoxesSectionP
                 disableRipple
             />
         ),
-        secondaryAction: <EmailBoxMoreMenu box={box} refetch={refetch} edge='end'/>,
-        tooltip: box.lastSyncAt !== null ? `${t('lastSyncAt')} ${formatDateTime(box.lastSyncAt!)}` : t('notSynced'),
+        secondaryAction: <Stack direction='row' alignItems='center'>
+            {box.connectionFault &&
+                <Tooltip title={t(`connectionFault.${box.connectionFault}`)} followCursor>
+                    <Warning color='warning'/>
+                </Tooltip>}
+            <EmailBoxMoreMenu box={box} refetch={refetch} edge='end'/>
+        </Stack>,
+        tooltip: box.lastSyncAt !== null
+            ? `${t(box.connectionFault ? 'lastSuccessfulSyncAt' : 'lastSyncAt')} ${formatDateTime(box.lastSyncAt!)}`
+            : t('notSynced'),
         dense: true,
     })) || [];
 
