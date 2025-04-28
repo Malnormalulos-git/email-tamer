@@ -3,7 +3,9 @@ using AutoMapper;
 using EmailTamer.Database.Persistence;
 using EmailTamer.Database.Tenant;
 using EmailTamer.Database.Tenant.Entities;
+using EmailTamer.Parts.Sync.Exceptions;
 using EmailTamer.Parts.Sync.Persistence;
+using EmailTamer.Parts.Sync.Services;
 using FluentValidation;
 using JetBrains.Annotations;
 using MailKit;
@@ -53,12 +55,12 @@ internal class BackUpEmailBoxMessagesCommandHandler(
 
         try
         {
-            using var client = await ConnectToImapClient(emailBox, cancellationToken);
+            using var client = await MailKitImapConnector.ConnectToImapClient(emailBox, cancellationToken);
 
             // we need all relevant folders to figure out what folders each message is in
             var folders = await GetRelevantFolders(client, cancellationToken);
 
-            emailBox.LastSyncAt = clock.UtcNow.DateTime;
+            var synchronizationStartedAt = clock.UtcNow.DateTime;
             var newMessagesDictionary = new Dictionary<string, Message>();
 
             foreach (var folder in folders)
@@ -89,7 +91,10 @@ internal class BackUpEmailBoxMessagesCommandHandler(
                     }
                 }
 
+                emailBox.ConnectionFault = null;
+                emailBox.LastSyncAt = synchronizationStartedAt;
                 repo.Update(emailBox);
+                
                 await repo.PersistAsync(ct);
             }, cancellationToken);
 
@@ -99,6 +104,15 @@ internal class BackUpEmailBoxMessagesCommandHandler(
         catch (Exception e)
         {
             logger.LogError(e, "Error while backing up EmailBox {EmailBoxId}", command.EmailBoxId);
+
+            if (e is MailKitImapConnectorException mailKitImapConnectorException)
+            {
+                emailBox.ConnectionFault = mailKitImapConnectorException.Fault;
+                repository.Update(emailBox);
+                await repository.PersistAsync(cancellationToken);
+                return new BadRequestObjectResult(mailKitImapConnectorException.Fault);
+            }
+            
             return new BadRequestResult();
         }
     }
@@ -125,23 +139,6 @@ internal class BackUpEmailBoxMessagesCommandHandler(
 
             return (box, messages, folders);
         }, cancellationToken);
-    }
-
-    private async Task<IImapClient> ConnectToImapClient(EmailBox emailBox, CancellationToken cancellationToken)
-    {
-        var client = new ImapClient();
-        await client.ConnectAsync(
-            emailBox.EmailDomainConnectionHost,
-            emailBox.EmailDomainConnectionPort,
-            emailBox.UseSSl,
-            cancellationToken);
-
-        await client.AuthenticateAsync(
-            emailBox.AuthenticateByEmail ? emailBox.Email : emailBox.UserName,
-            emailBox.Password,
-            cancellationToken);
-
-        return client;
     }
 
     private async Task<List<IMailFolder>> GetRelevantFolders(IImapClient client, CancellationToken cancellationToken)

@@ -1,3 +1,4 @@
+using EmailTamer.Database.Tenant.Entities;
 using EmailTamer.Database.Utilities.Paging;
 using EmailTamer.Infrastructure.Auth;
 using EmailTamer.Parts.Sync.Models;
@@ -17,6 +18,7 @@ public class BackupsController(IMediator mediator) : Controller
     [ProducesResponseType(200)]
     [ProducesResponseType(404)]
     [ProducesResponseType(400)]
+    [ProducesResponseType(typeof(ConnectionFault), 400)]
     public Task<IActionResult>
         BackUpEmailBoxMessages([FromRoute(Name = "id")] Guid id, CancellationToken ct = default) =>
         mediator.Send(new BackUpEmailBoxMessages(id), ct);
