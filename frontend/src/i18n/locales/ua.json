@@ -113,6 +113,7 @@
           "portRequired": "Порт підключення обов'язковий",
           "invalidPort": "Порт має бути позитивним числом"
         },
+        "testConnection": "Перевірити з'єднання",
         "testConnectionSuccess": "Підключення поштової скриньки успішне",
         "testConnectionError": "Помилка підключення до поштової скриньки",
         "connectionFault": {

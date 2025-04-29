@@ -113,6 +113,7 @@
           "portRequired": "Connection port is required",
           "invalidPort": "Port must be a positive number"
         },
+        "testConnection": "Test connection",
         "testConnectionSuccess": "Connection to email box is successful",
         "testConnectionError": "Connection to email box has been failed",
         "connectionFault": {

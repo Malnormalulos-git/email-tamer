@@ -16,6 +16,7 @@ import DoubleLabeledSwitch from '@components/forms/controls/DoubleLabeledSwitch.
 import LabeledCheckbox from '@components/forms/controls/LabeledCheckbox.tsx';
 import Fieldset from '@components/forms/Fieldset.tsx';
 import {ConnectionFault} from '@api/emailTamerApiSchemas.ts';
+import TestEmailBoxConnectionButton from '@components/emailBox/TestEmailBoxConnectionButton.tsx';
 
 interface EditEmailBoxDialogFormProps {
     open: boolean;
@@ -73,7 +74,7 @@ const EditEmailBoxDialogForm = ({open, onClose, refetch, boxId}: EditEmailBoxDia
         },
     });
 
-    const {watch, setValue, reset, formState: {isDirty: haveFormValuesChanged}} = form;
+    const {watch, setValue, reset, formState: {isDirty: haveFormValuesChanged, isValid}} = form;
     const useDefaultImapPorts = watch('useDefaultImapPorts');
     const useSSl = watch('useSSl');
     const authenticateByEmail = watch('authenticateByEmail');
@@ -178,9 +179,16 @@ const EditEmailBoxDialogForm = ({open, onClose, refetch, boxId}: EditEmailBoxDia
                 },
             }}
             dialogActions={
-                <SubmitButton disabled={isPending || !haveFormValuesChanged}>
-                    {isPending ? <ContentLoading size={24}/> : t('editSubmitButton')}
-                </SubmitButton>
+                <>
+                    <TestEmailBoxConnectionButton
+                        form={form as any}
+                        boxId={boxId}
+                        disabled={isPending || !isValid}
+                    />
+                    <SubmitButton disabled={isPending || haveFormValuesChanged}>
+                        {isPending ? <ContentLoading size={24}/> : t('editSubmitButton')}
+                    </SubmitButton>
+                </>
             }
         >
             {isFetching

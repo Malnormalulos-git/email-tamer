@@ -16,6 +16,7 @@ import DoubleLabeledSwitch from '@components/forms/controls/DoubleLabeledSwitch.
 import LabeledCheckbox from '@components/forms/controls/LabeledCheckbox.tsx';
 import Fieldset from '@components/forms/Fieldset.tsx';
 import {ConnectionFault} from '@api/emailTamerApiSchemas.ts';
+import TestEmailBoxConnectionButton from '@components/emailBox/TestEmailBoxConnectionButton.tsx';
 
 interface AddEmailBoxDialogFormProps {
     open: boolean;
@@ -70,7 +71,7 @@ const AddEmailBoxDialogForm = ({open, onClose, refetch}: AddEmailBoxDialogFormPr
         },
     });
 
-    const {watch, setValue} = form;
+    const {watch, setValue, formState: {isValid}} = form;
     const useDefaultImapPorts = watch('useDefaultImapPorts');
     const useSSl = watch('useSSl');
     const authenticateByEmail = watch('authenticateByEmail');
@@ -89,21 +90,19 @@ const AddEmailBoxDialogForm = ({open, onClose, refetch}: AddEmailBoxDialogFormPr
             onClose();
         },
         onError: (error) => {
-            if(error?.status == 409) {
+            if (error?.status === 409) {
                 const emailBox = form.getValues('email');
                 setErrorNotification(t('error.alreadyExist') + emailBox);
-            }
-            else
+            } else {
                 setErrorNotification(t('addError'));
+            }
         },
     });
 
     const {mutate: testConnection, isPending: isTesting} = useTestConnection({
         onSuccess: () => {
             setSuccessNotification(t('testConnectionSuccess'));
-
             const data = form.getValues();
-
             createEmailBox({
                 body: {
                     boxName: data.boxName || null,
@@ -154,9 +153,15 @@ const AddEmailBoxDialogForm = ({open, onClose, refetch}: AddEmailBoxDialogFormPr
                 },
             }}
             dialogActions={
-                <SubmitButton disabled={isPending}>
-                    {isPending ? <ContentLoading size={24}/> : t('addSubmitButton')}
-                </SubmitButton>
+                <>
+                    <TestEmailBoxConnectionButton
+                        form={form as any}
+                        disabled={isPending || !isValid}
+                    />
+                    <SubmitButton disabled={isPending}>
+                        {isPending ? <ContentLoading size={24}/> : t('addSubmitButton')}
+                    </SubmitButton>
+                </>
             }
         >
             <Fieldset disabled={isPending}>
