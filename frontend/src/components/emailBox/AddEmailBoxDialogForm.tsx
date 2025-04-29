@@ -2,6 +2,7 @@
 import {z} from 'zod';
 import {zodResolver} from '@hookform/resolvers/zod';
 import {useEffect, useState} from 'react';
+import {Stack} from '@mui/material';
 
 import EmailTamerDialog from '@components/forms/EmailTamerDialog.tsx';
 import TextInputControl from '@components/forms/controls/TextInputControl.tsx';
@@ -9,12 +10,12 @@ import PasswordInputControl from '@components/forms/controls/PasswordInputContro
 import SubmitButton from '@components/forms/controls/SubmitButton.tsx';
 import ContentLoading from '@components/ContentLoading.tsx';
 import useScopedContextTranslator from '@hooks/useScopedTranslator.ts';
-import {useCreateEmailBox} from '@api/emailTamerApiComponents.ts';
+import {useCreateEmailBox, useTestConnection} from '@api/emailTamerApiComponents.ts';
 import {getAppControlActions} from '@store/AppControlStore.ts';
 import DoubleLabeledSwitch from '@components/forms/controls/DoubleLabeledSwitch.tsx';
 import LabeledCheckbox from '@components/forms/controls/LabeledCheckbox.tsx';
-import {Stack} from '@mui/material';
 import Fieldset from '@components/forms/Fieldset.tsx';
+import {ConnectionFault} from '@api/emailTamerApiSchemas.ts';
 
 interface AddEmailBoxDialogFormProps {
     open: boolean;
@@ -83,7 +84,7 @@ const AddEmailBoxDialogForm = ({open, onClose, refetch}: AddEmailBoxDialogFormPr
         }
     }, [useDefaultImapPorts, useSSl, setValue]);
 
-    const {mutate: createEmailBox, isPending} = useCreateEmailBox({
+    const {mutate: createEmailBox, isPending: isCreating} = useCreateEmailBox({
         onSuccess: () => {
             setSuccessNotification(t('addSuccess'));
             form.reset();
@@ -95,10 +96,37 @@ const AddEmailBoxDialogForm = ({open, onClose, refetch}: AddEmailBoxDialogFormPr
         },
     });
 
+    const {mutate: testConnection, isPending: isTesting} = useTestConnection({
+        onSuccess: () => {
+            setSuccessNotification(t('testConnectionSuccess'));
+
+            const data = form.getValues();
+
+            createEmailBox({
+                body: {
+                    boxName: data.boxName || null,
+                    userName: !data.authenticateByEmail ? data.userName : null,
+                    email: data.email,
+                    password: data.password,
+                    emailDomainConnectionHost: data.emailDomainConnectionHost,
+                    emailDomainConnectionPort: data.emailDomainConnectionPort,
+                    authenticateByEmail: data.authenticateByEmail,
+                    useSSl: data.useSSl,
+                },
+            });
+        },
+        onError: (error) => {
+            const fault = error as any as ConnectionFault;
+            const errorMessage = ConnectionFault !== undefined && fault !== ConnectionFault.Other
+                ? t('testConnectionError') + t(`connectionFault.${fault}`)
+                : t('testConnectionError');
+            setErrorNotification(errorMessage);
+        },
+    });
+
     const onSubmit = (data: EmailBoxFormData) => {
-        createEmailBox({
+        testConnection({
             body: {
-                boxName: data.boxName || null,
                 userName: !data.authenticateByEmail ? data.userName : null,
                 email: data.email,
                 password: data.password,
@@ -106,9 +134,11 @@ const AddEmailBoxDialogForm = ({open, onClose, refetch}: AddEmailBoxDialogFormPr
                 emailDomainConnectionPort: data.emailDomainConnectionPort,
                 authenticateByEmail: data.authenticateByEmail,
                 useSSl: data.useSSl,
-            }
+            },
         });
     };
+
+    const isPending = isTesting || isCreating;
 
     return (
         <EmailTamerDialog

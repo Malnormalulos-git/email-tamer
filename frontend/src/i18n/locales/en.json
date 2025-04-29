@@ -108,6 +108,13 @@
           "hostRequired": "Connection host is required",
           "portRequired": "Connection port is required",
           "invalidPort": "Port must be a positive number"
+        },
+        "testConnectionSuccess": "Connection to email box is successful",
+        "testConnectionError": "Connection to email box has been failed",
+        "connectionFault": {
+          "connectionRefused": ": check email domain host and/or port configuration",
+          "portOutOfRange": ": host port is out of range",
+          "wrongAuthenticationCredentials": ": wrong authentication credentials"
         }
       },
       "moreMenu": {
