@@ -6,7 +6,7 @@ interface DoubleLabeledSwitchProps<T extends object> {
     rightLabel: string;
     id: Path<T>;
     form: UseFormReturn<T>;
-    disabled: boolean;
+    disabled?: boolean;
 }
 
 const DoubleLabeledSwitch = <T extends object>({

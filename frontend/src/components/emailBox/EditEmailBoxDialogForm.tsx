@@ -1,7 +1,7 @@
 ﻿import {useForm} from 'react-hook-form';
 import {z} from 'zod';
 import {zodResolver} from '@hookform/resolvers/zod';
-import {useEffect, useState} from 'react';
+import {useEffect} from 'react';
 import {Stack} from '@mui/material';
 
 import EmailTamerDialog from '@components/forms/EmailTamerDialog.tsx';
@@ -10,11 +10,12 @@ import PasswordInputControl from '@components/forms/controls/PasswordInputContro
 import SubmitButton from '@components/forms/controls/SubmitButton.tsx';
 import ContentLoading from '@components/ContentLoading.tsx';
 import useScopedContextTranslator from '@hooks/useScopedTranslator.ts';
-import {useEditEmailBox, useGetEmailBoxDetails} from '@api/emailTamerApiComponents.ts';
+import {useEditEmailBox, useGetEmailBoxDetails, useTestConnection} from '@api/emailTamerApiComponents.ts';
 import {getAppControlActions} from '@store/AppControlStore.ts';
 import DoubleLabeledSwitch from '@components/forms/controls/DoubleLabeledSwitch.tsx';
 import LabeledCheckbox from '@components/forms/controls/LabeledCheckbox.tsx';
 import Fieldset from '@components/forms/Fieldset.tsx';
+import {ConnectionFault} from '@api/emailTamerApiSchemas.ts';
 
 interface EditEmailBoxDialogFormProps {
     open: boolean;
@@ -51,14 +52,11 @@ type EmailBoxFormData = z.infer<ReturnType<typeof editEmailBoxSchema>>;
 
 const EditEmailBoxDialogForm = ({open, onClose, refetch, boxId}: EditEmailBoxDialogFormProps) => {
     const {t} = useScopedContextTranslator();
-    const {setErrorNotification, setSuccessNotification} = getAppControlActions();
-
-    const [showPassword, setShowPassword] = useState(false);
-    const handleClickShowPassword = () => setShowPassword(!showPassword);
+    const {setErrorNotification, setSuccessNotification, setInfoNotification} = getAppControlActions();
 
     const {data: emailBox, isLoading: isFetching} = useGetEmailBoxDetails({
         pathParams: {id: boxId},
-    });
+    }, {enabled: open});
 
     const form = useForm<EmailBoxFormData>({
         resolver: zodResolver(editEmailBoxSchema(t)),
@@ -102,7 +100,7 @@ const EditEmailBoxDialogForm = ({open, onClose, refetch, boxId}: EditEmailBoxDia
         }
     }, [useDefaultImapPorts, useSSl, setValue]);
 
-    const {mutate: editEmailBox, isPending} = useEditEmailBox({
+    const {mutate: editEmailBox, isPending: isEditing} = useEditEmailBox({
         onSuccess: () => {
             setSuccessNotification(t('editSuccess'));
             form.reset();
@@ -114,16 +112,47 @@ const EditEmailBoxDialogForm = ({open, onClose, refetch, boxId}: EditEmailBoxDia
                 const emailBox = form.getValues('email');
                 setErrorNotification(t('error.alreadyExist') + emailBox);
             }
+            else if (error?.status == 304) {
+                setInfoNotification(t('error.notModified'));
+            }
             else
                 setErrorNotification(t('editError'));
         },
     });
 
+    const {mutate: testConnection, isPending: isTesting} = useTestConnection({
+        onSuccess: () => {
+            setSuccessNotification(t('testConnectionSuccess'));
+
+            const data = form.getValues();
+
+            editEmailBox({
+                body: {
+                    id: boxId,
+                    boxName: data.boxName || null,
+                    userName: data.userName || null,
+                    email: data.email,
+                    password: data.password || null,
+                    emailDomainConnectionHost: data.emailDomainConnectionHost,
+                    emailDomainConnectionPort: data.emailDomainConnectionPort,
+                    authenticateByEmail: data.authenticateByEmail,
+                    useSSl: data.useSSl,
+                },
+            });
+        },
+        onError: (error) => {
+            const fault = error as any as ConnectionFault;
+            const errorMessage = ConnectionFault !== undefined && fault !== ConnectionFault.Other
+                ? t('testConnectionError') + t(`connectionFault.${fault}`)
+                : t('testConnectionError');
+            setErrorNotification(errorMessage);
+        },
+    });
+
     const onSubmit = (data: EmailBoxFormData) => {
-        editEmailBox({
+        testConnection({
             body: {
                 id: boxId,
-                boxName: data.boxName || null,
                 userName: data.userName || null,
                 email: data.email,
                 password: data.password || null,
@@ -134,6 +163,8 @@ const EditEmailBoxDialogForm = ({open, onClose, refetch, boxId}: EditEmailBoxDia
             },
         });
     };
+
+    const isPending = isEditing || isFetching || isTesting;
 
     return (
         <EmailTamerDialog
@@ -152,12 +183,10 @@ const EditEmailBoxDialogForm = ({open, onClose, refetch, boxId}: EditEmailBoxDia
                 </SubmitButton>
             }
         >
-            {isFetching ? (
-                <ContentLoading/>
-            ) : (
-                <Fieldset disabled={isPending}>
+            {isFetching
+                ? <ContentLoading/>
+                : <Fieldset disabled={isPending}>
                     <TextInputControl
-                        autoFocus
                         label={t('boxName')}
                         form={form}
                         id='boxName'
@@ -175,8 +204,6 @@ const EditEmailBoxDialogForm = ({open, onClose, refetch, boxId}: EditEmailBoxDia
                         id='email'
                     />
                     <PasswordInputControl
-                        showPassword={showPassword}
-                        handleClickShowPassword={handleClickShowPassword}
                         label={t('password')}
                         form={form}
                         id='password'
@@ -199,23 +226,20 @@ const EditEmailBoxDialogForm = ({open, onClose, refetch, boxId}: EditEmailBoxDia
                             rightLabel={t('authenticateByEmail')}
                             id={'authenticateByEmail'}
                             form={form}
-                            disabled={isPending}
                         />
                         <LabeledCheckbox
                             label={t('useSSl')}
                             id={'useSSl'}
                             form={form}
-                            disabled={isPending}
                         />
                         <LabeledCheckbox
                             label={t('useDefaultImapPorts')}
                             id={'useDefaultImapPorts'}
                             form={form}
-                            disabled={isPending}
                         />
                     </Stack>
                 </Fieldset>
-            )}
+            }
         </EmailTamerDialog>
     );
 };

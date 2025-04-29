@@ -1,7 +1,7 @@
 ﻿import {useForm} from 'react-hook-form';
 import {z} from 'zod';
 import {zodResolver} from '@hookform/resolvers/zod';
-import {useEffect, useState} from 'react';
+import {useEffect} from 'react';
 import {Stack} from '@mui/material';
 
 import EmailTamerDialog from '@components/forms/EmailTamerDialog.tsx';
@@ -54,9 +54,6 @@ type EmailBoxFormData = z.infer<ReturnType<typeof createEmailBoxSchema>>;
 const AddEmailBoxDialogForm = ({open, onClose, refetch}: AddEmailBoxDialogFormProps) => {
     const {t} = useScopedContextTranslator();
     const {setErrorNotification, setSuccessNotification} = getAppControlActions();
-
-    const [showPassword, setShowPassword] = useState(false);
-    const handleClickShowPassword = () => setShowPassword(!showPassword);
 
     const form = useForm<EmailBoxFormData>({
         resolver: zodResolver(createEmailBoxSchema(t)),
@@ -164,7 +161,6 @@ const AddEmailBoxDialogForm = ({open, onClose, refetch}: AddEmailBoxDialogFormPr
         >
             <Fieldset disabled={isPending}>
                 <TextInputControl
-                    autoFocus
                     label={t('boxName')}
                     form={form}
                     id='boxName'
@@ -182,8 +178,6 @@ const AddEmailBoxDialogForm = ({open, onClose, refetch}: AddEmailBoxDialogFormPr
                     id='email'
                 />
                 <PasswordInputControl
-                    showPassword={showPassword}
-                    handleClickShowPassword={handleClickShowPassword}
                     label={t('password')}
                     form={form}
                     id='password'
@@ -206,19 +200,16 @@ const AddEmailBoxDialogForm = ({open, onClose, refetch}: AddEmailBoxDialogFormPr
                         rightLabel={t('authenticateByEmail')}
                         id={'authenticateByEmail'}
                         form={form}
-                        disabled={isPending}
                     />
                     <LabeledCheckbox
                         label={t('useSSl')}
                         id={'useSSl'}
                         form={form}
-                        disabled={isPending}
                     />
                     <LabeledCheckbox
                         label={t('useDefaultImapPorts')}
                         id={'useDefaultImapPorts'}
                         form={form}
-                        disabled={isPending}
                     />
                 </Stack>
             </Fieldset>

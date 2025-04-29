@@ -10,8 +10,9 @@ import {formatDateTime} from '@utils/formatDateTime.ts';
 
 import GenericEmailTamerList from '@components/GenericEmailTamerList.tsx';
 
+import Tooltip from '@mui/material/Tooltip';
+
 import {TranslationScopeProvider} from '../../i18n/contexts/TranslationScopeContext.tsx';
-import Tooltip from "@mui/material/Tooltip";
 
 interface EmailBoxesSectionProps {
     emailBoxesIds: string[];

@@ -5,7 +5,7 @@ interface LabeledCheckboxProps<T extends object> {
     label: string;
     id: Path<T>;
     form: UseFormReturn<T>;
-    disabled: boolean;
+    disabled?: boolean;
 }
 
 const LabeledCheckbox = <T extends object>({label, id, form, disabled}: LabeledCheckboxProps<T>) => {

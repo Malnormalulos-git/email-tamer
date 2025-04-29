@@ -30,14 +30,14 @@ const EditEmailBoxMenuItem = ({box, refetch, onCloseMenu}: EditEmailBoxMenuItemP
             <MenuItem onClick={handleOpenEditDialog}>
                 {t('edit')}
             </MenuItem>
-            {openEditDialog && <TranslationScopeProvider scope='homePage.emailBoxesSection.emailBoxForm' rewriteScope>
+            <TranslationScopeProvider scope='homePage.emailBoxesSection.emailBoxForm' rewriteScope>
                 <EditEmailBoxDialogForm
                     open={openEditDialog}
                     onClose={handleCloseEditDialog}
                     refetch={refetch}
                     boxId={box.id!}
                 />
-            </TranslationScopeProvider>}
+            </TranslationScopeProvider>
         </>
     );
 };
