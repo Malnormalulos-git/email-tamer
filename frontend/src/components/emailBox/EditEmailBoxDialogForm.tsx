@@ -109,8 +109,13 @@ const EditEmailBoxDialogForm = ({open, onClose, refetch, boxId}: EditEmailBoxDia
             refetch();
             onClose();
         },
-        onError: () => {
-            setErrorNotification(t('editError'));
+        onError: (error) => {
+            if(error?.status == 409) {
+                const emailBox = form.getValues('email');
+                setErrorNotification(t('error.alreadyExist') + emailBox);
+            }
+            else
+                setErrorNotification(t('editError'));
         },
     });
 

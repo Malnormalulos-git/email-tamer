@@ -99,6 +99,7 @@
         "editSuccess": "Email box changed successfully",
         "addError": "Failed to add email box",
         "editError": "Failed to edit email box",
+        "error.alreadyExist": "You already have email box ",
         "validation": {
           "boxNameRequired": "Box name is required",
           "userNameRequired": "Username is required when not authenticating by email",
