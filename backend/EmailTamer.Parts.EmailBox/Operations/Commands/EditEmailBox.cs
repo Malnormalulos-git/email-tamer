@@ -68,11 +68,13 @@ public class EditEmailBoxCommandHandler([FromKeyedServices(nameof(TenantDbContex
 
         if (changedProperties.Any(p => p.Key == nameof(emailBox.Email)))
         {
-            var duplicateExists = await repository.ReadAsync((r, ct) =>
+            var emailBoxes = await repository.ReadAsync((r, ct) =>
                 r.Set<Database.Tenant.Entities.EmailBox>()
-                    .AnyAsync(x => x.Email == command.EditEmailBoxDto.Email, ct),
+                    .ToListAsync(ct),
                 cancellationToken);
 
+            var duplicateExists = emailBoxes.Any(x => x.Email == command.EditEmailBoxDto.Email);
+            
             if (duplicateExists)
             {
                 return new ConflictResult();

@@ -74,9 +74,9 @@ internal class BackUpEmailBoxMessagesCommandHandler(
                     cancellationToken);
             }
 
-            AssignThreadIds(backedUpMessages, newMessagesDictionary);
-
             await client.DisconnectAsync(true, cancellationToken);
+
+            AssignThreadIds(backedUpMessages, newMessagesDictionary);
 
             await repository.WriteInTransactionAsync(IsolationLevel.ReadCommitted, async (repo, ct) =>
             {

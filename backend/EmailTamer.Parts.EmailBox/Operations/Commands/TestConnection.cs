@@ -29,7 +29,8 @@ public class TestConnectionCommandHandler(IMapper mapper) : IRequestHandler<Test
 
         try
         {
-            await MailKitImapConnector.ConnectToImapClient(mappedEmailBox, cancellationToken);
+            var client = await MailKitImapConnector.ConnectToImapClient(mappedEmailBox, cancellationToken);
+            await client.DisconnectAsync(true, cancellationToken);
         }
         catch (MailKitImapConnectorException e)
         {

@@ -30,17 +30,17 @@ public class CreateEmailBoxCommandHandler(
 {
 	public async Task<IActionResult> Handle(CreateEmailBox command, CancellationToken cancellationToken)
     {
-        var emailBox = await repository.ReadAsync((r, ct) =>
+        var emailBoxes = await repository.ReadAsync((r, ct) =>
                 r.Set<Database.Tenant.Entities.EmailBox>()
-                    .FirstOrDefaultAsync(x => x.Email == command.EmailBox.Email, ct),
+                    .ToListAsync(ct),
             cancellationToken);
 
-        if (emailBox is not null)
+        if (emailBoxes.Any(x => x.Email == command.EmailBox.Email))
         {
             return new ConflictResult();
         }
         
-        emailBox = mapper.Map<Database.Tenant.Entities.EmailBox>(command.EmailBox); 
+        var emailBox = mapper.Map<Database.Tenant.Entities.EmailBox>(command.EmailBox); 
         
         emailBox.Id = Guid.NewGuid();
 

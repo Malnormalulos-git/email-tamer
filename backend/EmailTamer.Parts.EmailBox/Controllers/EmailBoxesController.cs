@@ -15,6 +15,7 @@ public class EmailBoxesController(IMediator mediator) : Controller
     [HttpPost(Name = nameof(CreateEmailBox))]
     [Authorize(Policy = AuthPolicy.User)]
     [ProducesResponseType(200)]
+    [ProducesResponseType(409)]
     public Task<IActionResult> CreateEmailBox([FromBody] CreateEmailBoxDto createEmailBoxDto, CancellationToken ct = default) =>
         mediator.Send(new CreateEmailBox(createEmailBoxDto), ct);
     
@@ -36,6 +37,7 @@ public class EmailBoxesController(IMediator mediator) : Controller
     [Authorize(Policy = AuthPolicy.User)]
     [ProducesResponseType(200)]
     [ProducesResponseType(304)]
+    [ProducesResponseType(409)]
     public Task<IActionResult> EditEmailBox([FromBody] EditEmailBoxDto editEmailBoxDto, CancellationToken ct = default) =>
         mediator.Send(new EditEmailBox(editEmailBoxDto), ct);
     
