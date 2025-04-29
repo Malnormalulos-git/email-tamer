@@ -33,7 +33,7 @@ public class TestConnectionCommandHandler(
     {
         var mappedEmailBox = mapper.Map<Database.Tenant.Entities.EmailBox>(command.EmailBox);
 
-        if (command.EmailBox.Id != null && command.EmailBox.Password == null)
+        if (command.EmailBox.Id != null && string.IsNullOrEmpty(command.EmailBox.Password))
         {
             var existingEmailBox = await repository.ReadAsync((r, ct) =>
                 r.Set<Database.Tenant.Entities.EmailBox>()
