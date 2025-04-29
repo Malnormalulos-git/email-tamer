@@ -38,7 +38,14 @@ const GenericEmailTamerList = ({items, showDivider = false, ...props}: GenericEm
                             {item.icon && <ListItemIcon>{item.icon}</ListItemIcon>}
                             {item.tooltip ? (
                                 <Tooltip title={item.tooltip} followCursor>
-                                    <ListItemText primary={item.label} secondary={item.secondary}/>
+                                    <ListItemText
+                                        primary={item.label}
+                                        secondary={item.secondary}
+                                        sx={{
+                                            wordBreak: 'break-word',
+                                            maxWidth: 'calc(100% - 80px)',
+                                        }}
+                                    />
                                 </Tooltip>
                             ) : (
                                 <ListItemText primary={item.label} secondary={item.secondary}/>
