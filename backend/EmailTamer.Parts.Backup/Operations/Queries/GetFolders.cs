@@ -1,12 +1,8 @@
 using AutoMapper;
-using EmailTamer.Core.Extensions;
-using EmailTamer.Database.Extensions;
 using EmailTamer.Database.Persistence;
 using EmailTamer.Database.Tenant;
 using EmailTamer.Database.Tenant.Entities;
-using EmailTamer.Database.Utilities.Paging;
 using EmailTamer.Parts.Sync.Models;
-using FluentValidation;
 using JetBrains.Annotations;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -32,6 +28,6 @@ public class GetFoldersQueryHandler(
                     .ToListAsync(ct)
             , cancellationToken);
             
-        return new OkObjectResult(folders);
+        return new OkObjectResult(folders.OrderBy(f => f.Name));
     }
 }
