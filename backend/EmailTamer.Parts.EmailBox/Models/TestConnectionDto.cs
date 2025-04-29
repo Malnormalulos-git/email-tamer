@@ -8,13 +8,15 @@ namespace EmailTamer.Parts.EmailBox.Models;
 
 public sealed class TestConnectionDto : IMappable, IInbound
 {
+    public Guid? Id { get; set; }
+    
     public string? UserName { get; set; }
 
     public string Email { get; set; } = null!;
 
     public bool AuthenticateByEmail { get; set; } = true;
 
-    public string Password { get; set; } = null!;
+    public string? Password { get; set; } = null!;
 
     public string EmailDomainConnectionHost { get; set; } = null!;
 
@@ -26,6 +28,11 @@ public sealed class TestConnectionDto : IMappable, IInbound
     {
         public TestEmailBoxConnectionDtoValidator()
         {
+            RuleFor(x => x.Id)
+                .NotNull()
+                .NotEmpty()
+                .When(x => x.Password == null);
+            
             RuleFor(x => x.UserName)
                 .NotEmpty()
                 .When(x => x.AuthenticateByEmail == false);
@@ -35,7 +42,9 @@ public sealed class TestConnectionDto : IMappable, IInbound
                 .Email();
 
             RuleFor(x => x.Password)
-                .NotEmpty();
+                .NotNull()
+                .NotEmpty()
+                .When(x => x.Id == null);
 
             RuleFor(x => x.EmailDomainConnectionHost)
                 .NotEmpty();

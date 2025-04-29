@@ -52,6 +52,7 @@ public class EmailBoxesController(IMediator mediator) : Controller
     [Authorize(Policy = AuthPolicy.User)]
     [ProducesResponseType(200)]
     [ProducesResponseType(typeof(ConnectionFault), 400)]
+    [ProducesResponseType(404)]
     public Task<IActionResult> TestConnection([FromBody] TestConnectionDto testConnectionDto, CancellationToken ct = default) =>
         mediator.Send(new TestConnection(testConnectionDto), ct);
 }
