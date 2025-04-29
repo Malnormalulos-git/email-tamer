@@ -33,6 +33,7 @@ const DoubleLabeledSwitch = <T extends object>({
             <Switch
                 {...register(id)}
                 disabled={disabled}
+                onClick={() => form.clearErrors()}
             />
             <Typography
                 sx={{
