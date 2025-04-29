@@ -181,6 +181,10 @@ export type MessagesThreadShortDtoPagedResult = {
 };
 
 export type TestConnectionDto = {
+  /**
+   * @format uuid
+   */
+  id?: string | null;
   userName?: string | null;
   email?: string | null;
   authenticateByEmail?: boolean;
