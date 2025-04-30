@@ -36,6 +36,8 @@ const EmailBoxesSection = ({emailBoxesIds, setEmailBoxesIds}: EmailBoxesSectionP
 
         if (currentIndex === -1 || currentIndex === undefined) {
             newEmailBoxesIds.push(boxId);
+        } else if (emailBoxesIds.length === 1) {
+            return;
         } else {
             newEmailBoxesIds.splice(currentIndex, 1);
         }
