@@ -13,6 +13,9 @@ import {
     Folder as FolderIcon
 } from '@mui/icons-material';
 
+import {getUrlParam, setUrlParam} from '@utils/urlUtils.ts';
+import {SELECTED_BOXES_IDS_PARAM, SELECTED_FOLDER_ID_PARAM} from '@router/urlParams.ts';
+
 import {TranslationScopeProvider} from '../i18n/contexts/TranslationScopeContext.tsx';
 
 const APPBAR_HEIGHT = 50;
@@ -21,8 +24,19 @@ const HomePage = () => {
     const [foldersDrawerOpen, toggleFoldersDrawer] = useReducer((state) => !state, false);
     const [emailBoxesDrawerOpen, toggleEmailBoxesDrawer] = useReducer((state) => !state, false);
 
-    const [selectedFolderId, setSelectedFolderId] = useState<string | null>(null);
-    const [selectedEmailBoxesIds, setSelectedEmailBoxesIds] = useState<string[]>([]);
+    const folderIdParam = getUrlParam(SELECTED_FOLDER_ID_PARAM);
+    const [selectedFolderId, setSelectedFolderId] = useState<string | null>(folderIdParam);
+    const handleSetSelectedFolderId = (folderId: string | null) => {
+        setUrlParam(SELECTED_FOLDER_ID_PARAM, folderId);
+        setSelectedFolderId(folderId);
+    };
+
+    const emailBoxesIdsParam = getUrlParam(SELECTED_BOXES_IDS_PARAM)?.split(',') || [];
+    const [selectedEmailBoxesIds, setSelectedEmailBoxesIds] = useState<string[]>(emailBoxesIdsParam);
+    const handleSetSelectedEmailBoxesIds = (emailBoxesIds: string[]) => {
+        setUrlParam(SELECTED_BOXES_IDS_PARAM, emailBoxesIds.join(','));
+        setSelectedEmailBoxesIds(emailBoxesIds);
+    };
 
     return (
         <>
@@ -71,7 +85,7 @@ const HomePage = () => {
                     <TranslationScopeProvider scope='foldersSection'>
                         <FoldersSection
                             selectedFolderId={selectedFolderId}
-                            setSelectedFolderId={setSelectedFolderId}
+                            setSelectedFolderId={handleSetSelectedFolderId}
                         />
                     </TranslationScopeProvider>
                 </Grid2>
@@ -106,7 +120,7 @@ const HomePage = () => {
                     <TranslationScopeProvider scope='emailBoxesSection'>
                         <EmailBoxesSection
                             emailBoxesIds={selectedEmailBoxesIds}
-                            setEmailBoxesIds={setSelectedEmailBoxesIds}
+                            setEmailBoxesIds={handleSetSelectedEmailBoxesIds}
                         />
                     </TranslationScopeProvider>
                 </Grid2>
@@ -133,7 +147,7 @@ const HomePage = () => {
                         <FoldersSection
                             selectedFolderId={selectedFolderId}
                             setSelectedFolderId={(id) => {
-                                setSelectedFolderId(id);
+                                handleSetSelectedFolderId(id);
                                 toggleFoldersDrawer();
                             }}
                         />
@@ -160,7 +174,7 @@ const HomePage = () => {
                     <TranslationScopeProvider scope='emailBoxesSection'>
                         <EmailBoxesSection
                             emailBoxesIds={selectedEmailBoxesIds}
-                            setEmailBoxesIds={setSelectedEmailBoxesIds}
+                            setEmailBoxesIds={handleSetSelectedEmailBoxesIds}
                         />
                     </TranslationScopeProvider>
                 </Box>

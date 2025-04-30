@@ -2,13 +2,13 @@ import {useEffect, useRef, useState} from 'react';
 import {Paper, InputBase, IconButton} from '@mui/material';
 import {Search, Clear as ClearIcon} from '@mui/icons-material';
 import {useNavigate} from 'react-router-dom';
-import {useUrlParam} from '@hooks/useUrlParam.ts';
 import {HOME_ROUTE} from '@router/routes.ts';
 import useScopedContextTranslator from '@hooks/useScopedTranslator.ts';
 import {SEARCH_PARAM} from '@router/urlParams.ts';
+import {getUrlParam} from '@utils/urlUtils.ts';
 
 const SearchBar = () => {
-    const searchTerm = useUrlParam(SEARCH_PARAM);
+    const searchTerm = getUrlParam(SEARCH_PARAM);
     const [searchValue, setSearchValue] = useState('');
     const navigate = useNavigate();
     const inputRef = useRef<HTMLInputElement | null>(null);

@@ -2,12 +2,12 @@
 import {useGetMessagesThreads} from '@api/emailTamerApiComponents.ts';
 import ContentLoading from '@components/ContentLoading.tsx';
 import useScopedContextTranslator from '@hooks/useScopedTranslator.ts';
-import {useReducer, useState} from 'react';
-import {SEARCH_PARAM} from '@router/urlParams.ts';
-import {useUrlParam} from '@hooks/useUrlParam';
+import {useEffect, useReducer, useState} from 'react';
+import {IS_BY_DESCENDING_PARAM, PAGE_PARAM, SEARCH_PARAM} from '@router/urlParams.ts';
 import ThreadPreview from '@components/homePage/messagesSection/ThreadPreview.tsx';
 import PagesHandler from '@components/homePage/messagesSection/PagesHandler.tsx';
 import usePreferencesStore from '@store/PreferencesStore.ts';
+import {getUrlParam, setUrlParam} from '@utils/urlUtils.ts';
 
 interface MessagesSectionProps {
     selectedFolderId: string | null;
@@ -15,17 +15,30 @@ interface MessagesSectionProps {
 }
 
 const MessagesSection = ({selectedFolderId, emailBoxesIds}: MessagesSectionProps) => {
-    const [page, setPage] = useState(1);
+    const pageParam = Number(getUrlParam(PAGE_PARAM || '1'));
+
+    const [page, setPage] = useState(pageParam);
+    const handleSetPage = (page: number) => {
+        setUrlParam(PAGE_PARAM, page);
+        setPage(page);
+    };
+    useEffect(() => {
+        if(page !== 1)
+            handleSetPage(1);
+    }, [selectedFolderId, emailBoxesIds]);
 
     const {preferences, setMessagesPerPage: setMessagesPerPageToStore} = usePreferencesStore();
     const [messagesPerPage, setMessagesPerPage] = useState(preferences.messagesPerPage);
 
-    const [isByDescending, toggleIsByDescending] = useReducer((state) => {
-        setPage(1);
-        return !state;
-    }, true);
+    const isByDescParam = Boolean(JSON.parse(getUrlParam(IS_BY_DESCENDING_PARAM) || 'true'));
 
-    const searchTerm = useUrlParam(SEARCH_PARAM);
+    const [isByDescending, toggleIsByDescending] = useReducer((state) => {
+        handleSetPage(1);
+        setUrlParam(IS_BY_DESCENDING_PARAM, !state);
+        return !state;
+    }, isByDescParam);
+
+    const searchTerm = getUrlParam(SEARCH_PARAM);
 
     const isAnyEmaiBoxSelected = emailBoxesIds.length > 0;
 
@@ -41,8 +54,7 @@ const MessagesSection = ({selectedFolderId, emailBoxesIds}: MessagesSectionProps
     },
     {
         enabled: isAnyEmaiBoxSelected,
-    }
-    );
+    });
 
     const {t} = useScopedContextTranslator();
 
@@ -62,7 +74,7 @@ const MessagesSection = ({selectedFolderId, emailBoxesIds}: MessagesSectionProps
                         isByDescending={isByDescending}
                         toggleIsByDescending={toggleIsByDescending}
                         page={page}
-                        setPage={setPage}
+                        setPage={handleSetPage}
                         messagesPerPage={messagesPerPage}
                         setMessagesPerPage={handleSetMessagesPerPage}
                         totalMessages={messagesThreads?.total}

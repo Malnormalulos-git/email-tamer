@@ -25,10 +25,10 @@ const EmailBoxesSection = ({emailBoxesIds, setEmailBoxesIds}: EmailBoxesSectionP
     const [openAddEmailBoxDialog, setOpenAddEmailBoxDialog] = useState(false);
 
     useEffect(() => {
-        if (emailBoxes) {
+        if (emailBoxes && emailBoxesIds.length === 0) {
             setEmailBoxesIds(emailBoxes.map((emailBox) => emailBox.id!));
         }
-    }, [emailBoxes, setEmailBoxesIds]);
+    }, [emailBoxes, emailBoxesIds]);
 
     const handleToggle = (boxId: string) => () => {
         const currentIndex = emailBoxesIds?.indexOf(boxId);
