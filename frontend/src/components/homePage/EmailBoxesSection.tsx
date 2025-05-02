@@ -1,5 +1,5 @@
 ﻿import {Checkbox, Typography, Box, Button, Stack} from '@mui/material';
-import {useGetEmailBoxes, useGetEmailBoxesStatuses} from '@api/emailTamerApiComponents.ts';
+import {useBackUpEmailBoxesMessages, useGetEmailBoxes, useGetEmailBoxesStatuses} from '@api/emailTamerApiComponents.ts';
 import ContentLoading from '@components/ContentLoading.tsx';
 import useScopedContextTranslator from '@hooks/useScopedTranslator.ts';
 import {Add, Cloud, CloudDownload, CloudSync, Warning} from '@mui/icons-material';
@@ -21,9 +21,22 @@ interface EmailBoxesSectionProps {
 const EmailBoxesSection = ({emailBoxesIds, setEmailBoxesIds}: EmailBoxesSectionProps) => {
     const {data: emailBoxes, isLoading, refetch} = useGetEmailBoxes({});
 
-    const {data: emailBoxesStatuses, isLoading: isStatusesLoading} = useGetEmailBoxesStatuses({},
+    const {data: emailBoxesStatuses, isLoading: isStatusesLoading, refetch: refetchStatuses} = useGetEmailBoxesStatuses({},
         {refetchInterval: 5000}
     );
+
+    const {mutate: backupBoxes, isPending: isBackuping} = useBackUpEmailBoxesMessages({
+        onSettled: () => refetchStatuses(),
+    });
+
+    const handleBackupButtonClick = () => {
+        backupBoxes({
+            queryParams: {
+                emailBoxesIds: emailBoxesIds.join(', ')
+            }
+        });
+        setTimeout(refetchStatuses, 200);
+    };
 
     const {t} = useScopedContextTranslator();
     const [openAddEmailBoxDialog, setOpenAddEmailBoxDialog] = useState(false);
@@ -149,7 +162,8 @@ const EmailBoxesSection = ({emailBoxesIds, setEmailBoxesIds}: EmailBoxesSectionP
                             variant='contained'
                             size='small'
                             startIcon={<CloudDownload/>}
-                            onClick={() => console.log('sync all')}
+                            onClick={handleBackupButtonClick}
+                            disabled={isBackuping}
                             sx={{mr: 1}}
                         >
                             {t('backup')}
