@@ -1,16 +1,15 @@
-﻿import {Checkbox, IconButton, Typography, Box, Button, Stack} from '@mui/material';
-import {useGetEmailBoxes} from '@api/emailTamerApiComponents.ts';
+﻿import {Checkbox, Typography, Box, Button, Stack} from '@mui/material';
+import {useGetEmailBoxes, useGetEmailBoxesStatuses} from '@api/emailTamerApiComponents.ts';
 import ContentLoading from '@components/ContentLoading.tsx';
 import useScopedContextTranslator from '@hooks/useScopedTranslator.ts';
-import {Add, Refresh, Warning} from '@mui/icons-material';
+import {Add, Cloud, CloudDownload, CloudSync, Warning} from '@mui/icons-material';
 import {useEffect, useState} from 'react';
 import AddEmailBoxDialogForm from '@components/emailBox/AddEmailBoxDialogForm.tsx';
 import EmailBoxMoreMenu from '@components/emailBox/moreMenu/EmailBoxMoreMenu.tsx';
 import {formatDateTime} from '@utils/formatDateTime.ts';
-
 import GenericEmailTamerList from '@components/GenericEmailTamerList.tsx';
-
 import Tooltip from '@mui/material/Tooltip';
+import {BackupStatus} from '@api/emailTamerApiSchemas.ts';
 
 import {TranslationScopeProvider} from '../../i18n/contexts/TranslationScopeContext.tsx';
 
@@ -21,6 +20,11 @@ interface EmailBoxesSectionProps {
 
 const EmailBoxesSection = ({emailBoxesIds, setEmailBoxesIds}: EmailBoxesSectionProps) => {
     const {data: emailBoxes, isLoading, refetch} = useGetEmailBoxes({});
+
+    const {data: emailBoxesStatuses, isLoading: isStatusesLoading} = useGetEmailBoxesStatuses({},
+        {refetchInterval: 5000}
+    );
+
     const {t} = useScopedContextTranslator();
     const [openAddEmailBoxDialog, setOpenAddEmailBoxDialog] = useState(false);
 
@@ -28,13 +32,13 @@ const EmailBoxesSection = ({emailBoxesIds, setEmailBoxesIds}: EmailBoxesSectionP
         if (emailBoxes && emailBoxesIds.length === 0) {
             setEmailBoxesIds(emailBoxes.map((emailBox) => emailBox.id!));
         }
-    }, [emailBoxes, emailBoxesIds]);
+    }, [emailBoxes, emailBoxesIds, setEmailBoxesIds]);
 
     const handleToggle = (boxId: string) => () => {
-        const currentIndex = emailBoxesIds?.indexOf(boxId);
-        const newEmailBoxesIds = [...(emailBoxesIds ?? [])];
+        const currentIndex = emailBoxesIds.indexOf(boxId);
+        const newEmailBoxesIds = [...emailBoxesIds];
 
-        if (currentIndex === -1 || currentIndex === undefined) {
+        if (currentIndex === -1) {
             newEmailBoxesIds.push(boxId);
         } else if (emailBoxesIds.length === 1) {
             return;
@@ -59,6 +63,46 @@ const EmailBoxesSection = ({emailBoxesIds, setEmailBoxesIds}: EmailBoxesSectionP
         setOpenAddEmailBoxDialog(false);
     };
 
+    const getBackupStatus = (boxId: string) => {
+        const status = emailBoxesStatuses?.find((status) => status.id === boxId)?.backupStatus;
+        return status || BackupStatus.Idle;
+    };
+
+    const renderStatusIcon = (boxId: string, connectionFault?: string) => {
+        if (connectionFault) {
+            return (
+                <Tooltip title={t(`connectionFault.${connectionFault}`)} followCursor>
+                    <Warning color='warning'/>
+                </Tooltip>
+            );
+        }
+
+        const status = getBackupStatus(boxId);
+        switch (status) {
+        case BackupStatus.InProgress:
+            return (
+                <Tooltip title={t('backupStatus.inProgress')}>
+                    <CloudSync color='secondary'/>
+                </Tooltip>
+            );
+        case BackupStatus.Queued:
+            return (
+                <Tooltip title={t('backupStatus.queued')}>
+                    <Cloud color='secondary'/>
+                </Tooltip>
+            );
+        case BackupStatus.Failed:
+            return (
+                <Tooltip title={t('backupStatus.failed')}>
+                    <Warning color='error'/>
+                </Tooltip>
+            );
+        case BackupStatus.Idle:
+        default:
+            return null;
+        }
+    };
+
     const items = emailBoxes?.map((box) => ({
         id: box.id!,
         label: box.boxName!,
@@ -71,13 +115,12 @@ const EmailBoxesSection = ({emailBoxesIds, setEmailBoxesIds}: EmailBoxesSectionP
                 disableRipple
             />
         ),
-        secondaryAction: <Stack direction='row' alignItems='center'>
-            {box.connectionFault &&
-                <Tooltip title={t(`connectionFault.${box.connectionFault}`)} followCursor>
-                    <Warning color='warning'/>
-                </Tooltip>}
-            <EmailBoxMoreMenu box={box} refetch={refetch} edge='end'/>
-        </Stack>,
+        secondaryAction: (
+            <Stack direction='row' alignItems='center' spacing={0}>
+                {renderStatusIcon(box.id!, box.connectionFault)}
+                <EmailBoxMoreMenu box={box} refetch={refetch}/>
+            </Stack>
+        ),
         tooltip: box.lastSyncAt !== null
             ? `${t(box.connectionFault ? 'lastSuccessfulSyncAt' : 'lastSyncAt')} ${formatDateTime(box.lastSyncAt!)}`
             : t('notSynced'),
@@ -93,15 +136,25 @@ const EmailBoxesSection = ({emailBoxesIds, setEmailBoxesIds}: EmailBoxesSectionP
                 alignItems='center'
                 sx={{m: 1, ml: 0.5}}
             >
-                {items.length > 0 && <Checkbox
-                    checked={emailBoxesIds.length === emailBoxes?.length && emailBoxes?.length > 0}
-                    onChange={handleSelectAll}
-                    sx={{mr: 1}}
-                />}
+                {items.length > 0 && (
+                    <Checkbox
+                        checked={emailBoxesIds.length === emailBoxes?.length && emailBoxes?.length > 0}
+                        onChange={handleSelectAll}
+                        sx={{mr: 1}}
+                    />
+                )}
                 <Box>
-                    {items.length > 0 && <IconButton onClick={() => console.log('sync all')} sx={{mr: 1}}>
-                        <Refresh/>
-                    </IconButton>}
+                    {items.length > 0 && (
+                        <Button
+                            variant='contained'
+                            size='small'
+                            startIcon={<CloudDownload/>}
+                            onClick={() => console.log('sync all')}
+                            sx={{mr: 1}}
+                        >
+                            {t('backup')}
+                        </Button>
+                    )}
                     <Button
                         variant='contained'
                         size='small'
@@ -112,7 +165,7 @@ const EmailBoxesSection = ({emailBoxesIds, setEmailBoxesIds}: EmailBoxesSectionP
                     </Button>
                 </Box>
             </Box>
-            {isLoading ? (
+            {isLoading || isStatusesLoading ? (
                 <ContentLoading/>
             ) : (
                 <GenericEmailTamerList items={items} sx={{width: '100%'}}/>

@@ -43,7 +43,7 @@ const GenericEmailTamerList = ({items, showDivider = false, ...props}: GenericEm
                                         secondary={item.secondary}
                                         sx={{
                                             wordBreak: 'break-word',
-                                            maxWidth: 'calc(100% - 80px)',
+                                            maxWidth: 'calc(100% - 90px)',
                                         }}
                                     />
                                 </Tooltip>

@@ -71,6 +71,7 @@
     "emailBoxesSection": {
       "emailBoxes": "Email boxes",
       "add": "Add",
+      "backup": "Backup",
       "lastSyncAt": "Last sync at: ",
       "lastSuccessfulSyncAt": "Last successful sync at: ",
       "notSynced": "Not synced",
@@ -132,6 +133,12 @@
           "success": "Email box deleted successfully",
           "error": "Failed to delete email box"
         }
+      },
+      "backupStatus": {
+        "inProgress": "Backup in progress...",
+        "queued": "Waiting for backup",
+        "failed": "Backup failed",
+        "idle": "Backup idle"
       }
     },
     "messagesSection": {
