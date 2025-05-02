@@ -1,3 +1,4 @@
+using EmailTamer.Core.Extensions;
 using EmailTamer.Database.Persistence;
 using EmailTamer.Database.Tenant;
 using EmailTamer.Database.Tenant.Entities;
@@ -10,22 +11,26 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace EmailTamer.Parts.Sync.Operations.Commands;
 
-public sealed record BackUpEmailBoxesMessages : IRequest<IActionResult>
+public sealed record BackUpEmailBoxesMessages(Guid[]? EmailBoxesIds) : IRequest<IActionResult>
 {
     public class Validator : AbstractValidator<BackUpEmailBoxesMessages>;
 }
 
 [UsedImplicitly]
 public class BackUpEmailBoxesMessagesCommandHandler(
-    [FromKeyedServices(nameof(TenantDbContext))] IEmailTamerRepository repository,
+    [FromKeyedServices(nameof(TenantDbContext))]
+    IEmailTamerRepository repository,
     IMediator mediator)
     : IRequestHandler<BackUpEmailBoxesMessages, IActionResult>
 {
     public async Task<IActionResult> Handle(BackUpEmailBoxesMessages request, CancellationToken cancellationToken)
     {
+        var filerByEmailBoxes = request.EmailBoxesIds != null && request.EmailBoxesIds.Length > 0;
+        
         var emailBoxes = await repository.ReadAsync((r, ct) =>
                 r.Set<EmailBox>()
                     .AsNoTracking()
+                    .WhereIf(filerByEmailBoxes, x => request.EmailBoxesIds!.Contains(x.Id))
                     .Where(x => x.BackupStatus != BackupStatus.Queued || x.BackupStatus != BackupStatus.InProgress)
                     .ToListAsync(ct),
             cancellationToken);
@@ -34,16 +39,17 @@ public class BackUpEmailBoxesMessagesCommandHandler(
         {
             emailBox.BackupStatus = BackupStatus.Queued;
         }
+
         repository.UpdateRange(emailBoxes);
         await repository.PersistAsync(cancellationToken);
-        
+
         var emailBoxesIds = emailBoxes.Select(x => x.Id).ToList();
-        
+
         foreach (var emailBoxId in emailBoxesIds)
         {
             await mediator.Send(new BackUpEmailBoxMessages(emailBoxId), cancellationToken);
         }
-        
+
         return new OkResult();
     }
 }
