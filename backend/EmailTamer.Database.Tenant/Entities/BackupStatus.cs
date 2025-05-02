@@ -2,7 +2,7 @@ namespace EmailTamer.Database.Tenant.Entities;
 
 public enum BackupStatus
 {
-    Idle = 1,
+    Idle = 0,
     Queued,
     InProgress,
     Failed,

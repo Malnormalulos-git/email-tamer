@@ -1,10 +1,7 @@
 using AutoMapper;
-using EmailTamer.Database.Extensions;
 using EmailTamer.Database.Persistence;
 using EmailTamer.Database.Tenant;
-using EmailTamer.Database.Utilities.Paging;
 using EmailTamer.Parts.EmailBox.Models;
-using FluentValidation;
 using JetBrains.Annotations;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -26,7 +23,7 @@ public class GetEmailBoxesQueryHandler(
 	    var emailBoxes = await repository.ReadAsync((r, ct) =>
 			    r.Set<Database.Tenant.Entities.EmailBox>()
 				    .AsNoTracking()
-				    .Select(t => mapper.Map<EmailBoxDto>(t))
+				    .Select(x => mapper.Map<EmailBoxDto>(x))
 				    .ToListAsync(ct),
 		    cancellationToken);
 

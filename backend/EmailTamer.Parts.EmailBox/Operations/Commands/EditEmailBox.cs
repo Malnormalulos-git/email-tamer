@@ -87,6 +87,8 @@ public class EditEmailBoxCommandHandler([FromKeyedServices(nameof(TenantDbContex
             property?.SetValue(emailBox, change.Value.NewValue);
         }
 
+        emailBox.ConnectionFault = null;
+
         repository.Update(emailBox);
         await repository.PersistAsync(cancellationToken);
         
