@@ -400,6 +400,118 @@ export const useGetMessagesThreads = <
   });
 };
 
+export type GetEmailBoxesStatusesError = Fetcher.ErrorWrapper<undefined>;
+
+export type GetEmailBoxesStatusesResponse = Schemas.EmailBoxStatusDto[];
+
+export type GetEmailBoxesStatusesVariables =
+  EmailTamerApiContext['fetcherOptions'];
+
+export const fetchGetEmailBoxesStatuses = (
+    variables: GetEmailBoxesStatusesVariables,
+    signal?: AbortSignal,
+) =>
+    emailTamerApiFetch<
+    GetEmailBoxesStatusesResponse,
+    GetEmailBoxesStatusesError,
+    undefined,
+    {},
+    {},
+    {}
+  >({
+      url: '/api/backup/emailBoxesStatuses',
+      method: 'get',
+      ...variables,
+      signal,
+  });
+
+export function getEmailBoxesStatusesQuery(
+  variables: GetEmailBoxesStatusesVariables,
+): {
+  queryKey: reactQuery.QueryKey;
+  queryFn: (options: QueryFnOptions) => Promise<GetEmailBoxesStatusesResponse>;
+};
+
+export function getEmailBoxesStatusesQuery(
+  variables: GetEmailBoxesStatusesVariables | reactQuery.SkipToken,
+): {
+  queryKey: reactQuery.QueryKey;
+  queryFn:
+    | ((options: QueryFnOptions) => Promise<GetEmailBoxesStatusesResponse>)
+    | reactQuery.SkipToken;
+};
+
+export function getEmailBoxesStatusesQuery(
+    variables: GetEmailBoxesStatusesVariables | reactQuery.SkipToken,
+) {
+    return {
+        queryKey: queryKeyFn({
+            path: '/api/backup/emailBoxesStatuses',
+            operationId: 'getEmailBoxesStatuses',
+            variables,
+        }),
+        queryFn:
+      variables === reactQuery.skipToken
+          ? reactQuery.skipToken
+          : ({ signal }: QueryFnOptions) =>
+              fetchGetEmailBoxesStatuses(variables, signal),
+    };
+}
+
+export const useSuspenseGetEmailBoxesStatuses = <
+  TData = GetEmailBoxesStatusesResponse,
+>(
+        variables: GetEmailBoxesStatusesVariables,
+        options?: Omit<
+    reactQuery.UseQueryOptions<
+      GetEmailBoxesStatusesResponse,
+      GetEmailBoxesStatusesError,
+      TData
+    >,
+    'queryKey' | 'queryFn' | 'initialData'
+  >,
+    ) => {
+    const { queryOptions, fetcherOptions } = useEmailTamerApiContext(options);
+    return reactQuery.useSuspenseQuery<
+    GetEmailBoxesStatusesResponse,
+    GetEmailBoxesStatusesError,
+    TData
+  >({
+      ...getEmailBoxesStatusesQuery(deepMerge(fetcherOptions, variables)),
+      ...options,
+      ...queryOptions,
+  });
+};
+
+export const useGetEmailBoxesStatuses = <
+  TData = GetEmailBoxesStatusesResponse,
+>(
+        variables: GetEmailBoxesStatusesVariables | reactQuery.SkipToken,
+        options?: Omit<
+    reactQuery.UseQueryOptions<
+      GetEmailBoxesStatusesResponse,
+      GetEmailBoxesStatusesError,
+      TData
+    >,
+    'queryKey' | 'queryFn' | 'initialData'
+  >,
+    ) => {
+    const { queryOptions, fetcherOptions } = useEmailTamerApiContext(options);
+    return reactQuery.useQuery<
+    GetEmailBoxesStatusesResponse,
+    GetEmailBoxesStatusesError,
+    TData
+  >({
+      ...getEmailBoxesStatusesQuery(
+          variables === reactQuery.skipToken
+              ? variables
+              : deepMerge(fetcherOptions, variables),
+      ),
+      ...options,
+      ...queryOptions,
+  });
+};
+
 export type GetMessageDetailsQueryParams = {
   messageId?: string;
 };
@@ -1183,6 +1295,11 @@ export type QueryOperation =
       path: '/api/backup';
       operationId: 'getMessagesThreads';
       variables: GetMessagesThreadsVariables | reactQuery.SkipToken;
+    }
+  | {
+      path: '/api/backup/emailBoxesStatuses';
+      operationId: 'getEmailBoxesStatuses';
+      variables: GetEmailBoxesStatusesVariables | reactQuery.SkipToken;
     }
   | {
       path: '/api/backup/message';

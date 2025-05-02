@@ -3,6 +3,13 @@
  *
  * @version v1
  */
+export enum BackupStatus {
+  Idle = 'idle',
+  Queued = 'queued',
+  InProgress = 'inProgress',
+  Failed = 'failed',
+}
+
 export enum ConnectionFault {
   Other = 'other',
   ConnectionRefused = 'connectionRefused',
@@ -92,6 +99,14 @@ export type EmailBoxDto = {
    */
   lastSyncAt?: string | null;
   connectionFault?: ConnectionFault;
+};
+
+export type EmailBoxStatusDto = {
+  /**
+   * @format uuid
+   */
+  id?: string;
+  backupStatus?: BackupStatus;
 };
 
 export type FolderDto = {
