@@ -229,10 +229,15 @@ export const useBackUpEmailBoxMessages = (
   });
 };
 
+export type BackUpEmailBoxesMessagesQueryParams = {
+  emailBoxesIds?: string;
+};
+
 export type BackUpEmailBoxesMessagesError = Fetcher.ErrorWrapper<undefined>;
 
-export type BackUpEmailBoxesMessagesVariables =
-  EmailTamerApiContext['fetcherOptions'];
+export type BackUpEmailBoxesMessagesVariables = {
+  queryParams?: BackUpEmailBoxesMessagesQueryParams;
+} & EmailTamerApiContext['fetcherOptions'];
 
 export const fetchBackUpEmailBoxesMessages = (
     variables: BackUpEmailBoxesMessagesVariables,
@@ -243,7 +248,7 @@ export const fetchBackUpEmailBoxesMessages = (
     BackUpEmailBoxesMessagesError,
     undefined,
     {},
-    {},
+    BackUpEmailBoxesMessagesQueryParams,
     {}
   >({ url: '/api/backup', method: 'post', ...variables, signal });
 
