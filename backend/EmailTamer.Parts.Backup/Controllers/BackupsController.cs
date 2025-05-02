@@ -19,22 +19,26 @@ public class BackupsController(IMediator mediator) : Controller
     [ProducesResponseType(404)]
     [ProducesResponseType(400)]
     [ProducesResponseType(typeof(ConnectionFault), 400)]
-    public Task<IActionResult>
-        BackUpEmailBoxMessages([FromRoute(Name = "id")] Guid id, CancellationToken ct = default) =>
-        mediator.Send(new BackUpEmailBoxMessages(id), ct);
+    public Task<IActionResult> BackUpEmailBoxMessages([FromRoute(Name = "id")] Guid id/*, CancellationToken ct = default*/) =>
+        mediator.Send(new BackUpEmailBoxMessages(id), CancellationToken.None);
 
     [HttpPost(Name = nameof(BackUpEmailBoxesMessages))]
     [Authorize(Policy = AuthPolicy.User)]
     [ProducesResponseType(200)]
-    public Task<IActionResult> BackUpEmailBoxesMessages(CancellationToken ct = default) =>
-        mediator.Send(new BackUpEmailBoxesMessages(), ct);
+    public Task<IActionResult> BackUpEmailBoxesMessages(/*CancellationToken ct = default*/) =>
+        mediator.Send(new BackUpEmailBoxesMessages(), CancellationToken.None);
+
+    [HttpGet("emailBoxesStatuses", Name = nameof(GetEmailBoxesStatuses))]
+    [Authorize(Policy = AuthPolicy.User)]
+    [ProducesResponseType(typeof(List<EmailBoxStatusDto>), 200)]
+    public Task<IActionResult> GetEmailBoxesStatuses(CancellationToken ct = default) =>
+        mediator.Send(new GetEmailBoxesStatuses(), ct);
 
     [HttpGet("message", Name = nameof(GetMessageDetails))]
     [Authorize(Policy = AuthPolicy.User)]
     [ProducesResponseType(typeof(MessageDetailsDto), 200)]
     [ProducesResponseType(404)]
-    public Task<IActionResult> GetMessageDetails([FromQuery] string messageId,
-        CancellationToken ct = default) =>
+    public Task<IActionResult> GetMessageDetails([FromQuery] string messageId, CancellationToken ct = default) =>
         mediator.Send(new GetMessageDetails(messageId), ct);
 
     [HttpGet("attachment", Name = nameof(GetMessageAttachment))]

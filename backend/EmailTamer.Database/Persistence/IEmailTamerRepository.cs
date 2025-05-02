@@ -26,6 +26,8 @@ public interface IEmailTamerRepository
 
 	public void Remove<T>(T item) where T : class, IEntity;
 
+	public void UpdateRange<T>(IEnumerable<T> items) where T : class, IEntity;
+	
 	public void AddRange<T>(IEnumerable<T> items) where T : class, IEntity;
 
 	public void RemoveRange<T>(IEnumerable<T> items) where T : class, IEntity;

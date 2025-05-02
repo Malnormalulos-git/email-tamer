@@ -2,6 +2,7 @@ using AutoMapper;
 using EmailTamer.Auth;
 using EmailTamer.Core.Mappers;
 using EmailTamer.Core.Models;
+using EmailTamer.Database.Tenant.Entities;
 using FluentValidation;
 
 namespace EmailTamer.Parts.EmailBox.Models;
@@ -50,6 +51,7 @@ public sealed class CreateEmailBoxDto : IMappable, IInbound
 
     public static void AddProfileMapping(Profile profile)
     {
-        profile.CreateMap<CreateEmailBoxDto, Database.Tenant.Entities.EmailBox>(MemberList.Source);
+        profile.CreateMap<CreateEmailBoxDto, Database.Tenant.Entities.EmailBox>(MemberList.Source)
+            .EasyMember(eb => eb.BackupStatus, _ => BackupStatus.Idle);
     }
 }

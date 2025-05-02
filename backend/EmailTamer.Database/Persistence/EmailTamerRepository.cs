@@ -53,6 +53,8 @@ public class EmailTamerRepository<TContext>(
 
 	public void Add<T>(T item) where T : class, IEntity => dbContext.Add(item);
 
+	public void UpdateRange<T>(IEnumerable<T> items) where T : class, IEntity => dbContext.UpdateRange(items);
+
 	public void AddRange<T>(IEnumerable<T> items) where T : class, IEntity => dbContext.AddRange(items);
 
 	public void RemoveRange<T>(IEnumerable<T> items) where T : class, IEntity => dbContext.RemoveRange(items);

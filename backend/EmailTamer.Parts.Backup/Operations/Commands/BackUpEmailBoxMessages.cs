@@ -51,6 +51,10 @@ internal class BackUpEmailBoxMessagesCommandHandler(
         if (emailBox is null)
             return new NotFoundResult();
 
+        emailBox.BackupStatus = BackupStatus.InProgress;
+        repository.Update(emailBox);
+        await repository.PersistAsync(cancellationToken);
+
         logger.LogInformation("Starting backup for EmailBox {EmailBoxId}", command.EmailBoxId);
 
         try
@@ -93,6 +97,7 @@ internal class BackUpEmailBoxMessagesCommandHandler(
 
                 emailBox.ConnectionFault = null;
                 emailBox.LastSyncAt = synchronizationStartedAt;
+                emailBox.BackupStatus = BackupStatus.Idle;
                 repo.Update(emailBox);
                 
                 await repo.PersistAsync(ct);
@@ -104,6 +109,10 @@ internal class BackUpEmailBoxMessagesCommandHandler(
         catch (Exception e)
         {
             logger.LogError(e, "Error while backing up EmailBox {EmailBoxId}", command.EmailBoxId);
+
+            emailBox.BackupStatus = BackupStatus.Failed;
+            repository.Update(emailBox);
+            await repository.PersistAsync(cancellationToken);
 
             if (e is MailKitImapConnectorException mailKitImapConnectorException)
             {

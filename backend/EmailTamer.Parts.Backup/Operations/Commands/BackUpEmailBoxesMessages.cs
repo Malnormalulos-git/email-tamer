@@ -23,12 +23,21 @@ public class BackUpEmailBoxesMessagesCommandHandler(
 {
     public async Task<IActionResult> Handle(BackUpEmailBoxesMessages request, CancellationToken cancellationToken)
     {
-        var emailBoxesIds = await repository.ReadAsync((r, ct) =>
+        var emailBoxes = await repository.ReadAsync((r, ct) =>
                 r.Set<EmailBox>()
                     .AsNoTracking()
-                    .Select(x => x.Id)
+                    .Where(x => x.BackupStatus != BackupStatus.Queued || x.BackupStatus != BackupStatus.InProgress)
                     .ToListAsync(ct),
             cancellationToken);
+
+        foreach (var emailBox in emailBoxes)
+        {
+            emailBox.BackupStatus = BackupStatus.Queued;
+        }
+        repository.UpdateRange(emailBoxes);
+        await repository.PersistAsync(cancellationToken);
+        
+        var emailBoxesIds = emailBoxes.Select(x => x.Id).ToList();
         
         foreach (var emailBoxId in emailBoxesIds)
         {
