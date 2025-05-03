@@ -38,6 +38,7 @@ public class CreateUserDto: IMappable, IInbound
         profile.CreateMap<CreateUserDto, EmailTamerUser>(MemberList.Source)
             .EasyMember(x => x.UserName,
                 (s, _) => s.Email)
+            .EasyMember(x => x.TenantId, _ => Guid.NewGuid())
             .IgnoreSourceMember(x => x.Password)
             .IgnoreSourceMember(x => x.Role);
     }

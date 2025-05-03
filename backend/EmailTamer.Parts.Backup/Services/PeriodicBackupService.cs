@@ -33,9 +33,9 @@ internal class PeriodicBackupService(
                     .GetRequiredKeyedService<IEmailTamerRepository>(nameof(EmailTamerDbContext));
 
                 var tenants = await mainRepository.ReadAsync((r, ct) =>
-                        r.Set<Tenant>()
+                        r.Set<EmailTamerUser>()
                             .AsNoTracking()
-                            .Select(t => new TenantContextAccessor(t.Id))
+                            .Select(u => new TenantContextAccessor(u.TenantId))
                             .ToListAsync(ct),
                     stoppingToken);
 

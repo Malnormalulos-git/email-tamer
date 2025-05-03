@@ -35,23 +35,6 @@ public sealed class TenantContextAccessor : ITenantContextAccessor
 			var user = await _userManager.FindByIdAsync(userId);
 			
 			_id = user!.TenantId.ToString();
-
-			if (string.IsNullOrEmpty(_id))
-			{
-				var newTenant = new Database.Entities.Tenant
-				{
-					Id = Guid.NewGuid(),
-					OwnerId = new Guid(userId)
-				};
-
-				_emailTamerRepository.Add(newTenant);
-				await _emailTamerRepository.PersistAsync();
-
-				user.TenantId = newTenant.Id;
-				await _userManager.UpdateAsync(user);
-
-				_id = newTenant.Id.ToString();
-			}
 		}
 
 		return _id;
