@@ -1,20 +1,14 @@
 import {AppBar, Box, Grid2, IconButton, SwipeableDrawer, Toolbar} from '@mui/material';
-import {useReducer, useState} from 'react';
+import {useReducer, useState, useEffect} from 'react';
 import FoldersSection from '@components/homePage/FoldersSection.tsx';
-
 import EmailBoxesSection from '@components/homePage/EmailBoxesSection.tsx';
-
 import MessagesSection from '@components/homePage/MessagesSection.tsx';
-
 import {HEADER_HEIGHT} from '@utils/constants.ts';
-
-import {
-    Email as EmailIcon,
-    Folder as FolderIcon
-} from '@mui/icons-material';
-
+import {Email as EmailIcon, Folder as FolderIcon} from '@mui/icons-material';
 import {getUrlParam, setUrlParam} from '@utils/urlUtils.ts';
 import {SELECTED_BOXES_IDS_PARAM, SELECTED_FOLDER_ID_PARAM} from '@router/urlParams.ts';
+
+import {arraysEqual} from '@utils/arraysEqual.ts';
 
 import {TranslationScopeProvider} from '../i18n/contexts/TranslationScopeContext.tsx';
 
@@ -31,11 +25,25 @@ const HomePage = () => {
         setSelectedFolderId(folderId);
     };
 
-    const emailBoxesIdsParam = getUrlParam(SELECTED_BOXES_IDS_PARAM)?.split(',') || [];
+    const emailBoxesIdsParam = getUrlParam(SELECTED_BOXES_IDS_PARAM)?.split(',').filter(id => id) || [];
     const [selectedEmailBoxesIds, setSelectedEmailBoxesIds] = useState<string[]>(emailBoxesIdsParam);
+
+    useEffect(() => {
+        const emailBoxesIdsParam = getUrlParam(SELECTED_BOXES_IDS_PARAM)?.split(',').filter(id => id) || [];
+        if (!arraysEqual(emailBoxesIdsParam, selectedEmailBoxesIds)) {
+            setSelectedEmailBoxesIds(emailBoxesIdsParam);
+        }
+    }, []);
+
     const handleSetSelectedEmailBoxesIds = (emailBoxesIds: string[]) => {
-        setUrlParam(SELECTED_BOXES_IDS_PARAM, emailBoxesIds.join(','));
-        setSelectedEmailBoxesIds(emailBoxesIds);
+        const newIds = emailBoxesIds.length > 0 ? emailBoxesIds.join(',') : null;
+        const currentIds = getUrlParam(SELECTED_BOXES_IDS_PARAM);
+        if (newIds !== currentIds) {
+            setUrlParam(SELECTED_BOXES_IDS_PARAM, newIds);
+        }
+        if (!arraysEqual(selectedEmailBoxesIds, emailBoxesIds)) {
+            setSelectedEmailBoxesIds(emailBoxesIds);
+        }
     };
 
     return (
@@ -53,17 +61,10 @@ const HomePage = () => {
                 }}
             >
                 <Toolbar variant='dense' sx={{justifyContent: 'space-between'}}>
-                    <IconButton
-                        edge='start'
-                        onClick={toggleFoldersDrawer}
-                    >
+                    <IconButton edge='start' onClick={toggleFoldersDrawer}>
                         <FolderIcon/>
                     </IconButton>
-
-                    <IconButton
-                        edge='end'
-                        onClick={toggleEmailBoxesDrawer}
-                    >
+                    <IconButton edge='end' onClick={toggleEmailBoxesDrawer}>
                         <EmailIcon/>
                     </IconButton>
                 </Toolbar>

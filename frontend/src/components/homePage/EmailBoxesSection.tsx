@@ -11,6 +11,8 @@ import GenericEmailTamerList from '@components/GenericEmailTamerList.tsx';
 import Tooltip from '@mui/material/Tooltip';
 import {BackupStatus} from '@api/emailTamerApiSchemas.ts';
 
+import {arraysEqual} from '@utils/arraysEqual.ts';
+
 import {TranslationScopeProvider} from '../../i18n/contexts/TranslationScopeContext.tsx';
 
 interface EmailBoxesSectionProps {
@@ -21,8 +23,15 @@ interface EmailBoxesSectionProps {
 const EmailBoxesSection = ({emailBoxesIds, setEmailBoxesIds}: EmailBoxesSectionProps) => {
     const {data: emailBoxes, isLoading, refetch} = useGetEmailBoxes({});
 
-    const {data: emailBoxesStatuses, isLoading: isStatusesLoading, refetch: refetchStatuses} = useGetEmailBoxesStatuses({},
-        {refetchInterval: 5000}
+    const {
+        data: emailBoxesStatuses,
+        isLoading: isStatusesLoading,
+        refetch: refetchStatuses
+    } = useGetEmailBoxesStatuses({},
+        {
+            enabled: emailBoxes !== undefined && emailBoxes?.length > 0,
+            refetchInterval: 5000
+        }
     );
 
     const {mutate: backupBoxes, isPending: isBackuping} = useBackUpEmailBoxesMessages({
@@ -30,36 +39,37 @@ const EmailBoxesSection = ({emailBoxesIds, setEmailBoxesIds}: EmailBoxesSectionP
     });
 
     const handleBackupButtonClick = () => {
-        backupBoxes({
-            queryParams: {
-                emailBoxesIds: emailBoxesIds.join(', ')
-            }
-        });
-        setTimeout(refetchStatuses, 200);
+        if (emailBoxesIds.length > 0) {
+            backupBoxes({
+                queryParams: {
+                    emailBoxesIds: emailBoxesIds.join(', ')
+                }
+            });
+            setTimeout(refetchStatuses, 200);
+        }
     };
 
     const {t} = useScopedContextTranslator();
     const [openAddEmailBoxDialog, setOpenAddEmailBoxDialog] = useState(false);
 
     useEffect(() => {
-        if (emailBoxes && emailBoxesIds.length === 0) {
-            setEmailBoxesIds(emailBoxes.map((emailBox) => emailBox.id!));
+        if (emailBoxes && emailBoxes.length > 0 && emailBoxesIds.length === 0) {
+            const newEmailBoxesIds = emailBoxes.map((emailBox) => emailBox.id!);
+            if (!arraysEqual(emailBoxesIds, newEmailBoxesIds)) {
+                setEmailBoxesIds(newEmailBoxesIds);
+            }
+        } else if (emailBoxes && emailBoxes.length === 0 && emailBoxesIds.length > 0) {
+            setEmailBoxesIds([]);
         }
     }, [emailBoxes, emailBoxesIds, setEmailBoxesIds]);
 
     const handleToggle = (boxId: string) => () => {
         const currentIndex = emailBoxesIds.indexOf(boxId);
-        const newEmailBoxesIds = [...emailBoxesIds];
-
         if (currentIndex === -1) {
-            newEmailBoxesIds.push(boxId);
-        } else if (emailBoxesIds.length === 1) {
-            return;
-        } else {
-            newEmailBoxesIds.splice(currentIndex, 1);
+            setEmailBoxesIds([...emailBoxesIds, boxId]);
+        } else if (emailBoxesIds.length > 1) {
+            setEmailBoxesIds(emailBoxesIds.filter(id => id !== boxId));
         }
-
-        setEmailBoxesIds(newEmailBoxesIds);
     };
 
     const handleSelectAll = () => {
