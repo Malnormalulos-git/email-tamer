@@ -96,7 +96,15 @@ public static class ServiceCollectionExtensions
 
 	private static IServiceCollection AddDatabasePersistence(this IServiceCollection services)
 	{
-		services.TryAddKeyedScoped<IEmailTamerRepository, EmailTamerRepository<EmailTamerDbContext>>(nameof(EmailTamerDbContext));
+		services.TryAddKeyedScoped<IEmailTamerRepository>(nameof(EmailTamerDbContext), (sp, _) =>
+		{
+			var dbContext = sp.GetRequiredService<EmailTamerDbContext>();
+			var databasePolicySet = sp.GetRequiredService<IDatabasePolicySet>();
+			
+			var repository = new EmailTamerRepository<EmailTamerDbContext>(dbContext, databasePolicySet);
+			return repository;
+		});
+		
 		return services;
 	}
 }

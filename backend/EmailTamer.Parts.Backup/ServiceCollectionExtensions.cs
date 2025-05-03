@@ -1,5 +1,6 @@
 using EmailTamer.Parts.Sync.Controllers;
 using EmailTamer.Parts.Sync.Persistence;
+using EmailTamer.Parts.Sync.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
@@ -20,6 +21,9 @@ public static class ServiceCollectionExtensions
 				.Create(default)
 				.GetAwaiter()
 				.GetResult());
+		
+		services.AddScoped<IBackupService, BackupService>();
+		services.AddHostedService<PeriodicBackupService>();
 		
 		return builder;
 	}

@@ -6,20 +6,33 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace EmailTamer.Database.Tenant.Accessor;
 
-public sealed class TenantContextAccessor(
-	IUserContextAccessor userContextAccessor,
-	UserManager<EmailTamerUser> userManager,
-	[FromKeyedServices(nameof(EmailTamerDbContext))] IEmailTamerRepository emailTamerRepository
-	) : ITenantContextAccessor
+public sealed class TenantContextAccessor : ITenantContextAccessor
 {
+	private IUserContextAccessor? _userContextAccessor;
+	private UserManager<EmailTamerUser>? _userManager;
+	private IEmailTamerRepository? _emailTamerRepository;
 	private string? _id;
+
+	public TenantContextAccessor(
+		IUserContextAccessor userContextAccessor,
+		UserManager<EmailTamerUser> userManager,
+		[FromKeyedServices(nameof(EmailTamerDbContext))] IEmailTamerRepository emailTamerRepository)
+	{
+		_userContextAccessor = userContextAccessor;
+		_userManager = userManager;
+		_emailTamerRepository = emailTamerRepository;
+	}
+	public TenantContextAccessor(Guid tenantId)
+	{
+		_id = tenantId.ToString();
+	}
 
 	public async Task<string> GetTenantId()
 	{
 		if (string.IsNullOrEmpty(_id))
 		{
-			var userId = userContextAccessor.Id;
-			var user = await userManager.FindByIdAsync(userId);
+			var userId = _userContextAccessor.Id;
+			var user = await _userManager.FindByIdAsync(userId);
 			
 			_id = user!.TenantId.ToString();
 
@@ -31,11 +44,11 @@ public sealed class TenantContextAccessor(
 					OwnerId = new Guid(userId)
 				};
 
-				emailTamerRepository.Add(newTenant);
-				await emailTamerRepository.PersistAsync();
+				_emailTamerRepository.Add(newTenant);
+				await _emailTamerRepository.PersistAsync();
 
 				user.TenantId = newTenant.Id;
-				await userManager.UpdateAsync(user);
+				await _userManager.UpdateAsync(user);
 
 				_id = newTenant.Id.ToString();
 			}

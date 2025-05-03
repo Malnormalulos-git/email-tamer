@@ -20,11 +20,11 @@ public class TenantDbContextFactory(
         return CreateDbContextInternal(connectionString);
     }
     
-    // public TenantDbContext CreateDbContext(Guid tenantId)
-    // {
-    //     var connectionString = GetConnectionString(tenantId.ToString());
-    //     return CreateDbContextInternal(connectionString);
-    // }
+    public TenantDbContext CreateDbContext(ITenantContextAccessor tenant)
+    {
+        var connectionString = GetConnectionString(tenant.GetDatabaseName());
+        return CreateDbContextInternal(connectionString);
+    }
 
     private TenantDbContext CreateDbContextInternal(string connectionString)
     {

@@ -1,7 +1,7 @@
-using EmailTamer.Core.Extensions;
 using EmailTamer.Database.Persistence;
 using EmailTamer.Database.Tenant;
-using EmailTamer.Database.Tenant.Entities;
+using EmailTamer.Parts.Sync.Persistence;
+using EmailTamer.Parts.Sync.Services;
 using FluentValidation;
 using JetBrains.Annotations;
 using MediatR;
@@ -18,38 +18,17 @@ public sealed record BackUpEmailBoxesMessages(Guid[]? EmailBoxesIds) : IRequest<
 
 [UsedImplicitly]
 public class BackUpEmailBoxesMessagesCommandHandler(
-    [FromKeyedServices(nameof(TenantDbContext))]
-    IEmailTamerRepository repository,
-    IMediator mediator)
+    IBackupService backupService,
+    [FromKeyedServices(nameof(TenantDbContext))] IEmailTamerRepository repository,
+    ITenantRepository filesRepository)
     : IRequestHandler<BackUpEmailBoxesMessages, IActionResult>
 {
     public async Task<IActionResult> Handle(BackUpEmailBoxesMessages request, CancellationToken cancellationToken)
     {
-        var filerByEmailBoxes = request.EmailBoxesIds != null && request.EmailBoxesIds.Length > 0;
-        
-        var emailBoxes = await repository.ReadAsync((r, ct) =>
-                r.Set<EmailBox>()
-                    .AsNoTracking()
-                    .WhereIf(filerByEmailBoxes, x => request.EmailBoxesIds!.Contains(x.Id))
-                    .Where(x => x.BackupStatus != BackupStatus.Queued || x.BackupStatus != BackupStatus.InProgress)
-                    .ToListAsync(ct),
+        return await backupService.BackupTenantEmailBoxesAsync(
+            request.EmailBoxesIds,
+            repository,
+            filesRepository,
             cancellationToken);
-
-        foreach (var emailBox in emailBoxes)
-        {
-            emailBox.BackupStatus = BackupStatus.Queued;
-        }
-
-        repository.UpdateRange(emailBoxes);
-        await repository.PersistAsync(cancellationToken);
-
-        var emailBoxesIds = emailBoxes.Select(x => x.Id).ToList();
-
-        foreach (var emailBoxId in emailBoxesIds)
-        {
-            await mediator.Send(new BackUpEmailBoxMessages(emailBoxId), cancellationToken);
-        }
-
-        return new OkResult();
     }
 }
