@@ -9,12 +9,10 @@ namespace EmailTamer.Database.Extensions;
 
 public static class ModelPropertyEncrypterExtension
 {
-    public static void UseEncryption(this ModelBuilder modelBuilder, IEncryptionService? encryptionService, ILogger logger = null)
+    public static void UseEncryption(this ModelBuilder modelBuilder, IEncryptionService encryptionService, ILogger logger = null)
     {
         var converter = new EncryptionConvertor(encryptionService);
 
-        var test = modelBuilder.Model.GetEntityTypes();
-        
         foreach (var entityType in modelBuilder.Model.GetEntityTypes())
         {
             foreach (var property in entityType.GetProperties())

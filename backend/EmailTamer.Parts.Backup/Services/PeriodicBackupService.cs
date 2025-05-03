@@ -1,11 +1,14 @@
 using EmailTamer.Database;
 using EmailTamer.Database.Entities;
 using EmailTamer.Database.Persistence;
+using EmailTamer.Database.Services;
 using EmailTamer.Database.Tenant;
 using EmailTamer.Database.Tenant.Accessor;
+using EmailTamer.Database.Tenant.Services;
 using EmailTamer.Database.Utilities;
 using EmailTamer.Parts.Sync.Persistence;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -51,7 +54,9 @@ internal class PeriodicBackupService(
                         
                         var dbContextFactory = scope.ServiceProvider.GetRequiredService<IDbContextFactory<TenantDbContext>>();
                         var databasePolicySet = scope.ServiceProvider.GetRequiredService<IDatabasePolicySet>();
-                        var dbContext = (dbContextFactory as TenantDbContextFactory)?.CreateDbContext(tenant);
+                        var configuration = scope.ServiceProvider.GetRequiredService<IConfiguration>();
+                        var encryptionService = new EncryptionService(tenant, configuration);
+                        var dbContext = (dbContextFactory as TenantDbContextFactory)?.CreateDbContext(tenant, encryptionService);
                         var repository = new EmailTamerRepository<TenantDbContext>(dbContext, databasePolicySet);
 
                         var tenantId = await tenant.GetTenantId();
