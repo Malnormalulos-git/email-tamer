@@ -625,7 +625,7 @@ export const useGetMessageDetails = <TData = Schemas.MessageDetailsDto,>(
 
 export type GetMessageAttachmentQueryParams = {
   messageId?: string;
-  fileName?: string;
+  attachmentId?: string;
 };
 
 export type GetMessageAttachmentError = Fetcher.ErrorWrapper<undefined>;

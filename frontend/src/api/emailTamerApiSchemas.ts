@@ -22,6 +22,11 @@ export enum UserRole {
   Admin = 'admin',
 }
 
+export type AttachmentDto = {
+  id?: string | null;
+  fileName?: string | null;
+};
+
 export type AuthResponseDto = {
   token?: string | null;
 };
@@ -127,7 +132,7 @@ export type MessageDetailsDto = {
   inReplyTo?: string | null;
   subject?: string | null;
   textBody?: string | null;
-  attachmentFilesNames?: string[] | null;
+  attachments?: AttachmentDto[] | null;
   references?: string[] | null;
   from?: EmailAddress[] | null;
   to?: EmailAddress[] | null;
