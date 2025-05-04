@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 namespace EmailTamer.Database.Tenant.Entities;
 
 [Table("Messages")]
-public class Message : IEntity
+public sealed class Message : IEntity
 {
     public List<EmailBox> EmailBoxes { get; set; } = [];
     
@@ -23,7 +23,7 @@ public class Message : IEntity
     
     public string? TextBody { get; set; } 
     
-    public List<string> AttachmentFilesNames { get; set; } = [];
+    public List<Attachment> Attachments { get; set; } = [];
     
     public List<string> References { get; set; } = []; // TODO: To separate table?
     
@@ -53,6 +53,10 @@ public class Message : IEntity
             
             builder.HasMany(x => x.Folders)
                 .WithMany(x => x.Messages);
+            
+            builder.HasMany(x => x.Attachments)
+                .WithOne(x => x.Message)
+                .HasForeignKey(x => x.MessageId);
 
             builder.HasIndex(x => x.ThreadId);
             
@@ -64,11 +68,9 @@ public class Message : IEntity
 
             builder.Property(x => x.References).Json();
             
-            builder.Property(p => p.AttachmentFilesNames).Json();
+            builder.Property(x => x.To).Json();
             
-            builder.Property(p => p.To).Json();
-            
-            builder.Property(p => p.From).Json();
+            builder.Property(x => x.From).Json();
         }
     }
 }
