@@ -1,7 +1,6 @@
 using EmailTamer.Database;
 using EmailTamer.Database.Entities;
 using EmailTamer.Database.Persistence;
-using EmailTamer.Database.Services;
 using EmailTamer.Database.Tenant;
 using EmailTamer.Database.Tenant.Accessor;
 using EmailTamer.Database.Tenant.Services;
@@ -20,15 +19,24 @@ internal class PeriodicBackupService(
     IServiceScopeFactory factory)
     : BackgroundService
 {
-    private readonly TimeSpan _period = TimeSpan.FromDays(1);
-
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        using PeriodicTimer timer = new PeriodicTimer(_period);
-        while (
-            !stoppingToken.IsCancellationRequested &&
-            await timer.WaitForNextTickAsync(stoppingToken))
+        while (!stoppingToken.IsCancellationRequested)
         {
+            var now = DateTimeOffset.UtcNow.DateTime;
+            var today = now.Date;
+            var nextRun = today.AddHours(1);
+
+            if (now > nextRun)
+            {
+                nextRun = nextRun.AddDays(1);
+            }
+
+            var delay = nextRun - now;
+
+            logger.LogInformation("Next backup scheduled at {NextRun} UTC", nextRun);
+            await Task.Delay(delay, stoppingToken);
+
             try
             {
                 await using var mainScope = factory.CreateAsyncScope();
