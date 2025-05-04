@@ -1,6 +1,6 @@
 ﻿import {useReducer} from 'react';
 import {useGetMessageDetails} from '@api/emailTamerApiComponents';
-import {EmailAddress, MessageDetailsDto, MessageDto} from '@api/emailTamerApiSchemas';
+import {AttachmentDto, EmailAddress, MessageDetailsDto, MessageDto} from '@api/emailTamerApiSchemas';
 import useScopedContextTranslator from '@hooks/useScopedTranslator';
 import {
     Avatar,
@@ -130,16 +130,16 @@ const Message = ({messageId, messageShort, messageDetailed}: MessageProps) => {
                         </>
                     ) : null}
                 </Box>
-                {isMessageDetails(message) && message.attachmentFilesNames && message.attachmentFilesNames.length > 0 ? (
+                {isMessageDetails(message) && message.attachments && message.attachments.length > 0 ? (
                     <Box sx={{mt: 2, p: 2}}>
                         <Typography variant='body2' fontWeight='medium' sx={{mb: 1}}>
                             {t('attachments')}
                         </Typography>
-                        {message.attachmentFilesNames.map((fileName: string) => (
+                        {message.attachments.map((attachment: AttachmentDto) => (
                             <Attachment
-                                key={fileName}
+                                key={attachment.id}
                                 messageId={messageId}
-                                fileName={fileName}
+                                attachment={attachment}
                             />
                         ))}
                     </Box>

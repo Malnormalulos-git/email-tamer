@@ -151,6 +151,7 @@
   },
   "threadPage": {
     "noThreadSubject": "Без теми",
+    "noSubject": "Без теми",
     "from": "Від: ",
     "to": "До: ",
     "attachments": "Вкладення",

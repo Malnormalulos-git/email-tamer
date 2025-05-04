@@ -6,23 +6,24 @@ import {getAppControlActions} from '@store/AppControlStore.ts';
 import useScopedContextTranslator from '@hooks/useScopedTranslator.ts';
 import {getFileIconUrl} from '@utils/getFileIconUrl.ts';
 import {saveAs} from 'file-saver';
+import {AttachmentDto} from '@api/emailTamerApiSchemas.ts';
 
 interface AttachmentProps {
     messageId: string;
-    fileName: string;
+    attachment: AttachmentDto;
 }
 
-const Attachment = ({messageId, fileName}: AttachmentProps) => {
+const Attachment = ({messageId, attachment}: AttachmentProps) => {
     const {setErrorNotification} = getAppControlActions();
     const {t} = useScopedContextTranslator();
 
     const {mutate: fetchAttachment, isPending: isAttachmentLoading} = useMutation({
-        mutationFn: (variables: { messageId: string; fileName: string }) =>
+        mutationFn: (variables: { messageId: string; attachment: AttachmentDto }) =>
             fetchGetMessageAttachment({
-                queryParams: {messageId: variables.messageId, fileName: variables.fileName},
+                queryParams: {messageId: variables.messageId, attachmentId: variables.attachment.id!},
             }),
         onSuccess: (blob, variables) => {
-            saveAs(blob, variables.fileName);
+            saveAs(blob, variables.attachment.fileName!);
         },
         onError: () => {
             setErrorNotification(t('failDuringLoadAttachment'));
@@ -30,7 +31,7 @@ const Attachment = ({messageId, fileName}: AttachmentProps) => {
     });
 
     const handleDownloadAttachment = () => {
-        fetchAttachment({messageId, fileName});
+        fetchAttachment({messageId, attachment});
     };
 
     return (
@@ -52,8 +53,8 @@ const Attachment = ({messageId, fileName}: AttachmentProps) => {
             }}
         >
             <img
-                src={getFileIconUrl(fileName, 32)}
-                alt={`${fileName} icon`}
+                src={getFileIconUrl(attachment.fileName!, 32)}
+                alt={`${attachment.fileName!} icon`}
                 style={{width: 24, height: 24, marginRight: 8}}
             />
             <Typography
@@ -68,9 +69,9 @@ const Attachment = ({messageId, fileName}: AttachmentProps) => {
                     },
                 }}
                 onClick={handleDownloadAttachment}
-                title={fileName}
+                title={attachment.fileName!}
             >
-                {fileName}
+                {attachment.fileName!}
             </Typography>
             <IconButton
                 onClick={handleDownloadAttachment}

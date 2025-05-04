@@ -151,6 +151,7 @@
   },
   "threadPage": {
     "noThreadSubject": "No subject",
+    "noSubject": "No subject",
     "from": "From: ",
     "to": "To: ",
     "attachments": "Attachments",
