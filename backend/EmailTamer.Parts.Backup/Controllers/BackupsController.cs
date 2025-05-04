@@ -57,9 +57,9 @@ public class BackupsController(IMediator mediator) : Controller
     [ProducesResponseType(404)]
     public Task<IActionResult> GetMessageAttachment(
         [FromQuery] string messageId,
-        [FromQuery] string fileName,
+        [FromQuery] string attachmentId,
         CancellationToken ct = default) =>
-        mediator.Send(new GetMessageAttachment(messageId, fileName), ct);
+        mediator.Send(new GetMessageAttachment(messageId, attachmentId), ct);
 
     [HttpGet("thread", Name = nameof(GetMessagesThread))]
     [Authorize(Policy = AuthPolicy.User)]

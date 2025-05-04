@@ -69,21 +69,22 @@ public class GetMessagesThreadsQueryHandler(
         var threadsPagedResult = await repository.ReadAsync(async (r, ct) =>
         {
             var baseQuery = r.Set<Message>()
+                .AsNoTracking()
                 .WhereIf(filerByFolder, msg => msg.Folders.Any(f => f.Id == query.FolderId))
                 .WhereIf(filerByEmailBoxes, msg => msg.EmailBoxes.Any(eb => query.EmailBoxesIds!.Contains(eb.Id)))
                 .WhereIf(searchTerm != null, msg =>
-                    msg.Subject != null && msg.Subject.ToUpper().Contains(searchTerm) ||
-                    msg.TextBody != null && msg.TextBody.ToUpper().Contains(searchTerm)/* ||
-                    msg.To.Any(a =>
+                        msg.Subject != null && msg.Subject.ToUpper().Contains(searchTerm) ||
+                        msg.TextBody != null && msg.TextBody.ToUpper().Contains(searchTerm) ||
+                        msg.Attachments.Any(a =>
+                            a.FileName.ToUpper().Contains(searchTerm))
+                    /*msg.To.Any(a =>
                         a.Name != null && a.Name.ToUpper().Contains(searchTerm) ||
                         a.Address.ToUpper().Contains(searchTerm)) ||
                     msg.From.Any(a =>
                         a.Name != null && a.Name.ToUpper().Contains(searchTerm) ||
                         a.Address.ToUpper().Contains(searchTerm)) ||
-                    msg.AttachmentFilesNames.Any(fn =>
-                        fn.ToUpper().Contains(searchTerm))*/)
-                .Where(m => m.ThreadId != null)
-                .AsNoTracking();
+                    */)
+                .Where(m => m.ThreadId != null);
 
             var threadIdsQuery = baseQuery
                 .Select(m => m.ThreadId)

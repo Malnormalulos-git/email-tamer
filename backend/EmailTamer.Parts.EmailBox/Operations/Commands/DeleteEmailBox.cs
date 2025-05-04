@@ -50,18 +50,14 @@ public class DeleteEmailBoxCommandHandler(
         var repoDeletingTasks = new List<Task>();
         
         var messagesWithAttachments = messagesToDelete
-            .Where(m => m.AttachmentFilesNames.Count > 0)
+            .Where(m => m.Attachments.Count > 0)
             .ToList();
         foreach (var message in messagesWithAttachments)
         {
-            foreach (var attachmentFileName in message.AttachmentFilesNames)
+            foreach (var attachment in message.Attachments)
             {
                 repoDeletingTasks.Add(filesRepository.DeleteAttachmentAsync(
-                    new MessageAttachmentKey
-                    {
-                        MessageId = message.Id,
-                        FileName = attachmentFileName
-                    }, cancellationToken));
+                    MessageAttachmentKey.Create(attachment, message), cancellationToken));
             }
         }
         

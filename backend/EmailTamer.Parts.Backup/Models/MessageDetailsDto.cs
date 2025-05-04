@@ -15,7 +15,7 @@ public class MessageDetailsDto : IMappable, IOutbound
     
     public string? TextBody { get; set; } 
     
-    public List<string> AttachmentFilesNames { get; set; } = [];
+    public List<AttachmentDto> Attachments { get; set; } = [];
     
     public List<string> References { get; set; } = []; 
     

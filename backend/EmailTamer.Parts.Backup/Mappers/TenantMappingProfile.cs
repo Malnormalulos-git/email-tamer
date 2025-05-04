@@ -29,7 +29,7 @@ public class MessageMappingProfile : MappableProfile, IMappable
             .EasyMember(x => x.HasHtmlBody, y => y.HtmlBody != null)
             .IgnoreMember(x => x.EmailBoxes)
             .IgnoreMember(x => x.Folders)
-            .IgnoreMember(x => x.AttachmentFilesNames)
+            .IgnoreMember(x => x.Attachments)
             .IgnoreMember(x => x.ThreadId);
     }
     

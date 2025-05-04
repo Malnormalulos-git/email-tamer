@@ -390,20 +390,23 @@ internal class BackupService(
             var contentStream = new MemoryStream();
             await content.CopyToAsync(contentStream, cancellationToken);
 
+            var newAttachment = new Attachment
+            {
+                Id = Guid.NewGuid(),
+                FileName = fileName,
+                MessageId = newMessage.Id
+            };
+
             saveToRepoTasks.Add(
                 tenantRepository.SaveAttachmentAsync(
-                    new MessageAttachmentKey
-                    {
-                        MessageId = mimeMessage.MessageId,
-                        FileName = fileName
-                    },
+                    MessageAttachmentKey.Create(newAttachment, mimeMessage),
                     new MessageAttachment(
                         contentStream,
                         fileName,
                         attachment.ContentType.MimeType),
                     cancellationToken));
 
-            newMessage.AttachmentFilesNames.Add(fileName);
+            newMessage.Attachments.Add(newAttachment);
         }
     }
 

@@ -39,6 +39,7 @@ internal class GetMessageDetailsQueryHandler(
         var message = await repository.ReadAsync((r, ct) => 
                 r.Set<Message>()
                     .AsNoTracking()
+                    .Include(m => m.Attachments)
                     .FirstOrDefaultAsync(x => x.Id == messageId, ct),
             cancellationToken);
         

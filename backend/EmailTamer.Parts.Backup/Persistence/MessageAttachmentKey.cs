@@ -1,22 +1,29 @@
 using EmailTamer.Database.Tenant.Entities;
+using MimeKit;
 
 namespace EmailTamer.Parts.Sync.Persistence;
 
 public sealed class MessageAttachmentKey : TenantRepositoryKey
 {
-	public string FileName { get; init; } = null!;
+	public string AttachmentId { get; init; } = null!;
 
 	public static implicit operator string(MessageAttachmentKey key) => key.ToString();
 
 	public override string ToString()
 		=> base.ToString()
-		   + $"attachments/{Uri.EscapeDataString(FileName)}";
+		   + $"attachments/{Uri.EscapeDataString(AttachmentId)}";
 
-	public static MessageAttachmentKey Create(string fileName,
-												   Message message) =>
+	public static MessageAttachmentKey Create(Attachment attachment, Message message) =>
 		new()
 		{
 			MessageId = message.Id,
-			FileName = fileName
+			AttachmentId = attachment.Id.ToString()
+		};
+
+	public static MessageAttachmentKey Create(Attachment attachment, MimeMessage message) =>
+		new()
+		{
+			MessageId = message.MessageId,
+			AttachmentId = attachment.Id.ToString()
 		};
 }

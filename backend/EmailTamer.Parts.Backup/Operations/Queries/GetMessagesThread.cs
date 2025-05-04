@@ -39,6 +39,7 @@ internal class GetMessagesThreadQueryHandler(
         var thread = await repository.ReadAsync(async (r, ct) =>
         {
             var message = await r.Set<Message>()
+                .AsNoTracking()
                 .Where(m => m.Id == messageId)
                 .Select(m => new { m.ThreadId })
                 .FirstOrDefaultAsync(ct);
@@ -47,6 +48,8 @@ internal class GetMessagesThreadQueryHandler(
                 return null;
 
             var threadMessages = await r.Set<Message>()
+                .AsNoTracking()
+                .Include(m => m.Attachments)
                 .Where(m => m.ThreadId == message.ThreadId)
                 .OrderBy(m => m.Date)
                 .AsNoTracking()
