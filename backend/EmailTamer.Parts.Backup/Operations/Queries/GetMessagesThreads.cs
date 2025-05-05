@@ -68,7 +68,7 @@ public class GetMessagesThreadsQueryHandler(
 
         var threadsPagedResult = await repository.ReadAsync(async (r, ct) =>
         {
-            var baseQuery = r.Set<Message>()
+            var targetMessagesQuery = r.Set<Message>()
                 .AsNoTracking()
                 .WhereIf(filerByFolder, msg => msg.Folders.Any(f => f.Id == query.FolderId))
                 .WhereIf(filerByEmailBoxes, msg => msg.EmailBoxes.Any(eb => query.EmailBoxesIds!.Contains(eb.Id)))
@@ -86,9 +86,13 @@ public class GetMessagesThreadsQueryHandler(
                     */)
                 .Where(m => m.ThreadId != null);
 
-            var threadIdsQuery = baseQuery
+            var threadIdsQuery = targetMessagesQuery
                 .Select(m => m.ThreadId)
                 .Distinct();
+            
+            var baseQuery = r.Set<Message>()
+                .AsNoTracking()
+                .Where(m => threadIdsQuery.Contains(m.ThreadId));
 
             var lastMessagesQuery = baseQuery
                 .GroupBy(m => m.ThreadId)
