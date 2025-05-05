@@ -5,10 +5,12 @@ import EmailBoxesSection from '@components/homePage/EmailBoxesSection.tsx';
 import MessagesSection from '@components/homePage/MessagesSection.tsx';
 import {HEADER_HEIGHT} from '@utils/constants.ts';
 import {Email as EmailIcon, Folder as FolderIcon} from '@mui/icons-material';
-import {getUrlParam, setUrlParam} from '@utils/urlUtils.ts';
+import {getUrlParam} from '@utils/urlUtils.ts';
 import {SELECTED_BOXES_IDS_PARAM, SELECTED_FOLDER_ID_PARAM} from '@router/urlParams.ts';
 
 import {arraysEqual} from '@utils/arraysEqual.ts';
+
+import {useGetUrlParam, useSetUrlParam} from '@hooks/useUrlParam.ts';
 
 import {TranslationScopeProvider} from '../i18n/contexts/TranslationScopeContext.tsx';
 
@@ -17,15 +19,16 @@ const APPBAR_HEIGHT = 50;
 const HomePage = () => {
     const [foldersDrawerOpen, toggleFoldersDrawer] = useReducer((state) => !state, false);
     const [emailBoxesDrawerOpen, toggleEmailBoxesDrawer] = useReducer((state) => !state, false);
+    const setUrlParam = useSetUrlParam();
 
-    const folderIdParam = getUrlParam(SELECTED_FOLDER_ID_PARAM);
+    const folderIdParam = useGetUrlParam(SELECTED_FOLDER_ID_PARAM);
     const [selectedFolderId, setSelectedFolderId] = useState<string | null>(folderIdParam);
     const handleSetSelectedFolderId = (folderId: string | null) => {
         setUrlParam(SELECTED_FOLDER_ID_PARAM, folderId);
         setSelectedFolderId(folderId);
     };
 
-    const emailBoxesIdsParam = getUrlParam(SELECTED_BOXES_IDS_PARAM)?.split(',').filter(id => id) || [];
+    const emailBoxesIdsParam = useGetUrlParam(SELECTED_BOXES_IDS_PARAM)?.split(',').filter(id => id) || [];
     const [selectedEmailBoxesIds, setSelectedEmailBoxesIds] = useState<string[]>(emailBoxesIdsParam);
 
     useEffect(() => {

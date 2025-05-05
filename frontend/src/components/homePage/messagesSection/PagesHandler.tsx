@@ -61,7 +61,6 @@ const PagesHandler = ({
     const handlePageSizeChange = (event: SelectChangeEvent<number>) => {
         const newSize = event.target.value as number;
         setMessagesPerPage(newSize);
-        setPage(1);
     };
 
     return (

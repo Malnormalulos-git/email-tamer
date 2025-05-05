@@ -13,6 +13,8 @@ import {BackupStatus} from '@api/emailTamerApiSchemas.ts';
 
 import {arraysEqual} from '@utils/arraysEqual.ts';
 
+import {useQueryClient} from '@tanstack/react-query';
+
 import {TranslationScopeProvider} from '../../i18n/contexts/TranslationScopeContext.tsx';
 
 interface EmailBoxesSectionProps {
@@ -22,6 +24,7 @@ interface EmailBoxesSectionProps {
 
 const EmailBoxesSection = ({emailBoxesIds, setEmailBoxesIds}: EmailBoxesSectionProps) => {
     const {data: emailBoxes, isLoading, refetch} = useGetEmailBoxes({});
+    const queryClient = useQueryClient();
 
     const {
         data: emailBoxesStatuses,
@@ -35,7 +38,10 @@ const EmailBoxesSection = ({emailBoxesIds, setEmailBoxesIds}: EmailBoxesSectionP
     );
 
     const {mutate: backupBoxes, isPending: isBackuping} = useBackUpEmailBoxesMessages({
-        onSettled: () => refetchStatuses(),
+        onSettled: () => {
+            queryClient.invalidateQueries();
+            refetchStatuses();
+        },
     });
 
     const handleBackupButtonClick = () => {

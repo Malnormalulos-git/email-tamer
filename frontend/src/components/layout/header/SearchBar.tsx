@@ -1,18 +1,16 @@
 import {useEffect, useRef, useState} from 'react';
 import {Paper, InputBase, IconButton} from '@mui/material';
 import {Search, Clear as ClearIcon} from '@mui/icons-material';
-import {useNavigate} from 'react-router-dom';
-import {HOME_ROUTE} from '@router/routes.ts';
 import useScopedContextTranslator from '@hooks/useScopedTranslator.ts';
 import {SEARCH_PARAM} from '@router/urlParams.ts';
-import {getUrlParam} from '@utils/urlUtils.ts';
+import {useSetUrlParam, useGetUrlParam} from '@hooks/useUrlParam.ts';
 
 const SearchBar = () => {
-    const searchTerm = getUrlParam(SEARCH_PARAM);
+    const searchTerm = useGetUrlParam(SEARCH_PARAM);
     const [searchValue, setSearchValue] = useState('');
-    const navigate = useNavigate();
     const inputRef = useRef<HTMLInputElement | null>(null);
     const {t} = useScopedContextTranslator();
+    const setUrlParam = useSetUrlParam();
 
     useEffect(() => {
         setSearchValue(searchTerm || '');
@@ -20,12 +18,15 @@ const SearchBar = () => {
 
     const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        if (searchValue.trim().length > 0) navigate(`${HOME_ROUTE}?${SEARCH_PARAM}=${searchValue}`);
-        else navigate(HOME_ROUTE);
+        if (searchValue.trim().length > 0)
+            setUrlParam(SEARCH_PARAM, searchValue);
+        else
+            setUrlParam(SEARCH_PARAM, null);
     };
 
     const handleClear = () => {
         inputRef.current?.focus();
+        setUrlParam(SEARCH_PARAM, null);
         setSearchValue('');
     };
 
