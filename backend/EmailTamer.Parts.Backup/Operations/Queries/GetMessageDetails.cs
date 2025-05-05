@@ -29,25 +29,25 @@ public sealed record GetMessageDetails(string MessageId) : IRequest<IActionResul
 internal class GetMessageDetailsQueryHandler(
     [FromKeyedServices(nameof(TenantDbContext))] IEmailTamerRepository repository,
     IMapper mapper,
-    ITenantRepository filesRepository) 
+    ITenantRepository filesRepository)
     : IRequestHandler<GetMessageDetails, IActionResult>
 {
     public async Task<IActionResult> Handle(GetMessageDetails request, CancellationToken cancellationToken)
     {
         var messageId = HttpUtility.UrlDecode(request.MessageId);
-        
-        var message = await repository.ReadAsync((r, ct) => 
+
+        var message = await repository.ReadAsync((r, ct) =>
                 r.Set<Message>()
                     .AsNoTracking()
                     .Include(m => m.Attachments)
                     .FirstOrDefaultAsync(x => x.Id == messageId, ct),
             cancellationToken);
-        
+
         if (message == null)
         {
             return new NotFoundResult();
         }
-        
+
         var result = mapper.Map<MessageDetailsDto>(message);
 
         if (message.HasHtmlBody)
@@ -63,7 +63,7 @@ internal class GetMessageDetailsQueryHandler(
                 }
             }
         }
-        
+
         return new OkObjectResult(result);
     }
 }

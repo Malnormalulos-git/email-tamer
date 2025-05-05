@@ -34,26 +34,26 @@ internal class GetMessageAttachmentQueryHandler(
     {
         var messageId = request.MessageId;
         var attachmentId = request.AttachmentId;
-        
+
         var message = await repository.ReadAsync((r, ct) =>
                 r.Set<Message>()
                     .AsNoTracking()
                     .Include(m => m.Attachments)
                     .FirstOrDefaultAsync(m => m.Id == messageId, ct)
             , cancellationToken);
-        
+
         if (message == null)
             return new NotFoundResult();
-        
+
         var attachmentEntity = message.Attachments.FirstOrDefault(a => a.Id == Guid.Parse(attachmentId));
-        
+
         if (attachmentEntity == null)
             return new NotFoundResult();
-        
+
         var messageAttachmentKey = MessageAttachmentKey.Create(attachmentEntity, message);
-        
+
         var attachment = await filesRepository.GetAttachmentAsync(messageAttachmentKey, cancellationToken);
-         
+
         return new FileStreamResult(attachment.Content, attachment.ContentType)
         {
             FileDownloadName = attachmentEntity.FileName,

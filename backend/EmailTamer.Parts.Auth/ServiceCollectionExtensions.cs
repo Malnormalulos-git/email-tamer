@@ -21,7 +21,7 @@ public static class ServiceCollectionExtensions
         builder.AddEmailTamerPart<AuthController>();
 
         var services = builder.Services;
-        
+
         const string jwtConfigSectionName = "JWT";
         services.AddOptionsWithValidator<JwtConfig, JwtConfig.Validator>(jwtConfigSectionName);
 
@@ -36,7 +36,7 @@ public static class ServiceCollectionExtensions
 
         return builder;
     }
-    
+
     public static IServiceCollection ConfigureIdentity(this IServiceCollection services)
     {
         services.AddIdentity<EmailTamerUser, IdentityRole>(options =>
@@ -49,7 +49,7 @@ public static class ServiceCollectionExtensions
                 options.Password.RequiredUniqueChars = 0;
             })
             .AddEntityFrameworkStores<EmailTamerDbContext>();
-        
+
         return services;
     }
 
@@ -57,11 +57,11 @@ public static class ServiceCollectionExtensions
     {
         services.AddAuthentication(options =>
         {
-            options.DefaultAuthenticateScheme = 
-                options.DefaultChallengeScheme = 
-                    options.DefaultForbidScheme = 
-                        options.DefaultScheme = 
-                            options.DefaultSignInScheme = 
+            options.DefaultAuthenticateScheme =
+                options.DefaultChallengeScheme =
+                    options.DefaultForbidScheme =
+                        options.DefaultScheme =
+                            options.DefaultSignInScheme =
                                 options.DefaultSignOutScheme = JwtBearerDefaults.AuthenticationScheme;
         }).AddJwtBearer(options =>
         {
@@ -82,7 +82,7 @@ public static class ServiceCollectionExtensions
         {
             var adminRole = UserRole.Admin.ToString("G");
             var userRole = UserRole.User.ToString("G");
-            
+
             options.AddPolicy(AuthPolicy.Admin, policy =>
             {
                 policy.RequireAuthenticatedUser();

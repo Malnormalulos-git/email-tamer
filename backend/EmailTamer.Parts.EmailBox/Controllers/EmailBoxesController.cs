@@ -18,21 +18,21 @@ public class EmailBoxesController(IMediator mediator) : Controller
     [ProducesResponseType(409)]
     public Task<IActionResult> CreateEmailBox([FromBody] CreateEmailBoxDto createEmailBoxDto, CancellationToken ct = default) =>
         mediator.Send(new CreateEmailBox(createEmailBoxDto), ct);
-    
+
     [HttpGet(Name = nameof(GetEmailBoxes))]
     [Authorize(Policy = AuthPolicy.User)]
     [ProducesResponseType(typeof(List<EmailBoxDto>), 200)]
     [ProducesResponseType(404)]
     public Task<IActionResult> GetEmailBoxes(CancellationToken ct = default)
         => mediator.Send(new GetEmailBoxes(), ct);
-    
+
     [HttpGet("{id:guid}", Name = nameof(GetEmailBoxDetails))]
     [Authorize(Policy = AuthPolicy.User)]
     [ProducesResponseType(typeof(EmailBoxDetailsDto), 200)]
     [ProducesResponseType(404)]
     public Task<IActionResult> GetEmailBoxDetails(Guid id, CancellationToken ct = default)
         => mediator.Send(new GetEmailBoxDetails(id), ct);
-    
+
     [HttpPatch(Name = nameof(EditEmailBox))]
     [Authorize(Policy = AuthPolicy.User)]
     [ProducesResponseType(200)]
@@ -40,14 +40,14 @@ public class EmailBoxesController(IMediator mediator) : Controller
     [ProducesResponseType(409)]
     public Task<IActionResult> EditEmailBox([FromBody] EditEmailBoxDto editEmailBoxDto, CancellationToken ct = default) =>
         mediator.Send(new EditEmailBox(editEmailBoxDto), ct);
-    
+
     [HttpDelete("{id:guid}", Name = nameof(DeleteEmailBox))]
     [Authorize(Policy = AuthPolicy.User)]
     [ProducesResponseType(200)]
     [ProducesResponseType(404)]
     public Task<IActionResult> DeleteEmailBox([FromRoute(Name = "id")] Guid id, CancellationToken ct = default) =>
         mediator.Send(new DeleteEmailBox(id), ct);
-    
+
     [HttpPost("testConnection", Name = nameof(TestConnection))]
     [Authorize(Policy = AuthPolicy.User)]
     [ProducesResponseType(200)]

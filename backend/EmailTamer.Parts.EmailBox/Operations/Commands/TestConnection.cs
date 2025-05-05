@@ -37,12 +37,12 @@ public class TestConnectionCommandHandler(
         {
             var existingEmailBox = await repository.ReadAsync((r, ct) =>
                 r.Set<Database.Tenant.Entities.EmailBox>()
-                    .FirstOrDefaultAsync(mb => mb.Id == command.EmailBox.Id,ct)
+                    .FirstOrDefaultAsync(mb => mb.Id == command.EmailBox.Id, ct)
                 , cancellationToken);
-            
+
             if (existingEmailBox is null)
                 return new NotFoundResult();
-            
+
             mappedEmailBox.Password = existingEmailBox.Password;
         }
 

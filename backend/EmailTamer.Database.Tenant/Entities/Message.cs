@@ -11,34 +11,34 @@ namespace EmailTamer.Database.Tenant.Entities;
 public sealed class Message : IEntity
 {
     public List<EmailBox> EmailBoxes { get; set; } = [];
-    
+
     [Key]
     public string Id { get; set; } = null!;
-    
+
     public string? ThreadId { get; set; }
-    
+
     public string? InReplyTo { get; set; }
-    
-    public string? Subject { get; set; } 
-    
-    public string? TextBody { get; set; } 
-    
+
+    public string? Subject { get; set; }
+
+    public string? TextBody { get; set; }
+
     public List<Attachment> Attachments { get; set; } = [];
-    
+
     public List<string> References { get; set; } = []; // TODO: To separate table?
-    
+
     public List<EmailAddress> From { get; set; } = []; // TODO: To separate table?
-    
+
     public List<EmailAddress> To { get; set; } = []; // TODO: To separate table?
 
     public DateTime Date { get; set; }
-    
+
     public DateTime? ResentDate { get; set; }
-    
-    public List<Folder> Folders { get; set; } = [];  
-    
+
+    public List<Folder> Folders { get; set; } = [];
+
     public bool HasHtmlBody { get; set; }
-    
+
     public class Configurator : EntityConfiguration<Message>
     {
         public override void Configure(EntityTypeBuilder<Message> builder)
@@ -46,36 +46,36 @@ public sealed class Message : IEntity
             base.Configure(builder);
 
             builder.HasKey(x => x.Id);
-            
-            
+
+
             builder.HasMany(x => x.EmailBoxes)
                 .WithMany(x => x.Messages);
-            
+
             builder.HasMany(x => x.Folders)
                 .WithMany(x => x.Messages);
-            
+
             builder.HasMany(x => x.Attachments)
                 .WithOne(x => x.Message)
                 .HasForeignKey(x => x.MessageId);
 
             builder.HasIndex(x => x.ThreadId);
-            
-            
+
+
             builder.Property(x => x.Date).DateTime();
-            
+
             builder.Property(x => x.ResentDate).DateTime();
-            
+
 
             builder.Property(x => x.References).Json();
-            
+
             builder.Property(x => x.To).Json();
-            
+
             builder.Property(x => x.From).Json();
         }
     }
 }
 
-public sealed class EmailAddress 
+public sealed class EmailAddress
 {
     public string? Name { get; set; }
     public string Address { get; set; }

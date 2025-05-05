@@ -6,7 +6,7 @@ namespace EmailTamer.Database.Entities.Configuration;
 
 public interface IDatabaseConfigurator
 {
-	void OnModelCreating(ModelBuilder modelBuilder, IEncryptionService? encryptionService = null);
+    void OnModelCreating(ModelBuilder modelBuilder, IEncryptionService? encryptionService = null);
 
-	void ConfigureConventions(ModelConfigurationBuilder modelConfigurationBuilder, DatabaseFacade databaseFacade);
+    void ConfigureConventions(ModelConfigurationBuilder modelConfigurationBuilder, DatabaseFacade databaseFacade);
 }

@@ -108,8 +108,8 @@ public class GetMessagesThreadsQueryHandler(
                         .FirstOrDefault(m => m.ThreadId == threadId && firstMessagesQuery.Contains(m.Id)),
                     Length = baseQuery.Count(m => m.ThreadId == threadId)
                 });
-                
-            var orderedThreadQuery = query.IsByDescending  
+
+            var orderedThreadQuery = query.IsByDescending
                 ? threadQuery.OrderByDescending(t => t.LastMessage.Date)
                 : threadQuery.OrderBy(t => t.LastMessage.Date);
 

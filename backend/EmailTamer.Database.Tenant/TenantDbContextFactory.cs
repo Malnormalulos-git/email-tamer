@@ -9,7 +9,7 @@ using Microsoft.Extensions.Options;
 namespace EmailTamer.Database.Tenant;
 
 public class TenantDbContextFactory(
-    DbContextOptionsBuilder<TenantDbContext> options, 
+    DbContextOptionsBuilder<TenantDbContext> options,
     IServiceProvider serviceProvider)
     : IDbContextFactory<TenantDbContext>
 {
@@ -18,7 +18,7 @@ public class TenantDbContextFactory(
         var connectionString = GetConnectionStringForTenant();
         return CreateDbContextInternal(connectionString);
     }
-    
+
     public TenantDbContext CreateDbContext(ITenantContextAccessor tenant, IEncryptionService encryptionService)
     {
         var connectionString = GetConnectionString(tenant.GetDatabaseName());
@@ -28,7 +28,7 @@ public class TenantDbContextFactory(
     private TenantDbContext CreateDbContextInternal(string connectionString, IEncryptionService? encryptionService = null)
     {
         var dbConfig = serviceProvider.GetRequiredService<IOptionsMonitor<TenantsDatabaseConfig>>().CurrentValue;
-        
+
         options.UseMySQL(connectionString,
             builder =>
             {
@@ -39,10 +39,10 @@ public class TenantDbContextFactory(
 
         var configurator = serviceProvider.GetRequiredService<IDatabaseConfigurator>();
         var encryptService = encryptionService ?? serviceProvider.GetRequiredService<IEncryptionService>();
-        
+
         var dbContext = new TenantDbContext(options.Options, configurator, encryptService);
         dbContext.Database.Migrate();
-        
+
         return dbContext;
     }
 
@@ -55,9 +55,9 @@ public class TenantDbContextFactory(
     private string GetConnectionStringForTenant()
     {
         var accessor = serviceProvider.GetRequiredService<ITenantContextAccessor>();
-    
+
         var dbName = accessor.GetDatabaseName();
-        
+
         return GetConnectionString(dbName);
     }
 }

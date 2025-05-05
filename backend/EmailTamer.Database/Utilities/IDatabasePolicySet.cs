@@ -4,6 +4,6 @@ namespace EmailTamer.Database.Utilities;
 
 public interface IDatabasePolicySet
 {
-	IAsyncPolicy DatabaseReadPolicy { get; }
-	IAsyncPolicy DatabaseWritePolicy { get; }
+    IAsyncPolicy DatabaseReadPolicy { get; }
+    IAsyncPolicy DatabaseWritePolicy { get; }
 }

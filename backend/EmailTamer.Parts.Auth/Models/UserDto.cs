@@ -12,8 +12,8 @@ public sealed class UserDto : IMappable, IOutbound
     public string Email { get; set; } = null!;
 
     public UserRole Role { get; set; }
-    
-    
+
+
     public static void AddProfileMapping(Profile profile)
         => profile.CreateMap<AuthUser, UserDto>(MemberList.Destination);
 }

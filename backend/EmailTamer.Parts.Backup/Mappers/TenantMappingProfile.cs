@@ -14,16 +14,16 @@ public class MessageMappingProfile : MappableProfile, IMappable
         profile.CreateMap<MimeMessage, Message>(MemberList.Destination)
             .EasyMember(x => x.Id, y => y.MessageId)
             .EasyMember(x => x.Date, y => y.Date.UtcDateTime)
-            .EasyMember(x => x.ResentDate, y => 
-                y.ResentDate.UtcDateTime != DateTime.MinValue 
-                    ? y.ResentDate.UtcDateTime 
+            .EasyMember(x => x.ResentDate, y =>
+                y.ResentDate.UtcDateTime != DateTime.MinValue
+                    ? y.ResentDate.UtcDateTime
                     : (DateTime?)null)
             .EasyMember(x => x.References, y => y.References.ToList())
             .EasyMember(x => x.TextBody, y => GetTextBody(y))
-            .EasyMember(x => x.To, src => 
+            .EasyMember(x => x.To, src =>
                 src.To.OfType<MailboxAddress>()
                     .Select(ToEmailAddress))
-            .EasyMember(x => x.From,src => 
+            .EasyMember(x => x.From, src =>
                 src.From.OfType<MailboxAddress>()
                     .Select(ToEmailAddress))
             .EasyMember(x => x.HasHtmlBody, y => y.HtmlBody != null)
@@ -32,7 +32,7 @@ public class MessageMappingProfile : MappableProfile, IMappable
             .IgnoreMember(x => x.Attachments)
             .IgnoreMember(x => x.ThreadId);
     }
-    
+
     private static string GetTextBody(MimeMessage message)
     {
         var textBody = message.TextBody;

@@ -15,34 +15,34 @@ public sealed record GetEmailBoxDetails(Guid Id) : IRequest<IActionResult>
 {
     public class Validator : AbstractValidator<GetEmailBoxDetails>
     {
-	    public Validator()
-	    {
-		    RuleFor(x => x.Id).NotNull();
-	    }
+        public Validator()
+        {
+            RuleFor(x => x.Id).NotNull();
+        }
     }
 }
 
 [UsedImplicitly]
 public class GetEmailBoxDetailsQueryHandler(
-	[FromKeyedServices(nameof(TenantDbContext))] IEmailTamerRepository repository,
-	IMapper mapper)
-	: IRequestHandler<GetEmailBoxDetails, IActionResult>
+    [FromKeyedServices(nameof(TenantDbContext))] IEmailTamerRepository repository,
+    IMapper mapper)
+    : IRequestHandler<GetEmailBoxDetails, IActionResult>
 {
     public async Task<IActionResult> Handle(GetEmailBoxDetails request, CancellationToken cancellationToken)
     {
-	    var emailBox = await repository.ReadAsync((r, ct) =>
-			    r.Set<Database.Tenant.Entities.EmailBox>()
-				    .AsNoTracking()
-				    .FirstOrDefaultAsync(x => x.Id == request.Id, ct),
-		    cancellationToken);
+        var emailBox = await repository.ReadAsync((r, ct) =>
+                r.Set<Database.Tenant.Entities.EmailBox>()
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync(x => x.Id == request.Id, ct),
+            cancellationToken);
 
-	    if (emailBox is null)
-	    {
-		    return new NotFoundResult();
-	    }
+        if (emailBox is null)
+        {
+            return new NotFoundResult();
+        }
 
-	    var result = mapper.Map<EmailBoxDetailsDto>(emailBox);
+        var result = mapper.Map<EmailBoxDetailsDto>(emailBox);
 
-	    return new OkObjectResult(result);
+        return new OkObjectResult(result);
     }
 }

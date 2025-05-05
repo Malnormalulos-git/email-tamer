@@ -29,7 +29,7 @@ public class DeleteEmailBoxCommandHandler(
 {
     public async Task<IActionResult> Handle(DeleteEmailBox command, CancellationToken cancellationToken)
     {
-        
+
         var emailBoxToDelete = await repository.ReadAsync((r, ct) =>
                 r.Set<Database.Tenant.Entities.EmailBox>()
                     .FirstOrDefaultAsync(x => x.Id == command.Id, ct),
@@ -39,16 +39,16 @@ public class DeleteEmailBoxCommandHandler(
         {
             return new NotFoundResult();
         }
-        
+
         var messagesToDelete = await repository.ReadAsync((r, ct) =>
                 r.Set<Database.Tenant.Entities.Message>()
                     .Include(m => m.EmailBoxes)
                     .Where(m => m.EmailBoxes.Count == 1 && m.EmailBoxes.First().Id == command.Id)
                     .ToListAsync(ct)
             , cancellationToken);
-        
+
         var repoDeletingTasks = new List<Task>();
-        
+
         var messagesWithAttachments = messagesToDelete
             .Where(m => m.Attachments.Count > 0)
             .ToList();
@@ -60,7 +60,7 @@ public class DeleteEmailBoxCommandHandler(
                     MessageAttachmentKey.Create(attachment, message), cancellationToken));
             }
         }
-        
+
         var messagesWithHtmlBody = messagesToDelete
             .Where(m => m.HasHtmlBody)
             .ToList();
@@ -69,7 +69,7 @@ public class DeleteEmailBoxCommandHandler(
             repoDeletingTasks.Add(filesRepository.DeleteBodyAsync(
                 new MessageBodyKey { MessageId = message.Id }, cancellationToken));
         }
-        
+
         await Task.WhenAll(repoDeletingTasks);
 
         repository.RemoveRange(messagesToDelete);

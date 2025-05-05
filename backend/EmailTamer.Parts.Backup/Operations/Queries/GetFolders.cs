@@ -27,7 +27,7 @@ public class GetFoldersQueryHandler(
                     .Select(f => mapper.Map<FolderDto>(f))
                     .ToListAsync(ct)
             , cancellationToken);
-            
+
         return new OkObjectResult(folders.OrderBy(f => f.Name));
     }
 }

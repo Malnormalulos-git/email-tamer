@@ -56,10 +56,10 @@ internal class PeriodicBackupService(
                     {
                         await using AsyncServiceScope scope = factory.CreateAsyncScope();
                         var backupService = scope.ServiceProvider.GetRequiredService<IBackupService>();
-                        
+
                         var tenantRepositoryFactory = scope.ServiceProvider.GetRequiredService<ITenantRepositoryFactory>();
                         var tenantRepository = await tenantRepositoryFactory.Create(tenant, stoppingToken);
-                        
+
                         var dbContextFactory = scope.ServiceProvider.GetRequiredService<IDbContextFactory<TenantDbContext>>();
                         var databasePolicySet = scope.ServiceProvider.GetRequiredService<IDatabasePolicySet>();
                         var configuration = scope.ServiceProvider.GetRequiredService<IConfiguration>();

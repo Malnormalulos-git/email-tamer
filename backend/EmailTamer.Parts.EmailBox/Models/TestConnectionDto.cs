@@ -9,7 +9,7 @@ namespace EmailTamer.Parts.EmailBox.Models;
 public sealed class TestConnectionDto : IMappable, IInbound
 {
     public Guid? Id { get; set; }
-    
+
     public string? UserName { get; set; }
 
     public string Email { get; set; } = null!;
@@ -32,7 +32,7 @@ public sealed class TestConnectionDto : IMappable, IInbound
                 .NotNull()
                 .NotEmpty()
                 .When(x => x.Password == null);
-            
+
             RuleFor(x => x.UserName)
                 .NotEmpty()
                 .When(x => x.AuthenticateByEmail == false);

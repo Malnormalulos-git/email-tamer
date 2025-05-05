@@ -34,7 +34,7 @@ public class BackupsController(IMediator mediator) : Controller
                 .Select(id => Guid.Parse(id.Trim()))
                 .ToArray();
         }
-        
+
         return mediator.Send(new BackUpEmailBoxesMessages(parsedEmailBoxesIds));
     }
 
@@ -66,7 +66,7 @@ public class BackupsController(IMediator mediator) : Controller
     [ProducesResponseType(typeof(MessagesThreadDto), 200)]
     [ProducesResponseType(404)]
     public Task<IActionResult> GetMessagesThread(
-        [FromQuery] string messageId, 
+        [FromQuery] string messageId,
         CancellationToken ct = default) =>
         mediator.Send(new GetMessagesThread(messageId), ct);
 
@@ -90,13 +90,13 @@ public class BackupsController(IMediator mediator) : Controller
                 .Select(id => Guid.Parse(id.Trim()))
                 .ToArray();
         }
-        
+
         return mediator.Send(new GetMessagesThreads(folderId, parsedEmailBoxesIds, searchTerm, page, size, isByDescending), ct);
     }
 
     [HttpGet("folders", Name = nameof(GetFolders))]
     [Authorize(Policy = AuthPolicy.User)]
     [ProducesResponseType(typeof(List<FolderDto>), 200)]
-    public Task<IActionResult> GetFolders(CancellationToken ct = default) => 
+    public Task<IActionResult> GetFolders(CancellationToken ct = default) =>
         mediator.Send(new GetFolders(), ct);
 }

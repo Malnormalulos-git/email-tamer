@@ -15,9 +15,9 @@ namespace EmailTamer.Database.Tenant.Migrations
                 table: "EmailBoxes",
                 type: "longtext",
                 nullable: true);
-            
+
             migrationBuilder.Sql("UPDATE EmailBoxes SET UserName = Name");
-            
+
             migrationBuilder.DropColumn(
                 name: "Name",
                 table: "EmailBoxes");

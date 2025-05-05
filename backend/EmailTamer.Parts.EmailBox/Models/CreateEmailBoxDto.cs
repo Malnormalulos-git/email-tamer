@@ -12,13 +12,13 @@ public sealed class CreateEmailBoxDto : IMappable, IInbound
     public string? BoxName { get; set; }
 
     public string? UserName { get; set; }
-    
+
     public string Email { get; set; } = null!;
 
     public bool AuthenticateByEmail { get; set; } = true;
-    
+
     public string Password { get; set; } = null!;
-    
+
     public string EmailDomainConnectionHost { get; set; } = null!;
 
     public int EmailDomainConnectionPort { get; set; } = 993;
@@ -31,19 +31,19 @@ public sealed class CreateEmailBoxDto : IMappable, IInbound
         {
             RuleFor(x => x.BoxName)
                 .MaximumLength(30);
-            
+
             RuleFor(x => x.UserName)
                 .NotNull()
                 .NotEmpty()
                 .When(x => x.AuthenticateByEmail == false);
-            
+
             RuleFor(x => x.Email)
                 .NotEmpty()
                 .Email();
-            
+
             RuleFor(x => x.Password)
                 .NotEmpty();
-            
+
             RuleFor(x => x.EmailDomainConnectionHost)
                 .NotEmpty();
         }

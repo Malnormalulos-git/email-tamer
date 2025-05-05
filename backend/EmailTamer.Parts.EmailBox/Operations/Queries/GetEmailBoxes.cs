@@ -14,18 +14,18 @@ public sealed record GetEmailBoxes() : IRequest<IActionResult>;
 
 [UsedImplicitly]
 public class GetEmailBoxesQueryHandler(
-	[FromKeyedServices(nameof(TenantDbContext))] IEmailTamerRepository repository,
-	IMapper mapper)
-	: IRequestHandler<GetEmailBoxes, IActionResult>
+    [FromKeyedServices(nameof(TenantDbContext))] IEmailTamerRepository repository,
+    IMapper mapper)
+    : IRequestHandler<GetEmailBoxes, IActionResult>
 {
-	public async Task<IActionResult> Handle(GetEmailBoxes query, CancellationToken cancellationToken)
+    public async Task<IActionResult> Handle(GetEmailBoxes query, CancellationToken cancellationToken)
     {
-	    var emailBoxes = await repository.ReadAsync((r, ct) =>
-			    r.Set<Database.Tenant.Entities.EmailBox>()
-				    .AsNoTracking()
-				    .Select(x => mapper.Map<EmailBoxDto>(x))
-				    .ToListAsync(ct),
-		    cancellationToken);
+        var emailBoxes = await repository.ReadAsync((r, ct) =>
+                r.Set<Database.Tenant.Entities.EmailBox>()
+                    .AsNoTracking()
+                    .Select(x => mapper.Map<EmailBoxDto>(x))
+                    .ToListAsync(ct),
+            cancellationToken);
 
         return new ObjectResult(emailBoxes);
     }

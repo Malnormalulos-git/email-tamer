@@ -22,7 +22,7 @@ public static class ModelPropertyEncrypterExtension
                     var attributes = property.PropertyInfo?.GetCustomAttributes(typeof(EncryptPropertyAttribute), false);
                     if (attributes != null && attributes.Any())
                     {
-                        logger?.LogInformation("Applying EncryptionConvertor to property {PropertyName} in entity {EntityName}", 
+                        logger?.LogInformation("Applying EncryptionConvertor to property {PropertyName} in entity {EntityName}",
                             property.Name, entityType.Name);
                         property.SetValueConverter(converter);
                     }

@@ -20,30 +20,30 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddTenantDatabases(this IServiceCollection services)
     {
         services.AddDatabaseSaveChangesInterceptor<AuditSaveChangesInterceptor>();
-        
+
         services.AddScoped<ITenantContextAccessor, TenantContextAccessor>();
-        
+
         services.AddScoped<IDbContextFactory<TenantDbContext>>(sp =>
         {
             var options = new DbContextOptionsBuilder<TenantDbContext>();
-            
+
             var hostEnv = sp.GetRequiredService<IHostEnvironment>();
             if (hostEnv.IsDevelopment())
             {
                 options.EnableSensitiveDataLogging()
                     .EnableDetailedErrors();
             }
-            
+
             options.AddInterceptors(sp.GetServices<IOrderedInterceptor>().OrderBy(x => x.Order));
-            
+
             return new TenantDbContextFactory(options, sp);
         });
 
         services.AddSharedDatabaseServices();
-        
+
         return services;
     }
-    
+
     private static IServiceCollection AddSharedDatabaseServices(this IServiceCollection services)
     {
         var assembly = typeof(TenantsDatabaseConfig).Assembly;
@@ -53,7 +53,7 @@ public static class ServiceCollectionExtensions
         services.AddDatabasePersistence();
         services.AddDatabaseConfiguration<TenantsDatabaseConfig>();
         services.AddOptionsWithValidator<TenantsDatabaseConfig, TenantsDatabaseConfig.Validator>("TenantsDatabase");
-        
+
         services.AddScoped<IEncryptionService, EncryptionService>();
 
         return services;
@@ -71,13 +71,13 @@ public static class ServiceCollectionExtensions
         {
             var dbContextFactory = sp.GetRequiredService<IDbContextFactory<TenantDbContext>>();
             var dbContext = dbContextFactory.CreateDbContext();
-        
+
             var databasePolicySet = sp.GetRequiredService<IDatabasePolicySet>();
-            
+
             var repository = new EmailTamerRepository<TenantDbContext>(dbContext, databasePolicySet);
             return repository;
         });
-        
+
         return services;
     }
 }

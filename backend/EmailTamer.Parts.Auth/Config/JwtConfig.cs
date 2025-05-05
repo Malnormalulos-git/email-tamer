@@ -9,7 +9,7 @@ public class JwtConfig : IAppConfig
     public string Audience { get; set; } = null!;
     public string Authority { get; set; } = null!;
     public string Key { get; set; } = null!;
-    
+
     public class Validator : AbstractValidator<JwtConfig>
     {
         public Validator()

@@ -90,7 +90,7 @@ internal class BackupService(
                 emailBox.LastSyncAt = synchronizationStartedAt;
                 emailBox.BackupStatus = BackupStatus.Idle;
                 repo.Update(emailBox);
-                
+
                 await repo.PersistAsync(ct);
             }, cancellationToken);
 
@@ -112,7 +112,7 @@ internal class BackupService(
                 await repository.PersistAsync(cancellationToken);
                 return new BadRequestObjectResult(mailKitImapConnectorException.Fault);
             }
-            
+
             return new BadRequestResult();
         }
     }

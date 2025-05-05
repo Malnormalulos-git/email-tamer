@@ -14,18 +14,18 @@ public sealed class EmailBoxDetailsDto : IMappable, IOutbound
     public string? BoxName { get; set; }
 
     public string? UserName { get; set; }
-    
+
     public string Email { get; set; }
 
     public bool AuthenticateByEmail { get; set; }
-    
+
     public string EmailDomainConnectionHost { get; set; }
 
     public int EmailDomainConnectionPort { get; set; }
 
     public bool UseSSl { get; set; }
-    
-    public ConnectionFault? ConnectionFault { get; set; } 
+
+    public ConnectionFault? ConnectionFault { get; set; }
 
     public static void AddProfileMapping(Profile profile)
     {

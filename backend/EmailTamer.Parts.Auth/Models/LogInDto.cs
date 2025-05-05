@@ -3,7 +3,7 @@ using FluentValidation;
 
 namespace EmailTamer.Auth.Models;
 
-public sealed class LogInDto: IInbound
+public sealed class LogInDto : IInbound
 {
     public string Email { get; set; } = null!;
 

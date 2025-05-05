@@ -29,10 +29,10 @@ public class EditEmailBoxCommandHandler([FromKeyedServices(nameof(TenantDbContex
     {
         public bool HasChanged(string propertyName) =>
             propertyName is nameof(Database.Tenant.Entities.EmailBox.BoxName) or nameof(Database.Tenant.Entities.EmailBox.UserName)
-                ? !Equals(CurrentValue, NewValue) 
-                : NewValue != null && !Equals(CurrentValue, NewValue); 
+                ? !Equals(CurrentValue, NewValue)
+                : NewValue != null && !Equals(CurrentValue, NewValue);
     }
-    
+
     public async Task<IActionResult> Handle(EditEmailBox command, CancellationToken cancellationToken)
     {
         var emailBox = await repository.ReadAsync((r, ct) =>
@@ -60,7 +60,7 @@ public class EditEmailBoxCommandHandler([FromKeyedServices(nameof(TenantDbContex
         var changedProperties = updates
             .Where(u => u.Value.HasChanged(u.Key))
             .ToList();
-        
+
         if (changedProperties.Count == 0)
         {
             return new StatusCodeResult(304);
@@ -74,7 +74,7 @@ public class EditEmailBoxCommandHandler([FromKeyedServices(nameof(TenantDbContex
                 cancellationToken);
 
             var duplicateExists = emailBoxes.Any(x => x.Email == command.EditEmailBoxDto.Email);
-            
+
             if (duplicateExists)
             {
                 return new ConflictResult();
@@ -91,7 +91,7 @@ public class EditEmailBoxCommandHandler([FromKeyedServices(nameof(TenantDbContex
 
         repository.Update(emailBox);
         await repository.PersistAsync(cancellationToken);
-        
+
         return new OkResult();
     }
 }

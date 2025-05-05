@@ -7,10 +7,10 @@ namespace EmailTamer.Auth.Mappers;
 
 public class UsersMappingProfile : MappableProfile
 {
-	public UsersMappingProfile()
-	{
-		CreateMap<EmailTamerUser, AuthUser>(MemberList.Destination)
-			.WithUserRoleContext()
-			.EasyContextMember(x => x.Role, ctx => ctx.Role);
-	}
+    public UsersMappingProfile()
+    {
+        CreateMap<EmailTamerUser, AuthUser>(MemberList.Destination)
+            .WithUserRoleContext()
+            .EasyContextMember(x => x.Role, ctx => ctx.Role);
+    }
 }

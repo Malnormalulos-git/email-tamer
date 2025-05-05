@@ -9,9 +9,9 @@ namespace EmailTamer.Database.Tenant.Entities;
 public class Folder : UniqueIdEntity
 {
     public string Name { get; set; } = null!;
-    
+
     public List<Message> Messages { get; set; } = [];
-    
+
     public class Configurator : EntityConfiguration<Folder>
     {
         public override void Configure(EntityTypeBuilder<Folder> builder)

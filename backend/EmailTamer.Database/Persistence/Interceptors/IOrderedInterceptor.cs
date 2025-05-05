@@ -4,5 +4,5 @@ namespace EmailTamer.Database.Persistence.Interceptors;
 
 public interface IOrderedInterceptor : IInterceptor
 {
-	uint Order { get; }
+    uint Order { get; }
 }

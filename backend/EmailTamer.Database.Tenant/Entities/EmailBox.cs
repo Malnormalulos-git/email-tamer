@@ -11,7 +11,7 @@ namespace EmailTamer.Database.Tenant.Entities;
 public class EmailBox : UniqueIdEntity, IDateAuditableEntity
 {
     public string? BoxName { get; set; }
-    
+
     [EncryptProperty]
     public string? UserName { get; set; }
 
@@ -29,18 +29,18 @@ public class EmailBox : UniqueIdEntity, IDateAuditableEntity
     public int EmailDomainConnectionPort { get; set; } = 993;
 
     public bool UseSSl { get; set; } = true;
-    
+
     public DateTime LastSyncAt { get; set; }
-    
+
     public ConnectionFault? ConnectionFault { get; set; }
-    
+
     public BackupStatus BackupStatus { get; set; }
-    
+
     public List<Message> Messages { get; set; } = [];
-    
+
     public DateTime CreatedAt { get; set; }
     public DateTime ModifiedAt { get; set; }
-    
+
     public class Configurator : EntityConfiguration<EmailBox>
     {
         public override void Configure(EntityTypeBuilder<EmailBox> builder)

@@ -25,10 +25,10 @@ public sealed record CreateEmailBox(CreateEmailBoxDto EmailBox) : IRequest<IActi
 [UsedImplicitly]
 public class CreateEmailBoxCommandHandler(
     [FromKeyedServices(nameof(TenantDbContext))] IEmailTamerRepository repository,
-	IMapper mapper)
-	: IRequestHandler<CreateEmailBox, IActionResult>
+    IMapper mapper)
+    : IRequestHandler<CreateEmailBox, IActionResult>
 {
-	public async Task<IActionResult> Handle(CreateEmailBox command, CancellationToken cancellationToken)
+    public async Task<IActionResult> Handle(CreateEmailBox command, CancellationToken cancellationToken)
     {
         var emailBoxes = await repository.ReadAsync((r, ct) =>
                 r.Set<Database.Tenant.Entities.EmailBox>()
@@ -39,12 +39,12 @@ public class CreateEmailBoxCommandHandler(
         {
             return new ConflictResult();
         }
-        
-        var emailBox = mapper.Map<Database.Tenant.Entities.EmailBox>(command.EmailBox); 
-        
+
+        var emailBox = mapper.Map<Database.Tenant.Entities.EmailBox>(command.EmailBox);
+
         emailBox.Id = Guid.NewGuid();
 
-        
+
         repository.Add(emailBox);
         await repository.PersistAsync(cancellationToken);
 

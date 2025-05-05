@@ -14,39 +14,39 @@ namespace EmailTamer.Dependencies.Amazon;
 
 public static class ServiceCollectionExtensions
 {
-	private static readonly RegionEndpoint region = RegionEndpoint.EUWest1;
+    private static readonly RegionEndpoint region = RegionEndpoint.EUWest1;
 
-	public static IServiceCollection AddAmazonServices(this IServiceCollection services, bool isDevelopment)
-	{
-		var awsOptions = new AWSOptions
-		{
-			Region = region
-		};
+    public static IServiceCollection AddAmazonServices(this IServiceCollection services, bool isDevelopment)
+    {
+        var awsOptions = new AWSOptions
+        {
+            Region = region
+        };
 
-		services.AddDefaultAWSOptions(awsOptions);
-		services.AddAmazonS3(isDevelopment);
-		services.TryAddSingleton<IValidator<IHasBucketName>, BucketNameValidator>();
+        services.AddDefaultAWSOptions(awsOptions);
+        services.AddAmazonS3(isDevelopment);
+        services.TryAddSingleton<IValidator<IHasBucketName>, BucketNameValidator>();
 
-		return services;
-	}
+        return services;
+    }
 
-	private static IServiceCollection AddAmazonS3(this IServiceCollection services, bool isDevelopment)
-	{
-		var s3Config = isDevelopment
-			? new AmazonS3Config
-			{
-				ServiceURL = "http://localhost:4566",
-				ForcePathStyle = true,
-				UseHttp = true
-			}
-			: new AmazonS3Config
-			{
-				RegionEndpoint = region
-			};
+    private static IServiceCollection AddAmazonS3(this IServiceCollection services, bool isDevelopment)
+    {
+        var s3Config = isDevelopment
+            ? new AmazonS3Config
+            {
+                ServiceURL = "http://localhost:4566",
+                ForcePathStyle = true,
+                UseHttp = true
+            }
+            : new AmazonS3Config
+            {
+                RegionEndpoint = region
+            };
 
-		services.AddSingleton<IAmazonS3>(new AmazonS3Client(s3Config));
-		services.TryAddTransient<IBlobStorage, S3BlobStorage>();
+        services.AddSingleton<IAmazonS3>(new AmazonS3Client(s3Config));
+        services.TryAddTransient<IBlobStorage, S3BlobStorage>();
 
-		return services;
-	}
+        return services;
+    }
 }

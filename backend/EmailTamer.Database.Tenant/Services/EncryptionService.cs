@@ -14,8 +14,8 @@ public sealed class EncryptionService(ITenantContextAccessor tenantContextAccess
     private async Task<byte[]> DeriveKeyFromTenantId()
     {
         var tenantId = await tenantContextAccessor.GetTenantId();
-        
-        var salt = configuration.GetValue<string>("Encryption:Tenant:Salt") 
+
+        var salt = configuration.GetValue<string>("Encryption:Tenant:Salt")
             ?? throw new InvalidOperationException("Tenant encryption salt not configured.");
 
         using var sha256 = SHA256.Create();

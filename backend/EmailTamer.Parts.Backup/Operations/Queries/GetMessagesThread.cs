@@ -14,7 +14,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace EmailTamer.Parts.Sync.Operations.Queries;
 
-public sealed record GetMessagesThread(string MessageId)  : IRequest<IActionResult>
+public sealed record GetMessagesThread(string MessageId) : IRequest<IActionResult>
 {
     public class Validator : AbstractValidator<GetMessageDetails>
     {
@@ -35,7 +35,7 @@ internal class GetMessagesThreadQueryHandler(
     public async Task<IActionResult> Handle(GetMessagesThread query, CancellationToken cancellationToken)
     {
         var messageId = HttpUtility.UrlDecode(query.MessageId);
-        
+
         var thread = await repository.ReadAsync(async (r, ct) =>
         {
             var message = await r.Set<Message>()
@@ -79,7 +79,7 @@ internal class GetMessagesThreadQueryHandler(
         }
 
         var messagesDto = thread
-            .Take(thread.Count - 1) 
+            .Take(thread.Count - 1)
             .Select(m => mapper.Map<MessageDto>(m))
             .ToList();
 

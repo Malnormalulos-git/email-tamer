@@ -49,10 +49,11 @@ services.AddMvcCore()
 
 services.AddEndpointsApiExplorer();
 
-if (isDevelopment) {
+if (isDevelopment)
+{
     services.AddSwaggerGen(o =>
         {
-            o.SwaggerDoc("v1", new ()
+            o.SwaggerDoc("v1", new()
             {
                 Title = "EmailTamer",
                 Version = "v1"
@@ -80,7 +81,7 @@ services.AddControllers()
     {
         var settings = x.SerializerSettings;
         settings.ContractResolver = new CamelCasePropertyNamesContractResolver();
-        settings.Converters.Add(new StringEnumConverter{NamingStrategy = new CamelCaseNamingStrategy()});
+        settings.Converters.Add(new StringEnumConverter { NamingStrategy = new CamelCaseNamingStrategy() });
         settings.NullValueHandling = NullValueHandling.Include;
     });
 

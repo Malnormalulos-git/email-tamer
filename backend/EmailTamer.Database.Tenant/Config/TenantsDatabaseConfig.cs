@@ -8,7 +8,7 @@ public class TenantsDatabaseConfig : IAppConfig
     public string DefaultConnectionString { get; set; } = null!;
     public int Retries { get; set; }
     public int Timeout { get; set; }
-    
+
     public class Validator : AbstractValidator<TenantsDatabaseConfig>
     {
         public Validator()

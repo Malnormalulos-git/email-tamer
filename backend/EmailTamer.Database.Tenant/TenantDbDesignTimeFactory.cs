@@ -27,7 +27,7 @@ public class TenantDbDesignTimeFactory : IDesignTimeDbContextFactory<TenantDbCon
 
         return new TenantDbContext(optionsBuilder.Options, configurator, encryptionService);
     }
-    
+
     private List<INonGenericEntityConfiguration> LoadEntityConfigurations()
     {
         var assembly = Assembly.GetExecutingAssembly();

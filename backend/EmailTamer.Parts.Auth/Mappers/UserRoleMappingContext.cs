@@ -5,12 +5,12 @@ namespace EmailTamer.Auth.Mappers;
 
 public sealed record UserRoleMappingContext(UserRole Role) : IMappingContext
 {
-	public IDictionary<string, object> EnrichContext(IDictionary<string, object> context)
-	{
-		context[nameof(Role)] = Role;
-		return context;
-	}
+    public IDictionary<string, object> EnrichContext(IDictionary<string, object> context)
+    {
+        context[nameof(Role)] = Role;
+        return context;
+    }
 
-	public static UserRoleMappingContext FromContext(IDictionary<string, object> context)
-		=> new((UserRole)context[nameof(Role)]);
+    public static UserRoleMappingContext FromContext(IDictionary<string, object> context)
+        => new((UserRole)context[nameof(Role)]);
 }

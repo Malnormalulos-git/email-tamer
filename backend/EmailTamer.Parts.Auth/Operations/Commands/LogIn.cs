@@ -29,7 +29,7 @@ public sealed record LogInCommand(LogInDto Credentials) : IRequest<IActionResult
 public class LogInCommandHandler(UserManager<EmailTamerUser> userManager,
                                  IOptionsMonitor<JwtConfig> jwtConfig,
                                  ISystemClock systemClock)
-	: IRequestHandler<LogInCommand, IActionResult>
+    : IRequestHandler<LogInCommand, IActionResult>
 {
     public async Task<IActionResult> Handle(LogInCommand request, CancellationToken cancellationToken)
     {
@@ -40,7 +40,7 @@ public class LogInCommandHandler(UserManager<EmailTamerUser> userManager,
         var passwordIsConfirmed = await userManager.CheckPasswordAsync(user, request.Credentials.Password);
 
         return passwordIsConfirmed
-            ? new OkObjectResult(new AuthResponseDto { Token = await IssueToken(user)})
+            ? new OkObjectResult(new AuthResponseDto { Token = await IssueToken(user) })
             : new UnauthorizedResult();
     }
 

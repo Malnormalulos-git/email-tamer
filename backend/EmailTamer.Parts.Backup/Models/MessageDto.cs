@@ -8,7 +8,7 @@ namespace EmailTamer.Parts.Sync.Models;
 public class MessageDto : IMappable, IOutbound
 {
     public string Id { get; set; }
-    
+
     public string? ThreadId { get; set; }
 
     public string? Subject { get; set; }

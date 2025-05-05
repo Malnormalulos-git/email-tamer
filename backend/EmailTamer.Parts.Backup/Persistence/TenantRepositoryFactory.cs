@@ -16,7 +16,7 @@ internal class TenantRepositoryFactory(
     public async Task<ITenantRepository> Create(CancellationToken cancellationToken)
     {
         var bucketName = accessor.GetS3BucketName();
-        
+
         if (!await AmazonS3Util.DoesS3BucketExistV2Async(client, bucketName))
         {
             await client.PutBucketAsync(bucketName, cancellationToken);
@@ -26,14 +26,14 @@ internal class TenantRepositoryFactory(
         {
             logger.LogInformation("Bucket {BucketName} already exists", bucketName);
         }
-			
+
         return new TenantRepository(blobStorage, bucketName);
     }
-    
+
     public async Task<ITenantRepository> Create(ITenantContextAccessor tenantAccessor, CancellationToken cancellationToken)
     {
         var bucketName = tenantAccessor.GetS3BucketName();
-        
+
         if (!await AmazonS3Util.DoesS3BucketExistV2Async(client, bucketName))
         {
             await client.PutBucketAsync(bucketName, cancellationToken);
@@ -43,7 +43,7 @@ internal class TenantRepositoryFactory(
         {
             logger.LogInformation("Bucket {BucketName} already exists", bucketName);
         }
-			
+
         return new TenantRepository(blobStorage, bucketName);
     }
 }

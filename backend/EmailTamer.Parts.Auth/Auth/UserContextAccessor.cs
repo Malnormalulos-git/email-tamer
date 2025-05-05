@@ -4,19 +4,19 @@ namespace EmailTamer.Auth.Auth;
 
 public sealed class UserContextAccessor : IConfigurableUserContextAccessor
 {
-	private bool _configured;
+    private bool _configured;
 
-	public void Configure(string userId)
-	{
-		if (_configured)
-		{
-			throw new UserContextException("User context has been configured already");
-		}
+    public void Configure(string userId)
+    {
+        if (_configured)
+        {
+            throw new UserContextException("User context has been configured already");
+        }
 
-		Id = userId;
+        Id = userId;
 
-		_configured = true;
-	}
+        _configured = true;
+    }
 
-	public string Id { get; set; } = null!;
+    public string Id { get; set; } = null!;
 }

@@ -7,10 +7,10 @@ namespace EmailTamer.Database.Startup;
 
 [UsedImplicitly]
 public class RunDbMigrationsAction(IDatabasePolicySet policySet, EmailTamerDbContext dbContext)
-	: IAsyncStartupAction
+    : IAsyncStartupAction
 {
-	public uint Order => 0;
+    public uint Order => 0;
 
-	public Task PerformActionAsync(CancellationToken cancellationToken = default)
-		=> policySet.DatabaseWritePolicy.ExecuteAsync(() => dbContext.Database.MigrateAsync(cancellationToken));
+    public Task PerformActionAsync(CancellationToken cancellationToken = default)
+        => policySet.DatabaseWritePolicy.ExecuteAsync(() => dbContext.Database.MigrateAsync(cancellationToken));
 }

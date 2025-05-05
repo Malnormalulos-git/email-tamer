@@ -7,14 +7,14 @@ using FluentValidation;
 
 namespace EmailTamer.Auth.Models;
 
-public class CreateUserDto: IMappable, IInbound
+public class CreateUserDto : IMappable, IInbound
 {
     public string Email { get; set; } = null!;
 
     public string Password { get; set; } = null!;
-    
+
     public UserRole Role { get; set; } = UserRole.User;
-    
+
     public class CreateUserDtoValidator : AbstractValidator<CreateUserDto>
     {
         public CreateUserDtoValidator()

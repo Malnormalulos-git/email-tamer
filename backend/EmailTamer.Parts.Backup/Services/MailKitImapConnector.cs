@@ -24,10 +24,10 @@ public static class MailKitImapConnector
         {
             if (e is System.Net.Sockets.SocketException se)
                 throw new MailKitImapConnectorException(ConnectionFault.ConnectionRefused, se);
-            
+
             if (e is System.ArgumentOutOfRangeException auore)
                 throw new MailKitImapConnectorException(ConnectionFault.PortOutOfRange, auore);
-            
+
             throw new MailKitImapConnectorException(ConnectionFault.Other, e);
         }
 
@@ -37,16 +37,16 @@ public static class MailKitImapConnector
                 emailBox.AuthenticateByEmail ? emailBox.Email : emailBox.UserName,
                 emailBox.Password,
                 cancellationToken);
-            
+
         }
         catch (Exception e)
         {
             if (e is MailKit.Security.AuthenticationException ae)
                 throw new MailKitImapConnectorException(ConnectionFault.WrongAuthenticationCredentials, ae);
-            
+
             throw new MailKitImapConnectorException(ConnectionFault.Other, e);
         }
-        
+
 
         return client;
     }

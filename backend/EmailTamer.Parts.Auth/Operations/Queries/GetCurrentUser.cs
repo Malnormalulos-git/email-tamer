@@ -12,7 +12,7 @@ namespace EmailTamer.Auth.Operations.Queries;
 
 public sealed record GetCurrentUser : IRequest<IActionResult>
 {
-	internal sealed class Validator : AbstractValidator<GetCurrentUser>
+    internal sealed class Validator : AbstractValidator<GetCurrentUser>
     {
         public Validator() { }
     }
@@ -20,14 +20,14 @@ public sealed record GetCurrentUser : IRequest<IActionResult>
 
 [UsedImplicitly]
 internal sealed class GetCurrentUserQueryHandler(
-	IMapper mapper,
-	UserManager<EmailTamerUser> userManager,
-	IUserContextAccessor userContextAccessor)
-	: IRequestHandler<GetCurrentUser, IActionResult>
+    IMapper mapper,
+    UserManager<EmailTamerUser> userManager,
+    IUserContextAccessor userContextAccessor)
+    : IRequestHandler<GetCurrentUser, IActionResult>
 {
     public async Task<IActionResult> Handle(GetCurrentUser request, CancellationToken cancellationToken)
     {
-	    var authUser = await userManager.GetAuthUserAsync(userContextAccessor.Id, mapper);
+        var authUser = await userManager.GetAuthUserAsync(userContextAccessor.Id, mapper);
         var userDto = mapper.Map<UserDto>(authUser);
         return new OkObjectResult(userDto);
     }

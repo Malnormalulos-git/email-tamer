@@ -2,5 +2,5 @@ namespace EmailTamer.Dependencies.Amazon.Config;
 
 public interface IHasBucketName
 {
-	string BucketName { get; }
+    string BucketName { get; }
 }
