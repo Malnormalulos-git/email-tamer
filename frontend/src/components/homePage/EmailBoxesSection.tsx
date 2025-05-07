@@ -1,4 +1,4 @@
-﻿import {Checkbox, Typography, Box, Button, Stack} from '@mui/material';
+﻿import {Checkbox, Typography, Box, Button, Stack, Fab} from '@mui/material';
 import {useBackUpEmailBoxesMessages, useGetEmailBoxes, useGetEmailBoxesStatuses} from '@api/emailTamerApiComponents.ts';
 import ContentLoading from '@components/ContentLoading.tsx';
 import useScopedContextTranslator from '@hooks/useScopedTranslator.ts';
@@ -172,27 +172,53 @@ const EmailBoxesSection = ({emailBoxesIds, setEmailBoxesIds}: EmailBoxesSectionP
                         sx={{mr: 1}}
                     />
                 )}
-                <Box>
-                    {items.length > 0 && (
+                <Box display='flex'>
+                    {items.length > 0 && (<>
                         <Button
                             variant='contained'
                             size='small'
                             startIcon={<CloudDownload/>}
                             onClick={handleBackupButtonClick}
                             disabled={isBackuping}
-                            sx={{mr: 1}}
+                            sx={{
+                                mr: 1,
+                                display: {xs: 'none', sm: 'flex'}
+                            }}
                         >
                             {t('backup')}
                         </Button>
-                    )}
+                        <Fab
+                            size='small'
+                            color='primary'
+                            onClick={handleBackupButtonClick}
+                            disabled={isBackuping}
+                            sx={{
+                                mr: 1,
+                                display: {xs: 'flex', sm: 'none'}
+                            }}
+                        >
+                            <CloudDownload/>
+                        </Fab>
+                    </>)}
                     <Button
                         variant='contained'
                         size='small'
                         startIcon={<Add/>}
                         onClick={() => setOpenAddEmailBoxDialog(true)}
+                        sx={{display: {xs: 'none', sm: 'flex'}}}
                     >
                         {t('add')}
                     </Button>
+                    <Fab
+                        size='small'
+                        color='primary'
+                        onClick={() => setOpenAddEmailBoxDialog(true)}
+                        sx={{
+                            display: {xs: 'flex', sm: 'none'}
+                        }}
+                    >
+                        <Add/>
+                    </Fab>
                 </Box>
             </Box>
             {isLoading || isStatusesLoading ? (
