@@ -63,7 +63,8 @@ internal class PeriodicBackupService(
                         var dbContextFactory = scope.ServiceProvider.GetRequiredService<IDbContextFactory<TenantDbContext>>();
                         var databasePolicySet = scope.ServiceProvider.GetRequiredService<IDatabasePolicySet>();
                         var configuration = scope.ServiceProvider.GetRequiredService<IConfiguration>();
-                        var encryptionService = new EncryptionService(tenant, configuration);
+                        var encServLogger = scope.ServiceProvider.GetRequiredService<ILogger<EncryptionService>>();
+                        var encryptionService = new EncryptionService(tenant, configuration, encServLogger);
                         var dbContext = (dbContextFactory as TenantDbContextFactory)?.CreateDbContext(tenant, encryptionService);
                         var repository = new EmailTamerRepository<TenantDbContext>(dbContext, databasePolicySet);
 
