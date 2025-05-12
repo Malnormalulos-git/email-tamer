@@ -89,7 +89,7 @@ public class GetMessagesThreadsQueryHandler(
             var threadIdsQuery = targetMessagesQuery
                 .Select(m => m.ThreadId)
                 .Distinct();
-            
+
             var baseQuery = r.Set<Message>()
                 .AsNoTracking()
                 .Where(m => threadIdsQuery.Contains(m.ThreadId));

@@ -7,6 +7,4 @@ public class EncryptionConvertor(IEncryptionService encryptionService, Converter
     : ValueConverter<string, string>(
         x => encryptionService.Encrypt(x),
         x => encryptionService.Decrypt(x),
-        mappingHints)
-{
-}
+        mappingHints);

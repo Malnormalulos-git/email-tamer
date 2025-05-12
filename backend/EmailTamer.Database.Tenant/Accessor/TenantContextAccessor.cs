@@ -1,8 +1,6 @@
 using EmailTamer.Database.Entities;
-using EmailTamer.Database.Persistence;
 using EmailTamer.Infrastructure.Auth;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace EmailTamer.Database.Tenant.Accessor;
 
@@ -10,17 +8,14 @@ public sealed class TenantContextAccessor : ITenantContextAccessor
 {
     private IUserContextAccessor? _userContextAccessor;
     private UserManager<EmailTamerUser>? _userManager;
-    private IEmailTamerRepository? _emailTamerRepository;
     private string? _id;
 
     public TenantContextAccessor(
         IUserContextAccessor userContextAccessor,
-        UserManager<EmailTamerUser> userManager,
-        [FromKeyedServices(nameof(EmailTamerDbContext))] IEmailTamerRepository emailTamerRepository)
+        UserManager<EmailTamerUser> userManager)
     {
         _userContextAccessor = userContextAccessor;
         _userManager = userManager;
-        _emailTamerRepository = emailTamerRepository;
     }
     public TenantContextAccessor(Guid tenantId)
     {
