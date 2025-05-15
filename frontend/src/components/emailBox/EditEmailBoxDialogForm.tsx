@@ -38,9 +38,13 @@ const editEmailBoxSchema = (t: (key: string) => string) =>
             .string()
             .min(1, {message: t('validation.hostRequired')}),
         emailDomainConnectionPort: z
-            .number({invalid_type_error: t('validation.portRequired')})
-            .int()
-            .min(1, {message: t('validation.invalidPort')}),
+            .preprocess(
+                (val) => (typeof val === 'string' ? parseInt(val, 10) : val),
+                z
+                    .number({invalid_type_error: t('validation.portRequired')})
+                    .int()
+                    .min(1, {message: t('validation.invalidPort')})
+            ),
         authenticateByEmail: z.boolean(),
         useSSl: z.boolean(),
         useDefaultImapPorts: z.boolean(),
@@ -185,7 +189,7 @@ const EditEmailBoxDialogForm = ({open, onClose, refetch, boxId}: EditEmailBoxDia
                         boxId={boxId}
                         disabled={isPending || !isValid}
                     />
-                    <SubmitButton disabled={isPending || haveFormValuesChanged}>
+                    <SubmitButton disabled={isPending || !haveFormValuesChanged}>
                         {isPending ? <ContentLoading size={24}/> : t('editSubmitButton')}
                     </SubmitButton>
                 </>
