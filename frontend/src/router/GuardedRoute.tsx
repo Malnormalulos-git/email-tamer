@@ -31,6 +31,6 @@ export const GuardedRoute: FC<GuardedRouteProps> = (props) => {
 
     if (isAccessAllowed) return <>{page}</>;
     if (!isAuthenticated)
-        return <Navigate to={`${LOGIN_ROUTE}?${REDIRECT_TO_PARAM}=${location.pathname + location.search}`}/>;
+        return <Navigate to={`${DEMO_ROUTE}?${REDIRECT_TO_PARAM}=${location.pathname + location.search}`}/>;
     if (isAuthenticated && !isUserAuthorized) return <Navigate to={DEMO_ROUTE} replace/>;
 };
