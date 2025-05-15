@@ -110,7 +110,7 @@ const PagesHandler = ({
             </Box>
             <Box display='flex' alignItems='center'>
                 <Typography variant='body2' sx={{mr: 1, display: {xs: 'none', sm: 'block'}}}>
-                    {`${startMessage}-${endMessage} of ${totalMessages}`}
+                    {`${startMessage}-${endMessage} ${t('of')} ${totalMessages}`}
                 </Typography>
                 <Typography variant='body2' sx={{mr: 1, display: {xs: 'block', sm: 'none'}}}>
                     {`${page}/${totalPages}`}

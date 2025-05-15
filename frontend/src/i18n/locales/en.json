@@ -146,7 +146,8 @@
       "page": "Page",
       "messagesPerPage": "Per page",
       "noSubject": "No subject",
-      "noMessagesFound": "No messages found"
+      "noMessagesFound": "No messages found",
+      "of": "of"
     }
   },
   "threadPage": {

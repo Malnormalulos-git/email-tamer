@@ -146,7 +146,8 @@
       "page": "Стр.",
       "messagesPerPage": "На стр.",
       "noSubject": "Без теми",
-      "noMessagesFound": "Повідомлень не знайдено"
+      "noMessagesFound": "Повідомлень не знайдено",
+      "of": "з"
     }
   },
   "threadPage": {
