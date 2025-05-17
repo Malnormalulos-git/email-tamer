@@ -1,4 +1,4 @@
-﻿import {Checkbox, Typography, Box, Button, Stack, Fab} from '@mui/material';
+﻿import {Box, Button, Checkbox, Fab, Stack, Typography} from '@mui/material';
 import {useBackUpEmailBoxesMessages, useGetEmailBoxes, useGetEmailBoxesStatuses} from '@api/emailTamerApiComponents.ts';
 import ContentLoading from '@components/ContentLoading.tsx';
 import useScopedContextTranslator from '@hooks/useScopedTranslator.ts';
@@ -37,12 +37,19 @@ const EmailBoxesSection = ({emailBoxesIds, setEmailBoxesIds}: EmailBoxesSectionP
         }
     );
 
-    const {mutate: backupBoxes, isPending: isBackuping} = useBackUpEmailBoxesMessages({
+    useEffect(() => {
+        queryClient.invalidateQueries();
+    }, [emailBoxesStatuses]);
+
+    const {mutate: backupBoxes, isPending: isBackupPending} = useBackUpEmailBoxesMessages({
         onSettled: () => {
-            queryClient.invalidateQueries();
             refetchStatuses();
         },
     });
+
+    const isBackuping = isBackupPending || isStatusesLoading ||
+        emailBoxesStatuses?.find(s => s.backupStatus == BackupStatus.Queued ||
+            s.backupStatus == BackupStatus.InProgress) != undefined;
 
     const handleBackupButtonClick = () => {
         if (emailBoxesIds.length > 0) {
@@ -51,7 +58,7 @@ const EmailBoxesSection = ({emailBoxesIds, setEmailBoxesIds}: EmailBoxesSectionP
                     emailBoxesIds: emailBoxesIds.join(', ')
                 }
             });
-            setTimeout(refetchStatuses, 200);
+            setTimeout(refetchStatuses, 500);
         }
     };
 
