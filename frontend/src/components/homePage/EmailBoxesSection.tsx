@@ -74,13 +74,13 @@ const EmailBoxesSection = ({emailBoxesIds, setEmailBoxesIds}: EmailBoxesSectionP
         } else if (emailBoxes && emailBoxes.length === 0 && emailBoxesIds.length > 0) {
             setEmailBoxesIds([]);
         }
-    }, [emailBoxes, emailBoxesIds, setEmailBoxesIds]);
+    }, [emailBoxes]);
 
     const handleToggle = (boxId: string) => () => {
         const currentIndex = emailBoxesIds.indexOf(boxId);
         if (currentIndex === -1) {
             setEmailBoxesIds([...emailBoxesIds, boxId]);
-        } else if (emailBoxesIds.length > 1) {
+        } else {
             setEmailBoxesIds(emailBoxesIds.filter(id => id !== boxId));
         }
     };
