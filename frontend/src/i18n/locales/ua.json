@@ -22,7 +22,7 @@
     "validation": {
       "emailRequired": "Електронна пошта обов'язкова",
       "invalidEmail": "Недійсна електронна пошта",
-      "passwordMinLength": "Пароль має містити щонайменше 12 символів"
+      "passwordRequired": "Пароль обов'язковий"
     }
   },
   "registerPage": {

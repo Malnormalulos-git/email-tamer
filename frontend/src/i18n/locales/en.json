@@ -22,7 +22,7 @@
     "validation": {
       "emailRequired": "Email is required",
       "invalidEmail": "Invalid email address",
-      "passwordMinLength": "Password must be at least 12 characters"
+      "passwordRequired": "Password  is required"
     }
   },
   "registerPage": {

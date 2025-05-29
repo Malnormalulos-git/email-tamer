@@ -24,7 +24,7 @@ const createLoginSchema = (t: (key: string) => string) =>
             .string()
             .min(1, {message: t('validation.emailRequired')})
             .email(t('validation.invalidEmail')),
-        password: z.string().min(12, t('validation.passwordMinLength')),
+        password: z.string().min(1, t('validation.passwordRequired')),
     });
 
 type LoginFormData = z.infer<ReturnType<typeof createLoginSchema>>;
